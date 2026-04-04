@@ -1,218 +1,200 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    
-
-<meta property="og:description" content="معالجة المشاكل التي تخص مواقع التواصل الاجتماعي  وإنشاء المواقع الإلكترونية">
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>فاست فيكس</title>
+    <meta property="og:description" content="معالجة المشاكل التي تخص مواقع التواصل الاجتماعي وإنشاء المواقع الإلكترونية">
+    <title>فاست فيكس للحلول التقنية</title>
     <style>
-        /* إعدادات الخط والألوان الأساسية */
         :root {
-            --primary-gradient: linear-gradient(135deg, #ffffff00 0%, #c5131300 100%);
-            --secondary-color: #ffffff;
-            --accent-color: #ffcc33;
+            --primary-blue: #326abe;
+            --accent-yellow: #ffcc33;
+            --bg-light: #f4f7f6;
         }
 
         body {
-            font-family: Arial, Helvetica, sans-serif;
-            background-image: url(img/h.jpg.jpg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            /* استبدال خلفية الملف المفقود بخلفية تقنية من الإنترنت */
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-attachment: fixed;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             margin: 0;
             padding: 20px;
-            color: #333;
-            
-            
         }
 
         .contact-container {
-            background: var(--secondary-color);
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            background: rgba(255, 255, 255, 0.98);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
             width: 100%;
-            max-width: 500px;
+            max-width: 550px;
             text-align: center;
+        }
+
+        /* تنسيق اللوجو الجديد */
+        .site-logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--primary-blue);
+            padding: 10px;
+            margin-bottom: 10px;
         }
 
         h2 {
-            color: #326abe;
-            margin-bottom: 30px;
-            font-size: 24px;
+            color: var(--primary-blue);
+            margin-top: 10px;
+            font-size: 26px;
         }
 
-        /* تنسيق الحقول */
+        /* تنسيق الصور لتكون متجاوبة 100% */
+        .responsive-img {
+            width: 100%;
+            height: auto;
+            max-height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+
+        .services-text {
+            text-align: justify;
+            font-size: 14px;
+            line-height: 1.6;
+            background: #f9f9f9;
+            padding: 15px;
+            border-right: 4px solid var(--primary-blue);
+            margin: 15px 0;
+        }
+
         .form-group {
-            margin-bottom: 20px;
-            text-align: center;
+            margin-bottom: 15px;
+            text-align: right;
         }
 
         label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 5px;
             font-weight: bold;
-            color: #020000;
+            color: #444;
         }
 
-        textarea, input, select {
+        input, select, textarea {
             width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #ebe5e5;
-            border-radius: 10px;
-            box-sizing: border-box; /* لضمان عدم خروج الحواف */
-            font-size: 16px;
-            transition: all 0.3s ease;
-            outline: none;
-        }
-
-        textarea:focus, input:focus, select:focus {
-            border-color: #d8d5d5;
-            box-shadow: 0 0 8px rgba(118, 75, 162, 0.2);
-        }
-
-        /* تنسيق الصفوف (المدخلات المزدوجة) */
-        .row {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .row .form-group {
-            flex: 1;
-            margin-bottom: 0;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 15px;
+            font-family: inherit;
         }
 
         button {
-            background-color: rgb(64, 144, 190);
-            color: rgb(240, 240, 240);
+            background-color: var(--primary-blue);
+            color: white;
             border: none;
-            padding: 15px 30px;
-            border-radius: 10px;
+            padding: 15px;
+            border-radius: 8px;
             font-size: 18px;
             font-weight: bold;
             cursor: pointer;
             width: 100%;
-            transition: transform 0.2s, box-shadow 0.2s;
-            margin-top: 10px;
+            transition: 0.3s;
         }
 
         button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(245, 5, 5, 0.932);
+            background-color: #255191;
+            box-shadow: 0 5px 15px rgba(50, 106, 190, 0.4);
         }
 
-        button:active {
-            transform: translateY(0);
-        }
-
-        /* تحسين العرض على الهواتف */
-        @media (max-width: 460px) {
-            .row {
-                flex-direction: column;
-            }
+        /* تحسينات الموبايل */
+        @media (max-width: 480px) {
+            .contact-container { padding: 20px; }
+            h2 { font-size: 20px; }
+            body { padding: 10px; }
         }
     </style>
 </head>
 <body>
-     
+
     <div class="contact-container">
-
-        <h2> فاست فيكس للحلول التقنية</h2>
-        <img src="img/5-1.jpg" height="188px" width="488px">
-      <strong> 
-        خدماتنا:
-        <br>
-        <br>
-        تصميم المواقع الإلكترونية 
-        فتح حسابات مواقع التواصل الاجتماعية مثل الفايسبوك وتويتر وانستغرام والواتساب والحسابات البنكية ومنصات تداول العملات
-        تأمين حساب الفايسبوك وتأكيده بالبطاقة القومية او  جواز السفر لمنع اعمال الاختراق وسرقة البيانات من قبل المتطفلين..
-        الاستشارات التقنية مع المبرمجين ومهندسي الشبكات وطلاب تقنية المعلومات في المشاكل التي تخص البرمجة وامن المعلومات ..
-        <br>
-        <br>
-            <img src="img/md_5b34f2d267961.jpg" height="188px" width="488px">
-         </strong> <div style="margin-top: 30px;">
-
-            <h4> انت في مكانك الصحيح الان لحل مشكلتك</h4>
-                  
-
+        <img src="https://cdn-icons-png.flaticon.com/512/2092/2092663.png" alt="Logo" class="site-logo">
         
-            </div>
-  <img src="img/1739887850149.jpg" height="188px" width="488px">
-        
+        <h2>فاست فيكس للحلول التقنية</h2>
+
+        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=500&auto=format" class="responsive-img" alt="برمجة">
+
+        <div class="services-text">
+            <strong>خدماتنا:</strong><br>
+            تصميم المواقع الإلكترونية، فتح وتأمين حسابات التواصل الاجتماعي (فيسبوك، تويتر، إنستغرام)، تأكيد الحسابات بالهوية الرسمية، واستشارات تقنية متخصصة في أمن المعلومات.
+        </div>
+
+        <img src="https://images.unsplash.com/photo-1553877522-43269d4ea984?w=500&auto=format" class="responsive-img" alt="دعم فني">
+
+        <h4>أنت في مكانك الصحيح لحل مشكلتك</h4>
+
         <form action="https://formsubmit.co/alshftmhmwd9@gmail.com" method="post">
-            <label for="user-image">قم بتحديد صورة من لقطات الشاشة</label>
-    <input type="file" id="user-image" name="attachment" accept="image/*" required>
+            
+            <div class="form-group">
+                <label for="user-image">قم بتحديد صورة من لقطات الشاشة</label>
+                <input type="file" id="user-image" name="attachment" accept="image/*" required>
+            </div>
 
             <input type="hidden" name="_captcha" value="false">
             <input type="hidden" name="_template" value="table">
-            <input type="hidden" name="_subject" value="رسالة جديدة!">    
-  <div class="form-group">
-                
-                     <div class="form-group">
-                   
-                    <input type="text" name="الاسم الاول" placeholder=" ادخل الاسم الكامل" required>
-                </div>
+            <input type="hidden" name="_subject" value="رسالة جديدة!"> 
+
+            <div class="form-group">
+                <input type="text" name="الاسم الكامل" placeholder="ادخل الاسم الكامل" required>
+            </div>
+
+            <div class="form-group">
                 <select name="المشكلة" required>
-                    
-                    <option value="" disabled selected> قم بتحديد خيار من المشكلة التي تواجهها</option>
+                    <option value="" disabled selected>حدد نوع المشكلة التي تواجهها</option>
                     <option value="فتح حساب فايسبوك جديد">فتح حساب فيسبوك جديد</option>
                     <option value="تصميم موقع الكتروني">تصميم موقع الكتروني</option>
-                    <option value="تأمين حساب فايسبوك ومواقع التواصل الاجتماعية الاخري">تأمين حساب فيسبوك</option>
-                    <option value="إنشاء حسابات تواصل اجتماعية اخري">انشاء حسابات اخرى مثل إنستغرام , تكتوك , واتساب , باي بال , بايير , منصة إكس تويتر سابقا</option>
-
-                    <option value="خيار 5"> تأكيد  حساب فيسبوك بالبطاقة القومية او جواز السفر</option>
-                    <option value="خيار 6">اود ان ابني شراكة معكم في مجال البرمجة </option>
-<option value="خيار 6">اود ان ابني شراكة معكم في مجال الهكر الاخلاقي وامن المعلومات</option>
+                    <option value="تأمين حساب فايسبوك">تأمين حساب فيسبوك</option>
+                    <option value="إنشاء حسابات أخرى">إنشاء حسابات تواصل أخرى (إنستغرام، واتساب..)</option>
+                    <option value="تأكيد الهوية">تأكيد الحساب بالبطاقة القومية</option>
+                    <option value="شراكة برمجية">طلب شراكة في مجال البرمجة</option>
                 </select>
             </div>
+
             <div class="form-group">
-                <label>نص الرسالة</label>
-                <textarea name="الرسالة" rows="4" placeholder=" اكتب رسالتك هنا تتضمن رقم هاتفك الخاص بالواتساب او الإيميل حتي يتم الاتصال بك في اقرب وقت ممكن...." required></textarea>
+                <textarea name="الرسالة" rows="4" placeholder="اكتب رسالتك وتضمن رقم واتساب الخاص بك..." required></textarea>
             </div>
 
-            <div class="row">
-           
-                <div class="form-group">
-                 
-                </div>
-                </div>
-                <div class="form-group">
+            <div class="form-group">
                 <label>كيف علمت بموقعنا؟</label>
                 <select name="مصدر_المعرفة" required>
                     <option value="" disabled selected>اختر خياراً...</option>
-                    <option value="علمت عن طريق جريدة">علمت عن طريق جريدة</option>
-                    <option value="علمت عن طريق صديق">علمت عن طريق صديق</option>
-                    <option value="علمت عن طريق جوجل">علمت عن طريق جوجل</option>
-                    <option value="علمت عن طريق البحث في متصفحات الانترنت">علمت عن طريق البحث في متصفحات الانترنت</option>
-                    <option value="علمت عن طريق فايسبوك">علمت عن طريق فيسبوك</option>
-                    <option value="علمت عن طريق المبرمج محمود عصام">علمت عن طريق المبرمج محمود عصام</option>
+                    <option value="صديق">عن طريق صديق</option>
+                    <option value="جوجل">عن طريق جوجل</option>
+                    <option value="فيسبوك">عن طريق فيسبوك</option>
+                    <option value="محمود عصام">المبرمج محمود عصام</option>
                 </select>
             </div>
-              
-   <div class="form-group">
-      <img src="img/images.jpeg" height="188px" width="488px">
-                <label>ما تقييمك لخدماتنا</label>
-                <select name="مصدر_المعرفة" required>
-                    <option value="" disabled selected>اختر خياراً...</option>
-                    <option value="علمت عن طريق جريدة">*</option>
-                    <option value="علمت عن طريق صديق">**</option>
-                    <option value="علمت عن طريق جوجل">***</option>
-                    <option value="علمت عن طريق البحث في متصفحات الانترنت">****</option>
-                    <option value="علمت عن طريق فايسبوك">*****</option>
-                  
-                </select>
-            </div>
-            <button type="submit">إرسال البيانات</button>
 
+            <div class="form-group">
+                <img src="https://images.unsplash.com/photo-1521791136364-798a7bc0d262?w=500&auto=format" class="responsive-img" alt="تقييم">
+                <label>ما تقييمك لخدماتنا؟</label>
+                <select name="التقييم" required>
+                    <option value="5">***** (ممتاز)</option>
+                    <option value="4">**** (جيد جداً)</option>
+                    <option value="3">*** (جيد)</option>
+                    <option value="2">** (متوسط)</option>
+                    <option value="1">* (ضعيف)</option>
+                </select>
+            </div>
+
+            <button type="submit">إرسال البيانات الآن</button>
         </form>
-               
-              
-</div>
+    </div>
+
 </body>
 </html>
