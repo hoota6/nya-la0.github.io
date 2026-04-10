@@ -3,255 +3,302 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facebook - البحير نت</title>
     
-    <link rel="icon" href="https://img.icons8.com/fluency/48/000000/shield.png" type="image/png">
-    
-    <meta property="og:description" content="معالجة المشاكل التي تخص مواقع التواصل الاجتماعي وإنشاء المواقع الإلكترونية">
-    <title>❤️البحير نت للتقنية❤️</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
+
     <style>
         :root {
-            --primary-blue: #326abe;
-            --accent-yellow: #ffcc33;
-            --bg-light: #f4f7f6;
-            --chat-bg: #e1f5fe;
+            --fb-blue: #1877F2;
+            --fb-bg: #F0F2F5;
+            --fb-white: #FFFFFF;
+            --fb-text: #050505;
+            --fb-secondary-text: #65676B;
+            --fb-input: #F0F2F5;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --fb-bg: #18191A;
+                --fb-white: #242526;
+                --fb-text: #E4E6EB;
+                --fb-secondary-text: #B0B3B8;
+                --fb-input: #3A3B3C;
+            }
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=1370');
-            background-size: cover;
-            background-attachment: fixed;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            font-family: Segoe UI, Helvetica, Arial, sans-serif;
+            background-color: var(--fb-bg);
             margin: 0;
-            padding: 20px;
+            color: var(--fb-text);
         }
 
-        .contact-container {
-            background: rgba(255, 255, 255, 0.98);
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-            width: 100%;
-            max-width: 550px;
-            text-align: center;
-            position: relative;
-        }
-
-        .site-logo {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: var(--primary-blue);
-            padding: 10px;
-            margin-bottom: 10px;
-        }
-
-        h2 {
-            color: var(--primary-blue);
-            margin-top: 10px;
-            font-size: 26px;
-        }
-
-        .responsive-img {
-            width: 100%;
-            height: auto;
-            max-height: 250px;
-            object-fit: cover;
-            border-radius: 10px;
-            margin: 15px 0;
-            display: block;
-            border: 2px solid #eee;
-        }
-
-        .services-text {
-            text-align: justify;
-            font-size: 14px;
-            line-height: 1.6;
-            background: #f9f9f9;
-            padding: 15px;
-            border-right: 4px solid var(--primary-blue);
-            margin: 15px 0;
-        }
-
-        .helper-box {
-            background-color: var(--chat-bg);
-            border-radius: 15px;
-            padding: 15px;
-            margin: 20px 0;
+        /* Navbar */
+        nav {
+            background-color: var(--fb-white);
+            height: 56px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 2px solid var(--primary-blue);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            animation: pulse 2s infinite;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
-        .computer-face {
-            font-size: 40px;
-            margin-left: 15px;
-            animation: blink 1.5s infinite;
-        }
+        nav h2 { color: var(--fb-blue); margin: 0; font-size: 24px; letter-spacing: -1px; }
 
-        .helper-text {
-            text-align: right;
-            color: #333;
-        }
+        .container { max-width: 600px; margin: 15px auto; padding: 0 10px; }
 
-        .welcome-msg {
-            font-weight: bold;
-            color: var(--primary-blue);
-            font-size: 16px;
-        }
-
-        .help-msg {
-            font-size: 14px;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-            100% { transform: scale(1); }
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.6; }
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-            text-align: right;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #444;
-        }
-
-        input, select, textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
+        /* Create Post Card */
+        .create-post {
+            background: var(--fb-white);
             border-radius: 8px;
-            box-sizing: border-box;
-            font-size: 15px;
-            font-family: inherit;
+            padding: 12px 16px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            margin-bottom: 16px;
         }
 
-        button {
-            background-color: var(--primary-blue);
-            color: white;
-            border: none;
-            padding: 15px;
-            border-radius: 8px;
-            font-size: 18px;
-            font-weight: bold;
+        .input-row { display: flex; align-items: center; gap: 10px; }
+        .avatar { width: 40px; height: 40px; border-radius: 50%; background: #ddd; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; background: linear-gradient(45deg, #1877F2, #8B3DFF); }
+
+        .fake-input {
+            background: var(--fb-input);
+            border-radius: 20px;
+            padding: 10px 15px;
+            flex-grow: 1;
             cursor: pointer;
+            color: var(--fb-secondary-text);
+            border: none;
+            text-align: right;
+            font-size: 15px;
+        }
+
+        .media-actions {
+            display: flex;
+            border-top: 1px solid #ddd;
+            margin-top: 12px;
+            padding-top: 8px;
+            justify-content: space-around;
+        }
+
+        .action-item {
+            color: var(--fb-secondary-text);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 8px;
+            border-radius: 8px;
+        }
+
+        .action-item:hover { background: var(--fb-input); }
+
+        /* Post Card */
+        .post {
+            background: var(--fb-white);
+            border-radius: 8px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .post-header { padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; }
+        .user-info b { font-size: 15px; display: block; }
+        .user-info span { font-size: 13px; color: var(--fb-secondary-text); }
+
+        .post-content { padding: 4px 16px 12px 16px; font-size: 15px; line-height: 1.4; }
+        .post-media img, .post-media video { width: 100%; display: block; max-height: 500px; object-fit: cover; }
+
+        .post-stats { padding: 10px 16px; display: flex; justify-content: space-between; color: var(--fb-secondary-text); font-size: 13px; border-bottom: 1px solid var(--fb-input); }
+
+        .post-buttons { display: flex; padding: 4px; }
+        .post-btn { flex: 1; border: none; background: none; padding: 10px; color: var(--fb-secondary-text); font-weight: 600; cursor: pointer; border-radius: 4px; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .post-btn:hover { background: var(--fb-input); }
+        .post-btn.active { color: var(--fb-blue); }
+
+        /* Modal for creating post */
+        #post-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(244, 244, 244, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--fb-white);
             width: 100%;
-            transition: 0.3s;
+            max-width: 500px;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.2);
         }
 
-        button:hover {
-            background-color: #255191;
-            box-shadow: 0 5px 15px rgba(50, 106, 190, 0.4);
-        }
-
-        @media (max-width: 480px) {
-            .contact-container { padding: 20px; }
-            h2 { font-size: 20px; }
-            .computer-face { font-size: 30px; }
-        }
+        #post-textarea { width: 100%; border: none; font-size: 18px; outline: none; background: transparent; color: var(--fb-text); resize: none; min-height: 150px; }
+        
+        #loading-overlay { position: fixed; inset: 0; background: var(--fb-bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; }
     </style>
 </head>
 <body>
 
-    <div class="contact-container">
-        <img src="https://cdn-icons-png.flaticon.com/512/2092/2092663.png" alt="Logo" class="site-logo">
-        
-        <h2>❤️البحير نت للتقنية❤️</h2>
+<div id="loading-overlay">
+    <h1 style="color: #1877F2; font-size: 40px;">facebook</h1>
+    <p>جاري التحميل...</p>
+</div>
 
-        <div class="helper-box">
-            <div class="computer-face">💻😊</div>
-            <div class="helper-text">
-                <div class="welcome-msg">مرحبا بك</div>
-                <div class="help-msg">أنا هنا لمساعدتك</div>
-            </div>
+<nav>
+    <h2>facebook</h2>
+</nav>
+
+<div class="container">
+    <div class="create-post">
+        <div class="input-row">
+            <div class="avatar">👤</div>
+            <button class="fake-input" onclick="openModal()">بم تفكر يا مستخدم البحير؟</button>
         </div>
-
-        <img src="http://googleusercontent.com/image_collection/image_retrieval/15788285858735020825_0" class="responsive-img" alt="الأمن الرقمي والتقنية">
-
-        <div class="services-text">
-            <strong>خدماتنا المطورة:</strong><br>
-            فتح وتأمين حسابات التواصل الاجتماعي، إنشاء الحسابات البنكية الرقمية (بنكك، فوري)، وحلول تقنية متكاملة لأمن المعلومات وتصميم المواقع.
+        <div class="media-actions">
+            <div class="action-item" onclick="openModal()">📹 فيديو بث مباشر</div>
+            <div class="action-item" onclick="openModal()">🖼️ صورة/فيديو</div>
+            <div class="action-item" onclick="openModal()">😊 شعور/نشاط</div>
         </div>
-
-        <h4>أنت في مكانك الصحيح لحل مشكلتك</h4>
-
-        <form action="https://formsubmit.co/fastfyks@gmail.com" method="post">
-            
-            <input type="hidden" name="_captcha" value="false">
-            <input type="hidden" name="_template" value="table">
-            <input type="hidden" name="_subject" value="طلب خدمة جديد - البحير نت"> 
-
-            <div class="form-group">
-                <input type="text" name="الاسم الكامل" placeholder="ادخل الاسم الكامل" required>
-            </div>
-
-            <div class="form-group">
-                <label>نوع الخدمة المطلوبة:</label>
-                <select name="الخدمة" required>
-                    <option value="" disabled selected>حدد الخدمة التي تحتاجها</option>
-                    <optgroup label=" فتح حسابات  مواقع التواصل الاجتماعي وتأمينها ">
-                        <option value="فتح حساب فيسبوك">فتح وتأمين حساب فيسبوك</option>
-                        <option value="فتح حساب واتساب">فتح حساب واتساب</option>
-                        <option value="فتح حساب تيلجرام">فتح حساب تيلجرام</option>
-                    </optgroup>
-                    <optgroup label="خدمات بنكية ورقمية">
-                        <option value="فتح حساب بنكك">فتح حساب بنكك (Bankak)</option>
-                        <option value="فتح حساب فوري">فتح حساب فوري (Fawry)</option>
-                        <option value="فتح حساب اوكاش">فتح حساب اوكاش (Cash)</option>
-                        <option value="فتح حساب بنك المشرق">فتح حساب بنك المشرق</option>
-                    </optgroup>
-                    <optgroup label="خدمات أخرى">
-                        <option value="تصميم موقع الكتروني">تصميم موقع إلكتروني</option>
-                        <option value="تأكيد الهوية">تأكيد حساب فيسبوك بالبطاقة القومية  اوالجواز</option>
-                    </optgroup>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <textarea name="الرسالة" rows="4" placeholder="اكتب تفاصيل طلبك ورقم هاتفك للتواصل..." required></textarea>
-            </div>
-
-            <div class="form-group">
-                <label>كيف علمت بموقعنا؟</label>
-                <select name="مصدر_المعرفة" required>
-                    <option value="صديق">عن طريق صديق</option>
-                    <option value="جوجل">عن طريق جوجل</option>
-                    <option value="فيسبوك">عن طريق فيسبوك</option>
-                    <option value="محمود عصام">المبرمج محمود عصام</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label>ما تقييمك لخدمات الموقع</label>
-                <select name="التقييم" required>
-                    <option value="5">***** (ممتاز)</option>
-                    <option value="4">**** (جيد جداً)</option>
-                    <option value="3">*** (جيد)</option>
-                    <option value="2">** (متوسط)</option>
-                    <option value="1">* (ضعيف)</option>
-                </select>
-            </div>
-
-            <button type="submit">إرسال الطلب الآن</button>
-        </form>
     </div>
+
+    <div id="feed"></div>
+</div>
+
+<div id="post-modal">
+    <div class="modal-content">
+        <div style="display:flex; justify-content: space-between; border-bottom:1px solid #ddd; padding-bottom:10px; margin-bottom:10px;">
+            <h3 style="margin:0">إنشاء منشور</h3>
+            <button onclick="closeModal()" style="border:none; background:none; font-size:20px; cursor:pointer; color:var(--fb-text)">✕</button>
+        </div>
+        <textarea id="post-textarea" placeholder="بم تفكر؟"></textarea>
+        <input type="file" id="media-input" accept="image/*,video/*" style="margin: 10px 0;">
+        <button onclick="uploadPost()" id="submit-btn" style="width:100%; padding:10px; background:var(--fb-blue); color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">نشر</button>
+    </div>
+</div>
+
+<script>
+    // بيانات Firebase الخاصة بك
+    const firebaseConfig = {
+        apiKey: "AIzaSyAHbXMLT3F0OpnMZQHHPz-kAOlZBi1hhs4",
+        authDomain: "albehirsocial.firebaseapp.com",
+        projectId: "albehirsocial",
+        storageBucket: "albehirsocial.firebasestorage.app",
+        messagingSenderId: "302307189713",
+        appId: "1:302307189713:web:abc71f50c9f87113c0f6f0"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    const storage = firebase.storage();
+
+    // الدخول التلقائي المباشر
+    auth.onAuthStateChanged(async (user) => {
+        if (!user) {
+            await auth.signInAnonymously();
+        } else {
+            document.getElementById('loading-overlay').style.display = 'none';
+            loadPosts();
+        }
+    });
+
+    function openModal() { document.getElementById('post-modal').style.display = 'flex'; }
+    function closeModal() { document.getElementById('post-modal').style.display = 'none'; }
+
+    async function uploadPost() {
+        const text = document.getElementById('post-textarea').value;
+        const file = document.getElementById('media-input').files[0];
+        const btn = document.getElementById('submit-btn');
+
+        if(!text && !file) return;
+
+        btn.disabled = true;
+        btn.innerText = "جاري النشر...";
+
+        let url = "";
+        let type = "";
+
+        if(file) {
+            type = file.type.split('/')[0];
+            const ref = storage.ref(`posts/${Date.now()}_${file.name}`);
+            await ref.put(file);
+            url = await ref.getDownloadURL();
+        }
+
+        await db.collection("posts").add({
+            text, url, mediaType: type,
+            uid: auth.currentUser.uid,
+            likes: [],
+            time: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        document.getElementById('post-textarea').value = "";
+        document.getElementById('media-input').value = "";
+        closeModal();
+        btn.disabled = false;
+        btn.innerText = "نشر";
+    }
+
+    async function toggleLike(postId, currentLikes) {
+        const myUid = auth.currentUser.uid;
+        const newLikes = currentLikes.includes(myUid) 
+            ? currentLikes.filter(id => id !== myUid) 
+            : [...currentLikes, myUid];
+        await db.collection("posts").doc(postId).update({ likes: newLikes });
+    }
+
+    function loadPosts() {
+        db.collection("posts").orderBy("time", "desc").onSnapshot(snap => {
+            const feed = document.getElementById('feed');
+            feed.innerHTML = "";
+            snap.forEach(doc => {
+                const p = doc.data();
+                const id = doc.id;
+                const myUid = auth.currentUser.uid;
+                const time = p.time ? new Date(p.time.seconds*1000).toLocaleString('ar-EG') : 'الآن';
+                const likes = p.likes || [];
+                const hasLiked = likes.includes(myUid);
+
+                feed.innerHTML += `
+                    <div class="post">
+                        <div class="post-header">
+                            <div class="user-meta" style="display:flex; align-items:center; gap:10px;">
+                                <div class="avatar">👤</div>
+                                <div class="user-info"><b>مستخدم البحير</b><span>${time}</span></div>
+                            </div>
+                            <div style="color:var(--fb-secondary-text); cursor:pointer;">•••</div>
+                        </div>
+                        <div class="post-content">${p.text}</div>
+                        <div class="post-media">
+                            ${p.url ? (p.mediaType === 'video' ? `<video controls src="${p.url}"></video>` : `<img src="${p.url}">`) : ""}
+                        </div>
+                        <div class="post-stats">
+                            <span>👍 ${likes.length}</span>
+                            <span>0 تعليق • 0 مشاركة</span>
+                        </div>
+                        <div class="post-buttons">
+                            <button class="post-btn ${hasLiked ? 'active' : ''}" onclick="toggleLike('${id}', ${JSON.stringify(likes)})">
+                                ${hasLiked ? '💙 أعجبني' : '👍 إعجاب'}
+                            </button>
+                            <button class="post-btn">💬 تعليق</button>
+                            <button class="post-btn">📤 مشاركة</button>
+                        </div>
+                    </div>`;
+            });
+        });
+    }
+</script>
 
 </body>
 </html>
