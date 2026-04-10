@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -6,205 +7,206 @@
     <title>سودانبوك - SudanBook</title>
     <style>
         :root { --main: #00a859; --bg: #f0f2f5; --white: #ffffff; --text: #1c1e21; --gray: #65676b; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding-bottom: 70px; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding-bottom: 70px; color: var(--text); user-select: none; }
         
-        /* Header & Nav */
         header { background: var(--main); color: white; padding: 12px; position: sticky; top: 0; z-index: 1000; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .status-header { font-size: 11px; display: flex; align-items: center; gap: 5px; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
+        .dot.online { background: #31a24c; box-shadow: 0 0 5px #31a24c; }
+        .dot.offline { background: #ced4da; }
+
         .nav-bar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #ddd; z-index: 1000; }
         .nav-item { cursor: pointer; text-align: center; font-size: 11px; color: var(--gray); flex: 1; transition: 0.3s; }
         .nav-item.active { color: var(--main); font-weight: bold; transform: scale(1.1); }
 
         .container { max-width: 550px; margin: auto; padding: 10px; }
-        .card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .page { display: none; min-height: 80vh; }
-        .page.active { display: block; animation: fadeIn 0.3s; }
-
-        @keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
-
-        /* Status & Profile */
-        .status-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-left: 5px; border: 2px solid white; }
-        .online { background: #31a24c; }
-        .offline { background: #808080; }
-        .profile-header { text-align: center; padding: 20px 0; }
-        .profile-avatar { width: 80px; height: 80px; border-radius: 50%; background: var(--main); margin: auto; display: flex; align-items: center; justify-content: center; font-size: 30px; color: white; border: 4px solid white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-
-        /* List Items */
-        .list-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid #f0f2f5; }
-        .avatar-sm { width: 45px; height: 45px; border-radius: 50%; background: #ddd; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; }
-
-        .btn { background: var(--main); color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; }
-        .btn-sm { padding: 6px 12px; font-size: 12px; width: auto; margin-left: 5px; }
+        .card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         
-        input, textarea, select { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        .page { display: none; animation: fadeIn 0.3s; }
+        .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Media Handling */
+        #media-preview { width: 100%; border-radius: 8px; margin-top: 10px; display: none; }
+        .post-media { width: 100%; border-radius: 8px; margin-top: 10px; max-height: 400px; object-fit: cover; }
+
+        /* Reactions System */
+        .react-wrapper { position: relative; flex: 1; text-align: center; }
+        .reactions-box { 
+            position: absolute; bottom: 45px; right: 0; background: white; 
+            border-radius: 30px; padding: 5px 10px; display: none;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.2); gap: 10px; z-index: 100;
+            animation: bounce 0.3s ease;
+        }
+        @keyframes bounce { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+        .reactions-box span { font-size: 25px; cursor: pointer; transition: transform 0.2s; }
+        .reactions-box span:hover { transform: scale(1.4); }
+
+        .btn { background: var(--main); color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 5px; }
+        .btn-outline { background: #f0f2f5; color: var(--text); border: none; padding: 8px; border-radius: 8px; cursor: pointer; width: 100%; font-size: 13px; }
         
-        /* Activity Switch */
-        .switch-container { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #f9f9f9; border-radius: 8px; }
+        input, textarea { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        
+        .switch { position: relative; display: inline-block; width: 45px; height: 22px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--main); }
+        input:checked + .slider:before { transform: translateX(23px); }
     </style>
 </head>
 <body>
 
 <header>
-    <div style="font-size: 18px; font-weight: bold;">سودانبوك 🇸🇩</div>
-    <div id="activity-status" style="font-size: 11px;"></div>
+    <div style="font-weight: bold; font-size: 18px;">SudanBook</div>
+    <div class="status-header" id="activity-status">
+        <span class="dot online"></span> متصل الآن
+    </div>
 </header>
 
 <div class="container">
     
     <div id="home-page" class="page active">
         <div class="card">
-            <textarea id="post-text" placeholder="ماذا يدور في ذهنك؟"></textarea>
-            <button class="btn" onclick="addPost()">نشر الآن</button>
-        </div>
-        <div id="feed"></div>
-    </div>
-
-    <div id="messages-page" class="page">
-        <h3 style="margin-top:0">الرسائل</h3>
-        <div class="card">
-            <div class="list-item">
-                <div class="avatar-sm" style="background:#007bff">م</div>
-                <div style="flex:1"><b>محمد أحمد</b><br><small style="color:gray">بالتوفيق في مشروعك الجديد</small></div>
-                <small style="color:#bbb">10د</small>
-            </div>
-            <div class="list-item">
-                <div class="avatar-sm" style="background:#ff5722">س</div>
-                <div style="flex:1"><b>سارة علي</b><br><small style="color:gray">تم استلام الطلب</small></div>
-                <small style="color:#bbb">1س</small>
+            <textarea id="post-input" placeholder="ماذا يدور في ذهنك؟"></textarea>
+            <input type="file" id="post-file" accept="image/*,video/*" style="display:none" onchange="previewMedia(event)">
+            <img id="media-preview">
+            <div style="display:flex; gap:10px; margin-top:5px">
+                <button class="btn-outline" onclick="document.getElementById('post-file').click()">🖼️ صورة/فيديو</button>
+                <button class="btn" onclick="publishPost()">نشر</button>
             </div>
         </div>
+        <div id="feed-container"></div>
     </div>
 
-    <div id="friends-page" class="page">
-        <h3 style="margin-top:0">طلبات الصداقة</h3>
-        <div class="card" id="requests-container">
-            <div class="list-item">
-                <div class="avatar-sm">ع</div>
-                <div style="flex:1"><b>عبد الله خالد</b><br>
-                    <button class="btn btn-sm" onclick="this.parentElement.parentElement.remove()">قبول</button>
-                    <button class="btn btn-sm" style="background:#eee; color:black" onclick="this.parentElement.parentElement.remove()">حذف</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="profile-page" class="page">
-        <div class="card profile-header">
-            <div class="profile-avatar" id="p-avatar-icon">👤</div>
-            <h2 id="p-display-name">المستخدم</h2>
-            <p id="p-display-bio" style="color:gray; font-size:14px"></p>
-        </div>
-        <div class="card">
-            <h4>المعلومات الشخصية</h4>
-            <div id="profile-details-list" style="font-size: 14px; line-height: 2;"></div>
-        </div>
-    </div>
-
-    <div id="settings-page" class="page">
-        <h3 style="margin-top:0">الإعدادات</h3>
-        <div class="card">
-            <div class="switch-container">
-                <span>حالة النشاط (متصل الآن)</span>
-                <input type="checkbox" id="activity-toggle" checked onchange="updateActivity()">
-            </div>
-            <hr style="border:0; border-top:1px solid #eee; margin:15px 0">
-            <button class="btn" style="background:#f0f2f5; color:black" onclick="localStorage.clear(); location.reload();">تسجيل الخروج</button>
-        </div>
-    </div>
+    <div id="msg-page" class="page"><div class="card"><h3>الرسائل</h3></div></div>
+    <div id="req-page" class="page"><div class="card"><h3>طلبات الصداقة</h3></div></div>
+    <div id="profile-page" class="page"><div class="card" id="profile-content"></div></div>
+    <div id="settings-page" class="page"><div class="card"><h3>الإعدادات</h3></div></div>
 
 </div>
 
 <div class="nav-bar">
-    <div class="nav-item active" onclick="showPage('home-page', this)">🏠<br>الموجز</div>
-    <div class="nav-item" onclick="showPage('messages-page', this)">💬<br>الرسائل</div>
-    <div class="nav-item" onclick="showPage('friends-page', this)">👥<br>الطلبات</div>
-    <div class="nav-item" onclick="showPage('profile-page', this)">👤<br>ملفي</div>
-    <div class="nav-item" onclick="showPage('settings-page', this)">⚙️<br>الإعدادات</div>
+    <div class="nav-item active" onclick="nav('home-page', this)">🏠<br>الموجز</div>
+    <div class="nav-item" onclick="nav('msg-page', this)">💬<br>الرسائل</div>
+    <div class="nav-item" onclick="nav('req-page', this)">👥<br>الطلبات</div>
+    <div class="nav-item" onclick="nav('profile-page', this)">👤<br>الملف</div>
+    <div class="nav-item" onclick="nav('settings-page', this)">⚙️<br>الإعدادات</div>
 </div>
 
 <script>
-    // نظام إدارة البيانات المحلي
-    let userData = JSON.parse(localStorage.getItem('sb_user')) || {
-        name: "", bio: "", dob: "", country: "", city: "", status: "", hobbies: "", isOnline: true, lastSeen: "الآن"
-    };
+    let user = JSON.parse(localStorage.getItem('sb_user')) || null;
     let posts = JSON.parse(localStorage.getItem('sb_posts')) || [];
+    let selectedFile = null;
+    let pressTimer;
 
-    function init() {
-        if(!userData.name) {
-            userData.name = prompt("أهلاً بك في سودانبوك! يرجى إدخال اسمك الكامل:");
-            userData.bio = "سوداني وأفتخر 🇸🇩";
-            userData.country = "السودان";
-            saveData();
+    window.onload = function() {
+        if(!user) {
+            let name = prompt("مرحباً بك! أدخل اسمك الكامل للبدء:");
+            user = { name: name || "مستخدم جديد", bio: "عضو سودانبوك", online: true, lastSeen: "الآن" };
+            localStorage.setItem('sb_user', JSON.stringify(user));
         }
-        updateStatusUI();
-        refreshProfileUI();
         renderPosts();
     }
 
-    function showPage(pageId, el) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-        document.getElementById(pageId).classList.add('active');
-        el.classList.add('active');
-    }
-
-    function updateActivity() {
-        userData.isOnline = document.getElementById('activity-toggle').checked;
-        userData.lastSeen = new Date().toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'});
-        saveData();
-        updateStatusUI();
-    }
-
-    function updateStatusUI() {
-        const statusBox = document.getElementById('activity-status');
-        if(userData.isOnline) {
-            statusBox.innerHTML = `<span class="status-dot online"></span> متصل الآن`;
-        } else {
-            statusBox.innerHTML = `<span class="status-dot offline"></span> نشط منذ ${userData.lastSeen}`;
+    function previewMedia(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                selectedFile = { src: e.target.result, type: file.type };
+                const preview = document.getElementById('media-preview');
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+            }
+            reader.readAsDataURL(file);
         }
     }
 
-    function refreshProfileUI() {
-        document.getElementById('p-display-name').innerText = userData.name;
-        document.getElementById('p-display-bio').innerText = userData.bio;
-        document.getElementById('p-avatar-icon').innerText = userData.name.charAt(0);
-        
-        document.getElementById('profile-details-list').innerHTML = `
-            📍 <b>الدولة:</b> ${userData.country}<br>
-            🎂 <b>تاريخ الميلاد:</b> ${userData.dob || 'غير محدد'}<br>
-            💍 <b>الحالة:</b> ${userData.status || 'أعزب'}<br>
-            🎨 <b>الهوايات:</b> ${userData.hobbies || 'لا توجد'}
-        `;
-    }
+    function publishPost() {
+        const txt = document.getElementById('post-input').value;
+        if(!txt && !selectedFile) return;
 
-    function addPost() {
-        const txt = document.getElementById('post-text').value;
-        if(!txt) return;
-        const post = { id: Date.now(), name: userData.name, content: txt, time: "الآن" };
-        posts.unshift(post);
+        const p = { 
+            id: Date.now(), 
+            author: user.name, 
+            content: txt, 
+            file: selectedFile,
+            time: new Date().toLocaleString('ar-EG', {hour:'2-digit', minute:'2-digit', day:'numeric', month:'short'}),
+            myReact: "👍 لايك"
+        };
+
+        posts.unshift(p);
         localStorage.setItem('sb_posts', JSON.stringify(posts));
-        document.getElementById('post-text').value = "";
+        
+        // Reset
+        document.getElementById('post-input').value = "";
+        document.getElementById('media-preview').style.display = 'none';
+        selectedFile = null;
         renderPosts();
     }
 
     function renderPosts() {
-        const feed = document.getElementById('feed');
-        feed.innerHTML = "";
+        const container = document.getElementById('feed-container');
+        container.innerHTML = "";
         posts.forEach(p => {
-            feed.innerHTML += `
-                <div class="post card">
-                    <b>${p.name}</b> <small style="color:gray; font-size:10px">${p.time}</small>
+            const mediaHtml = p.file ? (p.file.type.includes('video') ? 
+                `<video class="post-media" controls src="${p.file.src}"></video>` : 
+                `<img class="post-media" src="${p.file.src}">`) : "";
+
+            container.innerHTML += `
+                <div class="card">
+                    <b>${p.author}</b> <small style="color:gray; font-size:10px">${p.time}</small>
                     <p style="margin:10px 0">${p.content}</p>
-                    <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--gray)">
-                        <span>👍 لايك</span><span>💬 تعليق</span><span>📤 مشاركة</span>
+                    ${mediaHtml}
+                    <div style="display:flex; justify-content:space-around; font-size:12px; color:var(--gray); border-top:1px solid #eee; padding-top:10px; margin-top:10px">
+                        <div class="react-wrapper" 
+                             onmousedown="startPress('${p.id}')" 
+                             onmouseup="endPress()" 
+                             ontouchstart="startPress('${p.id}')" 
+                             ontouchend="endPress()">
+                            <span id="btn-${p.id}">${p.myReact}</span>
+                            <div class="reactions-box" id="box-${p.id}">
+                                <span onclick="setReact('${p.id}', '❤️ أحببته')">❤️</span>
+                                <span onclick="setReact('${p.id}', '💪 أدعمه')">💪</span>
+                                <span onclick="setReact('${p.id}', '😂 هاها')">😂</span>
+                                <span onclick="setReact('${p.id}', '😡 أغضبني')">😡</span>
+                            </div>
+                        </div>
+                        <span>💬 تعليق</span> <span>📤 مشاركة</span>
                     </div>
                 </div>`;
         });
     }
 
-    function saveData() { localStorage.setItem('sb_user', JSON.stringify(userData)); }
+    // Reaction Logic
+    function startPress(id) {
+        pressTimer = setTimeout(() => {
+            document.getElementById('box-' + id).style.display = 'flex';
+        }, 500);
+    }
 
-    init();
+    function endPress() {
+        clearTimeout(pressTimer);
+    }
+
+    function setReact(id, text) {
+        document.getElementById('btn-' + id).innerText = text;
+        document.getElementById('btn-' + id).style.color = '#1877f2';
+        document.getElementById('box-' + id).style.display = 'none';
+        
+        // تحديث في الذاكرة
+        const postIndex = posts.findIndex(p => p.id == id);
+        posts[postIndex].myReact = text;
+        localStorage.setItem('sb_posts', JSON.stringify(posts));
+    }
+
+    function nav(pageId, el) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+        el.classList.add('active');
+    }
 </script>
-
 </body>
 </html>
