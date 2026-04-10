@@ -3,227 +3,196 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>سودانبوك - SudanBook</title>
-    
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
-
+    <title>SudanBook - سودانبوك</title>
     <style>
-        :root { --main: #00a859; --sub: #ffffff; --dark: #121212; --bg: #f0f2f5; --fb-blue: #1877f2; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding-bottom: 60px; }
-        header { background: var(--main); color: white; padding: 12px; text-align: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        :root { --main: #00a859; --bg: #f0f2f5; --white: #ffffff; --text: #1c1e21; --gray: #65676b; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding-bottom: 70px; }
+        
+        /* Header & Nav */
+        header { background: var(--main); color: white; padding: 12px; text-align: center; position: sticky; top: 0; z-index: 1000; display: flex; justify-content: space-between; align-items: center; }
+        .nav-bar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #ddd; z-index: 1000; }
+        .nav-item { cursor: pointer; text-align: center; font-size: 12px; color: var(--gray); flex: 1; }
+        .nav-item.active { color: var(--main); font-weight: bold; }
+
         .container { max-width: 550px; margin: auto; padding: 10px; }
-        
-        /* البطاقات والشاشات */
         .card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        input, select, textarea { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        .btn { background: var(--main); color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; }
+        .page { display: none; }
+        .page.active { display: block; }
+
+        /* Status Styles */
+        .status-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; margin-left: 5px; }
+        .online { background: #31a24c; }
+        .offline { background: #808080; }
+
+        /* Lists Styles */
+        .list-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid #eee; }
+        .avatar { width: 45px; height: 45px; border-radius: 50%; background: #ccc; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; }
+
+        .btn { background: var(--main); color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; width: 100%; margin-top: 5px; }
+        .btn-sm { padding: 5px 10px; font-size: 12px; width: auto; }
         
-        #auth-screen, #profile-setup, #main-app, #messenger-screen { display: none; }
-
-        /* المنشورات والتفاعلات */
-        .post { background: white; border-radius: 12px; padding: 12px; margin-bottom: 15px; position: relative; }
-        .post-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-        .post-time { font-size: 11px; color: gray; }
-        .media-content img, .media-content video { width: 100%; border-radius: 8px; margin-top: 10px; }
-        
-        .reactions { display: flex; justify-content: space-around; border-top: 1px solid #eee; padding-top: 10px; margin-top: 10px; }
-        .react-btn { background: none; border: none; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 3px; }
-        .react-btn.active { color: var(--fb-blue); font-weight: bold; }
-
-        /* خيارات المنشور */
-        .post-opts { display: flex; gap: 10px; font-size: 12px; color: #65676b; margin-top: 10px; cursor: pointer; }
-
-        /* نظام الرسائل */
-        .msg-box { height: 300px; overflow-y: auto; border: 1px solid #eee; padding: 10px; margin-bottom: 10px; display: flex; flex-direction: column; }
-        .msg { padding: 8px 12px; border-radius: 15px; margin: 4px; max-width: 70%; font-size: 14px; }
-        .msg.sent { background: var(--main); color: white; align-self: flex-end; }
-        .msg.received { background: #e4e6eb; align-self: flex-start; }
+        input, textarea { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 20px; }
+        input:checked + .slider { background-color: var(--main); }
     </style>
 </head>
 <body>
 
 <header>
-    <h2 style="margin:0">SudanBook 🇸🇩</h2>
+    <h2 style="margin:0; font-size: 20px;">سودانبوك 🇸🇩</h2>
+    <div id="user-status-header" style="font-size: 11px;"></div>
 </header>
 
 <div class="container">
-    <div id="auth-screen" class="card" style="display: block;">
-        <h3>فتح حساب جديد</h3>
-        <input type="text" id="reg-name" placeholder="الاسم الكامل">
-        <input type="email" id="reg-email" placeholder="البريد الإلكتروني">
-        <input type="password" id="reg-pass" placeholder="كلمة المرور">
-        <button class="btn" onclick="registerUser()">إنشاء الحساب</button>
-    </div>
-
-    <div id="profile-setup" class="card">
-        <h3>معلومات الحساب</h3>
-        <input type="date" id="p-dob" title="تاريخ الميلاد">
-        <input type="text" id="p-country" placeholder="الدولة">
-        <input type="text" id="p-city" placeholder="المدينة">
-        <select id="p-status">
-            <option value="أعزب">أعزب</option>
-            <option value="متزوج">متزوج</option>
-            <option value="خاطب">خاطب</option>
-        </select>
-        <textarea id="p-hobbies" placeholder="الهوايات مع الايموجي (مثال: السباحة 🏊)"></textarea>
-        <textarea id="p-bio" placeholder="السيرة الذاتية"></textarea>
-        <button class="btn" onclick="saveFullProfile()">حفظ وانتقال للموجز</button>
-    </div>
-
-    <div id="main-app">
+    <div id="home-page" class="page active">
         <div class="card">
             <textarea id="post-text" placeholder="ماذا يدور في ذهنك؟"></textarea>
-            <input type="file" id="post-file" accept="image/*,video/*">
-            <button class="btn" onclick="createPost()">نشر في سودانبوك</button>
+            <button class="btn" onclick="addPost()">نشر المنشور</button>
         </div>
         <div id="feed"></div>
     </div>
+
+    <div id="messages-page" class="page">
+        <h3>الرسائل</h3>
+        <div class="card">
+            <div class="list-item">
+                <div class="avatar" style="background: #007bff;">أ</div>
+                <div>
+                    <b>أحمد محمد</b><br>
+                    <small style="color:gray">كيف حالك يا بطل؟</small>
+                </div>
+            </div>
+            <div class="list-item">
+                <div class="avatar" style="background: #e91e63;">م</div>
+                <div>
+                    <b>مروة علي</b><br>
+                    <small style="color:gray">تم إرسال صورة</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="friends-page" class="page">
+        <h3>طلبات الصداقة</h3>
+        <div class="card">
+            <div class="list-item" id="request-1">
+                <div class="avatar">ع</div>
+                <div style="flex-grow: 1;">
+                    <b>عثمان خالد</b><br>
+                    <button class="btn btn-sm" onclick="document.getElementById('request-1').remove()">قبول</button>
+                    <button class="btn btn-sm" style="background:#ddd; color:black" onclick="document.getElementById('request-1').remove()">حذف</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="settings-page" class="page">
+        <h3>الإعدادات</h3>
+        <div class="card">
+            <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <span>حالة النشاط (متصل الآن)</span>
+                <label class="switch">
+                    <input type="checkbox" id="status-toggle" checked onchange="toggleActivity()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <hr>
+            <p><b>الاسم:</b> <span id="set-name"></span></p>
+            <p><b>رابط الملف:</b> <small id="set-link" style="color:var(--main)"></small></p>
+            <button class="btn" style="background:#dc3545" onclick="logout()">تسجيل الخروج</button>
+        </div>
+    </div>
+</div>
+
+<div class="nav-bar">
+    <div class="nav-item active" onclick="switchPage('home-page', this)">🏠<br>الموجز</div>
+    <div class="nav-item" onclick="switchPage('messages-page', this)">💬<br>الرسائل</div>
+    <div class="nav-item" onclick="switchPage('friends-page', this)">👥<br>الطلبات</div>
+    <div class="nav-item" onclick="switchPage('settings-page', this)">⚙️<br>الإعدادات</div>
 </div>
 
 <script>
-    // تهيئة Firebase (استخدم نفس بياناتك)
-    const firebaseConfig = {
-        apiKey: "AIzaSyAHbXMLT3F0OpnMZQHHPz-kAOlZBi1hhs4",
-        authDomain: "albehirsocial.firebaseapp.com",
-        projectId: "albehirsocial",
-        storageBucket: "albehirsocial.firebasestorage.app",
-        messagingSenderId: "302307189713",
-        appId: "1:302307189713:web:abc71f50c9f87113c0f6f0"
-    };
+    // الحفاظ على بيانات المستخدم في الذاكرة المحلية
+    let user = JSON.parse(localStorage.getItem('sb_user')) || { fullName: "مستخدم جديد", isOnline: true, lastSeen: "الآن" };
+    let posts = JSON.parse(localStorage.getItem('sb_posts')) || [];
 
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-    const storage = firebase.storage();
-
-    // تسجيل حساب جديد
-    async function registerUser() {
-        const name = document.getElementById('reg-name').value;
-        const email = document.getElementById('reg-email').value;
-        const pass = document.getElementById('reg-pass').value;
-        if(!name || !email || pass.length < 6) return alert("أكمل البيانات (الباسوورد 6 خانات)");
-
-        try {
-            const res = await auth.createUserWithEmailAndPassword(email, pass);
-            await db.collection("users").doc(res.user.uid).set({ fullName: name, blocks: [], friends: [] });
-            showScreen('profile-setup');
-        } catch(e) { alert(e.message); }
+    function init() {
+        if(!localStorage.getItem('sb_user')) {
+            let name = prompt("مرحباً بك في سودانبوك! أدخل اسمك للبدء:");
+            if(name) {
+                user.fullName = name;
+                localStorage.setItem('sb_user', JSON.stringify(user));
+            }
+        }
+        updateStatusDisplay();
+        renderPosts();
+        document.getElementById('set-name').innerText = user.fullName;
+        document.getElementById('set-link').innerText = "sudanbook.net/" + user.fullName.replace(" ", "_");
     }
 
-    // حفظ الملف الشخصي الكامل
-    async function saveFullProfile() {
-        const user = auth.currentUser;
-        const data = {
-            dob: document.getElementById('p-dob').value,
-            country: document.getElementById('p-country').value,
-            city: document.getElementById('p-city').value,
-            status: document.getElementById('p-status').value,
-            hobbies: document.getElementById('p-hobbies').value,
-            bio: document.getElementById('p-bio').value,
-            profileLink: window.location.href + "?user=" + user.uid
-        };
-        await db.collection("users").doc(user.uid).update(data);
-        showScreen('main-app');
-        loadPosts();
+    function switchPage(pageId, el) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+        el.classList.add('active');
     }
 
-    // نشر المنشور (صور وفيديو)
-    async function createPost() {
+    function toggleActivity() {
+        user.isOnline = document.getElementById('status-toggle').checked;
+        user.lastSeen = new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+        localStorage.setItem('sb_user', JSON.stringify(user));
+        updateStatusDisplay();
+    }
+
+    function updateStatusDisplay() {
+        const headerStatus = document.getElementById('user-status-header');
+        if(user.isOnline) {
+            headerStatus.innerHTML = `<span class="status-dot online"></span> متصل الآن`;
+        } else {
+            headerStatus.innerHTML = `<span class="status-dot offline"></span> نشط منذ ${user.lastSeen}`;
+        }
+    }
+
+    function addPost() {
         const text = document.getElementById('post-text').value;
-        const file = document.getElementById('post-file').files[0];
-        if(!text && !file) return;
-
-        let url = "";
-        if(file) {
-            const ref = storage.ref(`posts/${Date.now()}`);
-            await ref.put(file);
-            url = await ref.getDownloadURL();
-        }
-
-        const userDoc = await db.collection("users").doc(auth.currentUser.uid).get();
-        await db.collection("posts").add({
-            text, url,
-            uid: auth.currentUser.uid,
-            userName: userDoc.data().fullName,
-            time: firebase.firestore.FieldValue.serverTimestamp(),
-            reacts: { like:[], love:[], support:[], haha:[], angry:[] }
-        });
+        if(!text) return;
+        const newPost = {
+            id: Date.now(),
+            name: user.fullName,
+            content: text,
+            time: "الآن"
+        };
+        posts.unshift(newPost);
+        localStorage.setItem('sb_posts', JSON.stringify(posts));
         document.getElementById('post-text').value = "";
+        renderPosts();
     }
 
-    // التفاعلات (لايك، احببته، ادعمه، هاها، اغضبني)
-    async function react(id, type, currentReacts) {
-        const myUid = auth.currentUser.uid;
-        for (let k in currentReacts) {
-            currentReacts[k] = currentReacts[k].filter(u => u !== myUid);
-        }
-        currentReacts[type].push(myUid);
-        await db.collection("posts").doc(id).update({ reacts: currentReacts });
-    }
-
-    // خيارات المنشور (حذف، نسخ، مشاركة)
-    function copyPostLink(id) {
-        const link = window.location.origin + window.location.pathname + "?post=" + id;
-        navigator.clipboard.writeText(link);
-        alert("تم نسخ رابط المنشور");
-    }
-
-    async function deletePost(id) {
-        if(confirm("هل تريد الحذف؟")) await db.collection("posts").doc(id).delete();
-    }
-
-    // جلب المنشورات
-    function loadPosts() {
-        db.collection("posts").orderBy("time", "desc").onSnapshot(snap => {
-            const feed = document.getElementById('feed');
-            feed.innerHTML = "";
-            snap.forEach(doc => {
-                const p = doc.data();
-                const id = doc.id;
-                const r = p.reacts || { like:[], love:[], support:[], haha:[], angry:[] };
-                const timeStr = p.time ? new Date(p.time.seconds*1000).toLocaleString('ar-EG') : 'الآن';
-
-                feed.innerHTML += `
+    function renderPosts() {
+        const feed = document.getElementById('feed');
+        feed.innerHTML = "";
+        posts.forEach(p => {
+            feed.innerHTML += `
                 <div class="post card">
-                    <div class="post-header">
-                        <b>${p.userName}</b>
-                        <span class="post-time">${timeStr}</span>
-                    </div>
-                    <div class="post-body">${p.text}</div>
-                    ${p.url ? `<div class="media-content"><img src="${p.url}"></div>` : ""}
-                    <div class="reactions">
-                        <button class="react-btn" onclick='react("${id}","like",${JSON.stringify(r)})'>👍 ${r.like.length}</button>
-                        <button class="react-btn" onclick='react("${id}","love",${JSON.stringify(r)})'>❤️ ${r.love.length}</button>
-                        <button class="react-btn" onclick='react("${id}","support",${JSON.stringify(r)})'>💪 ${r.support.length}</button>
-                        <button class="react-btn" onclick='react("${id}","haha",${JSON.stringify(r)})'>😂 ${r.haha.length}</button>
-                        <button class="react-btn" onclick='react("${id}","angry",${JSON.stringify(r)})'>😡 ${r.angry.length}</button>
-                    </div>
-                    <div class="post-opts">
-                        <span onclick="copyPostLink('${id}')">🔗 نسخ الرابط</span>
-                        <span onclick="navigator.share({text:'${p.text}'})">📤 مشاركة</span>
-                        ${p.uid === auth.currentUser.uid ? `<span style="color:red" onclick="deletePost('${id}')">🗑️ حذف</span>` : ''}
+                    <b>${p.name}</b> <small style="color:gray; font-size:10px">${p.time}</small>
+                    <p>${p.content}</p>
+                    <div style="display:flex; gap:10px; font-size:12px; color:var(--main); cursor:pointer">
+                        <span>👍 إعجاب</span> <span>💬 تعليق</span> <span>📤 مشاركة</span>
                     </div>
                 </div>`;
-            });
         });
     }
 
-    function showScreen(id) {
-        ['auth-screen','profile-setup','main-app'].forEach(s => document.getElementById(s).style.display='none');
-        document.getElementById(id).style.display='block';
+    function logout() {
+        if(confirm("هل تريد تسجيل الخروج؟ سيتم مسح البيانات المحلية.")) {
+            localStorage.clear();
+            location.reload();
+        }
     }
 
-    auth.onAuthStateChanged(user => {
-        if(user) {
-            db.collection("users").doc(user.uid).get().then(doc => {
-                if(doc.exists && doc.data().dob) { showScreen('main-app'); loadPosts(); }
-                else { showScreen('profile-setup'); }
-            });
-        } else { showScreen('auth-screen'); }
-    });
+    init();
 </script>
 
 </body>
