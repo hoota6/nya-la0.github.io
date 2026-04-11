@@ -6,74 +6,62 @@
     <title>شبكة البحير | Albeher Net</title>
     <style>
         :root { --main: #ff2d55; --dark: #4e085f; --bg: #f0f2f5; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 0; overflow-x: hidden; }
+        
+        /* شاشة الدخول */
         #auth-screen { position: fixed; inset: 0; background: linear-gradient(135deg, var(--main), var(--dark)); display: flex; justify-content: center; align-items: center; z-index: 10000; }
-        .auth-box { background: white; padding: 20px; border-radius: 20px; width: 340px; text-align: center; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .auth-box { background: white; padding: 20px; border-radius: 20px; width: 340px; text-align: center; max-height: 90vh; overflow-y: auto; }
         #preview-img { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 3px solid var(--main); margin-bottom: 10px; }
-        input, select { width: 100%; padding: 12px; margin: 6px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 1rem; background: #fff; color: #333; }
-        .btn-reg { background: var(--main); color: white; border: none; padding: 14px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: bold; font-size: 1.1rem; }
-        .btn-login-toggle { background: var(--dark); color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: bold; margin-top: 10px; }
+        input, select { width: 100%; padding: 12px; margin: 6px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; }
+        .btn-reg { background: var(--main); color: white; border: none; padding: 14px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: bold; }
+
+        /* التطبيق الرئيسي */
         #main-app { display: none; }
-        .header { background: var(--main); color: white; padding: 15px; text-align: center; position: fixed; top: 0; width: 100%; z-index: 1000; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .header { background: var(--main); color: white; padding: 15px; text-align: center; position: fixed; top: 0; width: 100%; z-index: 1000; font-weight: bold; }
         .content { padding: 70px 10px 80px 10px; max-width: 600px; margin: 0 auto; }
         .page { display: none; }
         .active-page { display: block; }
+
+        /* كرت المستخدم */
         .user-card { background: white; border-radius: 15px; overflow: hidden; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .user-card img { width: 100%; height: 300px; object-fit: cover; cursor: pointer; }
+        .user-card img { width: 100%; height: 300px; object-fit: cover; }
         .user-info { padding: 15px; }
-        .actions { display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #eee; background: #fafafa; }
-        .btn-action { border: none; background: none; cursor: pointer; color: #555; font-size: 0.9rem; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+        .actions { display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #eee; }
+        .btn-action { border: none; background: none; cursor: pointer; color: #555; font-size: 0.9rem; display: flex; flex-direction: column; align-items: center; }
+        .liked { color: var(--main) !important; font-weight: bold; }
+
+        /* الرسائل والإشعارات */
+        .item-list { background: white; padding: 15px; border-radius: 12px; margin-bottom: 10px; border-right: 5px solid var(--main); display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .time-tag { font-size: 0.7rem; color: #999; }
+        .badge { background: red; color: white; padding: 2px 6px; border-radius: 50%; font-size: 0.7rem; position: absolute; margin-right: 15px; margin-top: -10px; }
+
         .navbar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #ddd; z-index: 1000; }
-        .nav-item { cursor: pointer; color: #888; font-size: 0.85rem; }
+        .nav-item { cursor: pointer; color: #888; font-size: 0.8rem; text-align: center; position: relative; }
         .nav-item.active { color: var(--main); font-weight: bold; }
-        .notif-item { background: white; padding: 15px; border-radius: 12px; margin-bottom: 10px; border-right: 5px solid var(--main); display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+
+        /* واجهة المراسلة السريعة */
+        #msg-panel { position: fixed; bottom: 0; width: 100%; background: white; padding: 20px; border-radius: 20px 20px 0 0; box-shadow: 0 -5px 25px rgba(0,0,0,0.2); z-index: 2000; display: none; text-align: center; }
+        .msg-option { padding: 15px; margin: 5px; border-radius: 12px; border: 1px solid #f0f0f0; cursor: pointer; display: inline-block; width: 80px; transition: 0.3s; }
+        .msg-option:hover { background: #fff0f3; }
     </style>
 </head>
 <body>
 
     <div id="auth-screen">
         <div class="auth-box" id="reg-box">
-            <h2 style="color:var(--main); margin-bottom:15px;">تسجيل جديد</h2>
+            <h2 style="color:var(--main);">تسجيل جديد</h2>
             <img id="preview-img" src="https://cdn-icons-png.flaticon.com/512/149/149071.png">
-            <input type="file" id="f-in" accept="image/*" style="display:none" onchange="loadFile(this)">
-            <button onclick="document.getElementById('f-in').click()" style="margin-bottom:10px; cursor:pointer; background:#eee; border:none; padding:8px; border-radius:5px;">اختيار صورة الشخصية</button>
-            
+            <input type="file" id="f-in" style="display:none" onchange="loadFile(this)">
+            <button onclick="document.getElementById('f-in').click()" style="margin-bottom:10px; cursor:pointer;">اختيار صورة</button>
             <input type="text" id="r-name" placeholder="اسم المستخدم">
             <input type="password" id="r-pass" placeholder="كلمة السر">
-            <div style="display:flex; gap:5px;">
-                <input type="number" id="r-age" placeholder="العمر">
-                <select id="r-gen"><option value="ذكر">ذكر</option><option value="أنثى">أنثى</option></select>
-            </div>
-
+            <div style="display:flex; gap:5px;"><input type="number" id="r-age" placeholder="العمر"><select id="r-gen"><option value="ذكر">ذكر</option><option value="أنثى">أنثى</option></select></div>
             <select id="r-st">
-                <option value="">اختر الولاية / المدينة</option>
-                <option value="الخرطوم">الخرطوم</option>
-                <option value="امدرمان">امدرمان</option>
-                <option value="كسلا">كسلا</option>
-                <option value="القضارف">القضارف</option>
-                <option value="سنار">سنار</option>
-                <option value="النيل الأبيض">النيل الأبيض</option>
-                <option value="النيل الأزرق">النيل الأزرق</option>
-                <option value="الشمالية">الشمالية</option>
-                <option value="نهر النيل">نهر النيل</option>
-                <option value="شمال كردفان">شمال كردفان</option>
-                <option value="جنوب كردفان">جنوب كردفان</option>
-                <option value="غرب كردفان">غرب كردفان</option>
-                <option value="شمال دارفور">شمال دارفور</option>
-                <option value="جنوب دارفور">جنوب دارفور</option>
-                <option value="غرب دارفور">غرب دارفور</option>
-                <option value="وسط دارفور">وسط دارفور</option>
-                <option value="شرق دارفور">شرق دارفور</option>
+                <option value="الخرطوم">الخرطوم</option><option value="امدرمان">امدرمان</option><option value="كسلا">كسلا</option><option value="القضارف">القضارف</option><option value="سنار">سنار</option><option value="النيل الأبيض">النيل الأبيض</option><option value="النيل الأزرق">النيل الأزرق</option><option value="الشمالية">الشمالية</option><option value="نهر النيل">نهر النيل</option><option value="شمال كردفان">شمال كردفان</option><option value="جنوب كردفان">جنوب كردفان</option><option value="غرب كردفان">غرب كردفان</option><option value="شمال دارفور">شمال دارفور</option><option value="جنوب دارفور">جنوب دارفور</option><option value="غرب دارفور">غرب دارفور</option><option value="وسط دارفور">وسط دارفور</option><option value="شرق دارفور">شرق دارفور</option>
             </select>
-
-            <select id="r-soc">
-                <option value="أعزب">أعزب</option>
-                <option value="مطلق">مطلق</option>
-                <option value="أرمل">أرمل</option>
-            </select>
-
+            <select id="r-soc"><option value="أعزب">أعزب</option><option value="مطلق">مطلق</option><option value="أرمل">أرمل</option></select>
             <button class="btn-reg" onclick="doRegister()">إنشاء حساب ودخول</button>
-            <button class="btn-login-toggle" onclick="toggleView(true)">لدي حساب بالفعل</button>
+            <button onclick="toggleView(true)" style="background:none; border:none; margin-top:10px; cursor:pointer;">لدي حساب بالفعل</button>
         </div>
 
         <div class="auth-box" id="log-box" style="display:none;">
@@ -81,36 +69,61 @@
             <input type="text" id="l-name" placeholder="اسم المستخدم">
             <input type="password" id="l-pass" placeholder="كلمة السر">
             <button class="btn-reg" style="background:var(--dark)" onclick="doLogin()">دخول الآن</button>
-            <button onclick="toggleView(false)" style="background:none; border:none; color:var(--main); margin-top:10px; cursor:pointer;">إنشاء حساب جديد</button>
+            <button onclick="toggleView(false)" style="background:none; border:none; margin-top:10px; cursor:pointer;">إنشاء حساب جديد</button>
         </div>
     </div>
 
     <div id="main-app">
-        <div class="header" id="h-title">استكشف أصدقاء للتعارف</div>
+        <div class="header" id="h-title">استكشف أصدقاء</div>
+        
         <div class="content">
             <div id="p-explore" class="page active-page"></div>
-            <div id="p-notifs" class="page"><div id="n-list"></div></div>
+            
+            <div id="p-chats" class="page">
+                <div id="chats-list"></div>
+            </div>
+
+            <div id="p-notifs" class="page">
+                <div id="notifs-list"></div>
+            </div>
+
+            <div id="p-settings" class="page">
+                <div style="background:white; padding:20px; border-radius:15px; text-align:center;">
+                    <button onclick="logOut()" style="width:100%; padding:12px; margin-bottom:10px; border:none; background:#eee; border-radius:10px; cursor:pointer;">تسجيل الخروج</button>
+                    <button onclick="deleteAccount()" style="width:100%; padding:12px; border:none; background:#ffebee; color:red; border-radius:10px; cursor:pointer;">حذف الحساب نهائياً</button>
+                </div>
+            </div>
         </div>
+
         <div class="navbar">
-            <div class="nav-item active" onclick="nav('explore','استكشف أصدقاء',this)">🔍 استكشف</div>
-            <div class="nav-item" onclick="nav('notifs','الإشعارات',this)">🔔 الإشعارات</div>
-            <div class="nav-item" onclick="logOut()" style="color:red">🚪 خروج</div>
+            <div class="nav-item active" onclick="nav('explore','استكشف أصدقاء',this)">🔍<br>استكشف</div>
+            <div class="nav-item" onclick="nav('chats','المحادثات',this)">💬<span id="chat-badge" class="badge" style="display:none">!</span><br>الرسائل</div>
+            <div class="nav-item" onclick="nav('notifs','الإشعارات',this)">🔔<span id="notif-badge" class="badge" style="display:none">0</span><br>الإشعارات</div>
+            <div class="nav-item" onclick="nav('settings','الإعدادات',this)">⚙️<br>الإعدادات</div>
         </div>
     </div>
 
+    <div id="msg-panel">
+        <h4 id="target-user-name">مراسلة</h4>
+        <div class="msg-option" onclick="sendData('نصية 💬')">⌨️<br>نص</div>
+        <div class="msg-option" onclick="sendData('صوتية 🎤')">🎤<br>صوت</div>
+        <div class="msg-option" onclick="sendData('صورة 🖼️')">🖼️<br>صورة</div>
+        <br><button onclick="closeMsg()" style="margin-top:10px; border:none; color:red; background:none; cursor:pointer;">إلغاء</button>
+    </div>
+
     <script>
-        let users = JSON.parse(localStorage.getItem('app_users_v2') || '[]');
-        let current = JSON.parse(sessionStorage.getItem('active_user_v2'));
+        let users = JSON.parse(localStorage.getItem('app_users_v4') || '[]');
+        let messages = JSON.parse(localStorage.getItem('app_msgs_v4') || '[]');
+        let current = JSON.parse(sessionStorage.getItem('active_user_v4'));
+        let selectedUserId = null;
         let tempImg = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
         if(current) enter();
 
         function loadFile(i) {
-            if (i.files && i.files[0]) {
-                const r = new FileReader();
-                r.onload = (e) => { tempImg = e.target.result; document.getElementById('preview-img').src = tempImg; };
-                r.readAsDataURL(i.files[0]);
-            }
+            const r = new FileReader();
+            r.onload = (e) => { tempImg = e.target.result; document.getElementById('preview-img').src = tempImg; };
+            r.readAsDataURL(i.files[0]);
         }
 
         function toggleView(v) {
@@ -121,92 +134,123 @@
         function doRegister() {
             const n = document.getElementById('r-name').value.trim();
             const p = document.getElementById('r-pass').value;
-            const st = document.getElementById('r-st').value;
-            if(!n || !p || !st) return alert("الرجاء إكمال البيانات واختيار الولاية");
-            
+            if(!n || !p) return alert("اكمل البيانات");
             const u = {
-                id: Date.now(), name: n, pass: p,
-                age: document.getElementById('r-age').value,
-                gen: document.getElementById('r-gen').value,
-                st: st,
-                soc: document.getElementById('r-soc').value,
-                img: tempImg, likes: 0, date: new Date().toLocaleDateString('ar-EG')
+                id: Date.now(), name: n, pass: p, age: document.getElementById('r-age').value,
+                gen: document.getElementById('r-gen').value, st: document.getElementById('r-st').value,
+                soc: document.getElementById('r-soc').value, img: tempImg, likes: 0, likedBy: [], date: new Date().toLocaleDateString('ar-EG')
             };
-            
             users.push(u);
-            localStorage.setItem('app_users_v2', JSON.stringify(users));
+            saveData();
             current = u;
-            sessionStorage.setItem('active_user_v2', JSON.stringify(u));
+            sessionStorage.setItem('active_user_v4', JSON.stringify(u));
             enter();
         }
 
         function doLogin() {
-            const n = document.getElementById('l-name').value.trim();
+            const n = document.getElementById('l-name').value;
             const p = document.getElementById('l-pass').value;
             const u = users.find(x => x.name === n && x.pass === p);
-            if(u) {
-                current = u;
-                sessionStorage.setItem('active_user_v2', JSON.stringify(u));
-                enter();
-            } else { alert("بيانات الدخول غير صحيحة"); }
+            if(u) { current = u; sessionStorage.setItem('active_user_v4', JSON.stringify(u)); enter(); }
+            else { alert("بيانات خطأ"); }
         }
 
         function enter() {
             document.getElementById('auth-screen').style.display = 'none';
             document.getElementById('main-app').style.display = 'block';
-            draw();
-            makeNotif();
+            drawExplore();
+            updateBadges();
+            // تحديث تلقائي كل 5 ثواني لرؤية الرسائل الجديدة
+            setInterval(updateBadges, 5000);
         }
 
-        function draw() {
+        function drawExplore() {
             const box = document.getElementById('p-explore');
             box.innerHTML = "";
-            let others = users.filter(u => u.name !== current.name);
-            if(others.length === 0) {
-                box.innerHTML = "<center><p style='margin-top:50px; color:#666;'>لا يوجد أعضاء آخرون حالياً.<br>سجل بحسابات أخرى لتظهر هنا.</p></center>";
-                return;
-            }
-            others.forEach(u => {
+            users.filter(u => u.id !== current.id).forEach(u => {
+                const isLiked = u.likedBy.includes(current.id);
                 box.innerHTML += `
                     <div class="user-card">
-                        <img src="${u.img}" onclick="viewImg('${u.img}')">
+                        <img src="${u.img}">
                         <div class="user-info">
-                            <b>${u.name}</b> <small style="color:#4caf50">● متصل الآن</small><br>
-                            <div style="font-size:0.85rem; color:#666; margin-top:5px;">
-                                ${u.gen} | ${u.soc} | ${u.st} <br> انضم: ${u.date}
-                            </div>
+                            <b>${u.name}</b> <small style="color:green">● متصل</small><br>
+                            <small>${u.gen} | ${u.soc} | ${u.st}</small>
                         </div>
                         <div class="actions">
-                            <button class="btn-action" onclick="hitLike(${u.id})">❤️ <span id="l-${u.id}">${u.likes}</span> أحببته</button>
-                            <button class="btn-action" onclick="alert('ملف ${u.name}')">👤 ملف</button>
-                            <button class="btn-action" onclick="alert('فتح الدردشة')">💬 مراسلة</button>
+                            <button class="btn-action ${isLiked?'liked':''}" onclick="hitLike(${u.id})">❤️ <span>${u.likes}</span></button>
+                            <button class="btn-action" onclick="openMsgPanel(${u.id}, '${u.name}')">💬 مراسلة</button>
                         </div>
                     </div>`;
             });
         }
 
-        function hitLike(id) {
-            const u = users.find(x => x.id === id);
-            u.likes++;
-            localStorage.setItem('app_users_v2', JSON.stringify(users));
-            document.getElementById('l-'+id).innerText = u.likes;
+        function openMsgPanel(id, name) {
+            selectedUserId = id;
+            document.getElementById('target-user-name').innerText = "مراسلة " + name;
+            document.getElementById('msg-panel').style.display = 'block';
         }
 
-        function viewImg(s) {
-            const w = window.open("");
-            w.document.write(`<center><img src="${s}" style="max-width:100%"><br><br><a href="${s}" download="photo.jpg" style="padding:15px; background:#ff2d55; color:white; text-decoration:none; border-radius:10px;">تحميل الصورة الشخصية</a></center>`);
+        function sendData(type) {
+            const time = new Date().toLocaleTimeString('ar-EG', {hour: '2-digit', minute:'2-digit'});
+            const msg = {
+                from: current.id,
+                to: selectedUserId,
+                type: type,
+                time: time,
+                read: false
+            };
+            messages.push(msg);
+            saveData();
+            alert("تم إرسال رسالة " + type);
+            closeMsg();
+            drawChats();
         }
 
-        function makeNotif() {
-            const list = document.getElementById('n-list');
-            const other = users.find(x => x.name !== current.name);
-            if(other) {
-                list.innerHTML = `
-                <div class="notif-item">
-                    <span><b>${other.name}</b> متصل الآن.. اتريد مراسلته؟</span>
-                    <button onclick="nav('explore','استكشف أصدقاء',null)" style="background:var(--main); color:white; border:none; padding:8px; border-radius:5px; cursor:pointer;">مراسلة</button>
-                </div>`;
-            } else { list.innerHTML = "<p style='text-align:center; padding:20px;'>لا توجد إشعارات</p>"; }
+        function drawChats() {
+            const box = document.getElementById('chats-list');
+            box.innerHTML = "";
+            // جلب المحادثات المتعلقة بالمستخدم الحالي
+            const myMsgs = messages.filter(m => m.to === current.id || m.from === current.id);
+            if(myMsgs.length === 0) box.innerHTML = "<center>لا توجد محادثات بعد</center>";
+            
+            // ترتيب من الأحدث للأقدم
+            myMsgs.reverse().forEach(m => {
+                const peer = users.find(u => u.id === (m.from === current.id ? m.to : m.from));
+                box.innerHTML += `
+                    <div class="item-list">
+                        <span><b>${peer.name}:</b> ${m.type}</span>
+                        <span class="time-tag">${m.time}</span>
+                    </div>`;
+            });
+        }
+
+        function drawNotifs() {
+            const box = document.getElementById('notifs-list');
+            box.innerHTML = "";
+            const myNotifs = messages.filter(m => m.to === current.id);
+            myNotifs.reverse().forEach(m => {
+                const sender = users.find(u => u.id === m.from);
+                box.innerHTML += `
+                    <div class="item-list">
+                        <span>رسالة جديدة من <b>${sender.name}</b></span>
+                        <span class="time-tag">${m.time}</span>
+                    </div>`;
+                m.read = true; // تم القراءة
+            });
+            saveData();
+            updateBadges();
+        }
+
+        function updateBadges() {
+            const unread = messages.filter(m => m.to === current.id && !m.read).length;
+            const nBadge = document.getElementById('notif-badge');
+            if(unread > 0) {
+                nBadge.innerText = unread; nBadge.style.display = 'block';
+                document.getElementById('chat-badge').style.display = 'block';
+            } else {
+                nBadge.style.display = 'none';
+                document.getElementById('chat-badge').style.display = 'none';
+            }
         }
 
         function nav(p, t, el) {
@@ -215,8 +259,29 @@
             document.getElementById('h-title').innerText = t;
             document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
             if(el) el.classList.add('active');
+            if(p === 'chats') drawChats();
+            if(p === 'notifs') drawNotifs();
         }
 
+        function hitLike(id) {
+            const u = users.find(x => x.id === id);
+            const idx = u.likedBy.indexOf(current.id);
+            if(idx === -1) { u.likes++; u.likedBy.push(current.id); } 
+            else { u.likes--; u.likedBy.splice(idx, 1); }
+            saveData(); drawExplore();
+        }
+
+        function closeMsg() { document.getElementById('msg-panel').style.display = 'none'; }
+        function saveData() { 
+            localStorage.setItem('app_users_v4', JSON.stringify(users)); 
+            localStorage.setItem('app_msgs_v4', JSON.stringify(messages));
+        }
+        function deleteAccount() {
+            if(confirm("حذف الحساب؟")) {
+                users = users.filter(u => u.id !== current.id);
+                saveData(); logOut();
+            }
+        }
         function logOut() { sessionStorage.clear(); location.reload(); }
     </script>
 </body>
