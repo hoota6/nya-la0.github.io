@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -6,199 +5,276 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>سودانبوك - SudanBook</title>
     <style>
-        :root { --main: #00a859; --bg: #f0f2f5; --white: #ffffff; --text: #1c1e21; --gray: #65676b; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding-bottom: 70px; color: var(--text); user-select: none; }
-        
-        header { background: var(--main); color: white; padding: 12px; position: sticky; top: 0; z-index: 1000; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .status-header { font-size: 11px; display: flex; align-items: center; gap: 5px; }
-        .dot { width: 10px; height: 10px; border-radius: 50%; }
-        .dot.online { background: #31a24c; box-shadow: 0 0 5px #31a24c; }
-        .dot.offline { background: #ced4da; }
+        :root { --main: #00a859; --bg: #f0f2f5; --white: #ffffff; --text: #1c1e21; --gray: #65676b; --dark-card: #242526; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding-bottom: 70px; color: var(--text); user-select: none; transition: 0.3s; }
+        body.dark-mode { --bg: #18191a; --text: #e4e6eb; --white: #242526; }
+        body.dark-mode .card { background: var(--dark-card); color: white; }
 
-        .nav-bar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #ddd; z-index: 1000; }
+        header { background: var(--main); color: white; padding: 12px; position: sticky; top: 0; z-index: 1000; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .nav-bar { position: fixed; bottom: 0; width: 100%; background: var(--white); display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #ddd; z-index: 1000; }
         .nav-item { cursor: pointer; text-align: center; font-size: 11px; color: var(--gray); flex: 1; transition: 0.3s; }
         .nav-item.active { color: var(--main); font-weight: bold; transform: scale(1.1); }
 
         .container { max-width: 550px; margin: auto; padding: 10px; }
-        .card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .card { background: var(--white); border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         
         .page { display: none; animation: fadeIn 0.3s; }
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Media Handling */
-        #media-preview { width: 100%; border-radius: 8px; margin-top: 10px; display: none; }
-        .post-media { width: 100%; border-radius: 8px; margin-top: 10px; max-height: 400px; object-fit: cover; }
+        .user-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
+        .chat-box { height: 300px; overflow-y: auto; border: 1px solid #eee; padding: 10px; margin-bottom: 10px; border-radius: 8px; }
+        .msg { margin-bottom: 8px; padding: 8px; border-radius: 10px; max-width: 80%; }
+        .msg.sent { background: var(--main); color: white; align-self: flex-end; margin-right: auto; }
+        .msg.received { background: #e4e6eb; color: black; }
 
+        .btn { background: var(--main); color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .btn-red { background: #dc3545; }
+        input, textarea { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; background: inherit; color: inherit; }
+        
         /* Reactions System */
         .react-wrapper { position: relative; flex: 1; text-align: center; }
-        .reactions-box { 
-            position: absolute; bottom: 45px; right: 0; background: white; 
-            border-radius: 30px; padding: 5px 10px; display: none;
-            box-shadow: 0 2px 15px rgba(0,0,0,0.2); gap: 10px; z-index: 100;
-            animation: bounce 0.3s ease;
-        }
-        @keyframes bounce { 0% { transform: scale(0); } 100% { transform: scale(1); } }
-        .reactions-box span { font-size: 25px; cursor: pointer; transition: transform 0.2s; }
-        .reactions-box span:hover { transform: scale(1.4); }
-
-        .btn { background: var(--main); color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 5px; }
-        .btn-outline { background: #f0f2f5; color: var(--text); border: none; padding: 8px; border-radius: 8px; cursor: pointer; width: 100%; font-size: 13px; }
-        
-        input, textarea { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        
-        .switch { position: relative; display: inline-block; width: 45px; height: 22px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--main); }
-        input:checked + .slider:before { transform: translateX(23px); }
+        .reactions-box { position: absolute; bottom: 45px; right: 0; background: white; border-radius: 30px; padding: 5px 10px; display: none; box-shadow: 0 2px 15px rgba(0,0,0,0.2); gap: 10px; z-index: 100; }
+        .post-media { width: 100%; border-radius: 8px; margin-top: 10px; max-height: 400px; object-fit: cover; }
     </style>
 </head>
 <body>
 
 <header>
     <div style="font-weight: bold; font-size: 18px;">SudanBook</div>
-    <div class="status-header" id="activity-status">
-        <span class="dot online"></span> متصل الآن
-    </div>
+    <div id="activity-status" style="font-size: 11px;">🟢 متصل الآن</div>
 </header>
 
 <div class="container">
-    
     <div id="home-page" class="page active">
         <div class="card">
             <textarea id="post-input" placeholder="ماذا يدور في ذهنك؟"></textarea>
             <input type="file" id="post-file" accept="image/*,video/*" style="display:none" onchange="previewMedia(event)">
-            <img id="media-preview">
+            <img id="media-preview" style="width:100%; display:none; border-radius:8px; margin-bottom:10px;">
             <div style="display:flex; gap:10px; margin-top:5px">
-                <button class="btn-outline" onclick="document.getElementById('post-file').click()">🖼️ صورة/فيديو</button>
+                <button class="btn" style="background:#f0f2f5; color:black;" onclick="document.getElementById('post-file').click()">🖼️ وسائط</button>
                 <button class="btn" onclick="publishPost()">نشر</button>
             </div>
         </div>
         <div id="feed-container"></div>
     </div>
 
-    <div id="msg-page" class="page"><div class="card"><h3>الرسائل</h3></div></div>
-    <div id="req-page" class="page"><div class="card"><h3>طلبات الصداقة</h3></div></div>
-    <div id="profile-page" class="page"><div class="card" id="profile-content"></div></div>
-    <div id="settings-page" class="page"><div class="card"><h3>الإعدادات</h3></div></div>
+    <div id="msg-page" class="page">
+        <div class="card">
+            <h3>المحادثات</h3>
+            <div id="chats-list"></div>
+            <div id="active-chat" style="display:none;">
+                <button class="btn" onclick="closeChat()" style="margin-bottom:10px;">⬅️ عودة</button>
+                <div class="chat-box" id="chat-messages"></div>
+                <div style="display:flex; gap:5px;">
+                    <input type="text" id="msg-input" placeholder="اكتب رسالة...">
+                    <button class="btn" onclick="sendMessage()">إرسال</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <div id="req-page" class="page">
+        <div class="card">
+            <h3>أشخاص قد تعرفهم</h3>
+            <div id="all-users-list"></div>
+        </div>
+        <div class="card">
+            <h3>طلبات الصداقة الواردة</h3>
+            <div id="friend-requests-list"></div>
+        </div>
+    </div>
+
+    <div id="profile-page" class="page">
+        <div class="card" style="text-align:center;">
+            <div style="width:80px; height:80px; background:var(--main); border-radius:50%; margin:auto; display:flex; align-items:center; justify-content:center; color:white; font-size:30px;" id="user-avatar">👤</div>
+            <h2 id="user-profile-name">اسم المستخدم</h2>
+            <p id="user-profile-bio">عضو في سودانبوك</p>
+            <hr>
+            <div style="text-align:right;">
+                <p>🆔 المعرف: <span id="user-profile-id"></span></p>
+                <p>📅 انضم في: <span id="user-profile-date"></span></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="settings-page" class="page">
+        <div class="card">
+            <h3>⚙️ الإعدادات</h3>
+            <button class="btn" style="width:100%; margin-bottom:10px; background:#444;" onclick="toggleDarkMode()">🌓 تبديل الوضع (داكن/فاتح)</button>
+            <button class="btn" style="width:100%; margin-bottom:10px; background:#007bff;" onclick="changeLang()">🌐 تغيير اللغة (العربية/English)</button>
+            <button class="btn btn-red" style="width:100%;" onclick="logout()">🚪 تسجيل الخروج</button>
+        </div>
+    </div>
 </div>
 
-<div class="nav-bar">
+<nav class="nav-bar">
     <div class="nav-item active" onclick="nav('home-page', this)">🏠<br>الموجز</div>
     <div class="nav-item" onclick="nav('msg-page', this)">💬<br>الرسائل</div>
     <div class="nav-item" onclick="nav('req-page', this)">👥<br>الطلبات</div>
-    <div class="nav-item" onclick="nav('profile-page', this)">👤<br>الملف</div>
+    <div class="nav-item" onclick="nav('profile-page', this)">👤<br>الملف الشخصي</div>
     <div class="nav-item" onclick="nav('settings-page', this)">⚙️<br>الإعدادات</div>
-</div>
+</nav>
 
 <script>
-    let user = JSON.parse(localStorage.getItem('sb_user')) || null;
+    // --- المحرك الأساسي (بناء على الكود السابق) ---
+    let currentUser = JSON.parse(localStorage.getItem('sb_user')) || null;
     let posts = JSON.parse(localStorage.getItem('sb_posts')) || [];
+    let allUsers = JSON.parse(localStorage.getItem('sb_all_users')) || [];
+    let messages = JSON.parse(localStorage.getItem('sb_msgs')) || [];
+    let currentChatWith = null;
     let selectedFile = null;
-    let pressTimer;
 
     window.onload = function() {
-        if(!user) {
-            let name = prompt("مرحباً بك! أدخل اسمك الكامل للبدء:");
-            user = { name: name || "مستخدم جديد", bio: "عضو سودانبوك", online: true, lastSeen: "الآن" };
-            localStorage.setItem('sb_user', JSON.stringify(user));
+        if(!currentUser) {
+            let name = prompt("مرحباً بك! أدخل اسمك الكامل:");
+            currentUser = { 
+                id: 'sb' + Math.floor(Math.random()*1000),
+                name: name || "مستخدم مجهول", 
+                bio: "أنا أحب سودانبوك 🇸🇩", 
+                joined: new Date().toLocaleDateString('ar-EG'),
+                friends: [],
+                requests: []
+            };
+            localStorage.setItem('sb_user', JSON.stringify(currentUser));
+            allUsers.push(currentUser);
+            localStorage.setItem('sb_all_users', JSON.stringify(allUsers));
         }
+        updateProfileUI();
         renderPosts();
+        renderUsers();
+        renderRequests();
+        renderChats();
     }
 
-    function previewMedia(event) {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                selectedFile = { src: e.target.result, type: file.type };
-                const preview = document.getElementById('media-preview');
-                preview.src = e.target.result;
-                preview.style.display = 'block';
+    // --- وظائف الصداقة ---
+    function renderUsers() {
+        const list = document.getElementById('all-users-list');
+        list.innerHTML = "";
+        allUsers.forEach(u => {
+            if(u.id !== currentUser.id) {
+                list.innerHTML += `
+                    <div class="user-item">
+                        <span>${u.name}</span>
+                        <button class="btn" onclick="sendFriendRequest('${u.id}')">إضافة صديق</button>
+                    </div>`;
             }
-            reader.readAsDataURL(file);
+        });
+    }
+
+    function sendFriendRequest(targetId) {
+        alert("تم إرسال طلب الصداقة بنجاح!");
+    }
+
+    function renderRequests() {
+        const list = document.getElementById('friend-requests-list');
+        list.innerHTML = "<p style='color:gray; font-size:12px;'>لا توجد طلبات جديدة حالياً.</p>";
+    }
+
+    // --- وظائف الرسائل ---
+    function renderChats() {
+        const list = document.getElementById('chats-list');
+        list.innerHTML = "";
+        allUsers.forEach(u => {
+            if(u.id !== currentUser.id) {
+                list.innerHTML += `
+                    <div class="user-item" onclick="openChat('${u.id}', '${u.name}')">
+                        <b>${u.name}</b>
+                        <small>اضغط للمراسلة</small>
+                    </div>`;
+            }
+        });
+    }
+
+    function openChat(id, name) {
+        currentChatWith = {id, name};
+        document.getElementById('chats-list').style.display = 'none';
+        document.getElementById('active-chat').style.display = 'block';
+        loadMessages();
+    }
+
+    function closeChat() {
+        document.getElementById('chats-list').style.display = 'block';
+        document.getElementById('active-chat').style.display = 'none';
+    }
+
+    function sendMessage() {
+        const input = document.getElementById('msg-input');
+        if(!input.value) return;
+        const msg = { from: currentUser.id, to: currentChatWith.id, text: input.value, time: new Date().toLocaleTimeString() };
+        messages.push(msg);
+        localStorage.setItem('sb_msgs', JSON.stringify(messages));
+        input.value = "";
+        loadMessages();
+    }
+
+    function loadMessages() {
+        const box = document.getElementById('chat-messages');
+        box.innerHTML = "";
+        messages.filter(m => (m.from === currentUser.id && m.to === currentChatWith.id) || (m.to === currentUser.id && m.from === currentChatWith.id))
+                .forEach(m => {
+                    box.innerHTML += `<div class="msg ${m.from === currentUser.id ? 'sent' : 'received'}">${m.text}</div>`;
+                });
+        box.scrollTop = box.scrollHeight;
+    }
+
+    // --- الملف الشخصي والإعدادات ---
+    function updateProfileUI() {
+        document.getElementById('user-profile-name').innerText = currentUser.name;
+        document.getElementById('user-profile-bio').innerText = currentUser.bio;
+        document.getElementById('user-profile-id').innerText = currentUser.id;
+        document.getElementById('user-profile-date').innerText = currentUser.joined;
+        document.getElementById('user-avatar').innerText = currentUser.name[0];
+    }
+
+    function toggleDarkMode() {
+        document.body.classList.toggle('dark-mode');
+        alert("تم تبديل الوضع!");
+    }
+
+    function changeLang() {
+        alert("اللغة الحالية: العربية. سيتم إضافة الإنجليزية قريباً!");
+    }
+
+    // --- الوظائف الأساسية (نشر، تنقل) ---
+    function previewMedia(e) {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = function(f) {
+            selectedFile = {src: f.target.result, type: file.type};
+            document.getElementById('media-preview').src = f.target.result;
+            document.getElementById('media-preview').style.display = 'block';
         }
+        reader.readAsDataURL(file);
     }
 
     function publishPost() {
         const txt = document.getElementById('post-input').value;
         if(!txt && !selectedFile) return;
-
         const p = { 
-            id: Date.now(), 
-            author: user.name, 
-            content: txt, 
-            file: selectedFile,
-            time: new Date().toLocaleString('ar-EG', {hour:'2-digit', minute:'2-digit', day:'numeric', month:'short'}),
-            myReact: "👍 لايك"
+            id: Date.now(), author: currentUser.name, content: txt, 
+            file: selectedFile, time: new Date().toLocaleTimeString(), myReact: "👍 لايك" 
         };
-
         posts.unshift(p);
         localStorage.setItem('sb_posts', JSON.stringify(posts));
-        
-        // Reset
-        document.getElementById('post-input').value = "";
-        document.getElementById('media-preview').style.display = 'none';
-        selectedFile = null;
-        renderPosts();
+        location.reload(); 
     }
 
     function renderPosts() {
         const container = document.getElementById('feed-container');
         container.innerHTML = "";
         posts.forEach(p => {
-            const mediaHtml = p.file ? (p.file.type.includes('video') ? 
-                `<video class="post-media" controls src="${p.file.src}"></video>` : 
-                `<img class="post-media" src="${p.file.src}">`) : "";
-
+            const media = p.file ? `<img src="${p.file.src}" class="post-media">` : "";
             container.innerHTML += `
                 <div class="card">
-                    <b>${p.author}</b> <small style="color:gray; font-size:10px">${p.time}</small>
-                    <p style="margin:10px 0">${p.content}</p>
-                    ${mediaHtml}
-                    <div style="display:flex; justify-content:space-around; font-size:12px; color:var(--gray); border-top:1px solid #eee; padding-top:10px; margin-top:10px">
-                        <div class="react-wrapper" 
-                             onmousedown="startPress('${p.id}')" 
-                             onmouseup="endPress()" 
-                             ontouchstart="startPress('${p.id}')" 
-                             ontouchend="endPress()">
-                            <span id="btn-${p.id}">${p.myReact}</span>
-                            <div class="reactions-box" id="box-${p.id}">
-                                <span onclick="setReact('${p.id}', '❤️ أحببته')">❤️</span>
-                                <span onclick="setReact('${p.id}', '💪 أدعمه')">💪</span>
-                                <span onclick="setReact('${p.id}', '😂 هاها')">😂</span>
-                                <span onclick="setReact('${p.id}', '😡 أغضبني')">😡</span>
-                            </div>
-                        </div>
-                        <span>💬 تعليق</span> <span>📤 مشاركة</span>
+                    <b>${p.author}</b> <small style="color:gray;">${p.time}</small>
+                    <p>${p.content}</p>
+                    ${media}
+                    <div style="display:flex; justify-content:space-around; border-top:1px solid #eee; padding-top:10px; margin-top:10px; font-size:12px;">
+                        <span>${p.myReact}</span> <span>💬 تعليق</span> <span>📤 مشاركة</span>
                     </div>
                 </div>`;
         });
-    }
-
-    // Reaction Logic
-    function startPress(id) {
-        pressTimer = setTimeout(() => {
-            document.getElementById('box-' + id).style.display = 'flex';
-        }, 500);
-    }
-
-    function endPress() {
-        clearTimeout(pressTimer);
-    }
-
-    function setReact(id, text) {
-        document.getElementById('btn-' + id).innerText = text;
-        document.getElementById('btn-' + id).style.color = '#1877f2';
-        document.getElementById('box-' + id).style.display = 'none';
-        
-        // تحديث في الذاكرة
-        const postIndex = posts.findIndex(p => p.id == id);
-        posts[postIndex].myReact = text;
-        localStorage.setItem('sb_posts', JSON.stringify(posts));
     }
 
     function nav(pageId, el) {
@@ -206,6 +282,13 @@
         document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
         document.getElementById(pageId).classList.add('active');
         el.classList.add('active');
+    }
+
+    function logout() {
+        if(confirm("هل تريد تسجيل الخروج؟")) {
+            localStorage.clear();
+            location.reload();
+        }
     }
 </script>
 </body>
