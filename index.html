@@ -8,6 +8,7 @@
         :root { --main: #ff2d55; --dark: #4e085f; --bg: #f0f2f5; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 0; overflow-x: hidden; }
         
+        /* شاشة الدخول - الحقول الأصلية */
         #auth-screen { position: fixed; inset: 0; background: linear-gradient(135deg, var(--main), var(--dark)); display: flex; justify-content: center; align-items: center; z-index: 10000; }
         .auth-box { background: white; padding: 20px; border-radius: 20px; width: 340px; text-align: center; max-height: 90vh; overflow-y: auto; }
         #preview-img { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 3px solid var(--main); margin-bottom: 10px; }
@@ -20,40 +21,76 @@
         .page { display: none; }
         .active-page { display: block; }
 
+        /* كرت المستخدم */
         .user-card { background: white; border-radius: 15px; overflow: hidden; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         .user-card img { width: 100%; height: 300px; object-fit: cover; }
         .user-info { padding: 15px; }
-        .status-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
-        
-        .item-list { background: white; padding: 15px; border-radius: 12px; margin-bottom: 10px; border-right: 5px solid var(--main); display: flex; flex-direction: column; }
-        .msg-status { font-size: 0.7rem; color: #4caf50; font-weight: bold; margin-top: 5px; text-align: left; }
-        .typing-text { font-size: 0.8rem; color: #ff2d55; font-style: italic; display: none; }
 
         .navbar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #ddd; z-index: 1000; }
-        .nav-item { cursor: pointer; color: #888; font-size: 0.8rem; text-align: center; position: relative; width: 25%; }
+        .nav-item { cursor: pointer; color: #888; font-size: 0.85rem; text-align: center; }
         .nav-item.active { color: var(--main); font-weight: bold; }
 
+        /* نافذة الدردشة */
         #msg-panel { position: fixed; bottom: 0; width: 100%; background: white; padding: 20px; border-radius: 20px 20px 0 0; box-shadow: 0 -5px 25px rgba(0,0,0,0.2); z-index: 2000; display: none; box-sizing: border-box; }
+        .typing-hint { font-size: 0.75rem; color: var(--main); font-style: italic; display: none; }
     </style>
 </head>
 <body>
 
     <div id="auth-screen">
         <div class="auth-box" id="reg-box">
-            <h2 style="color:var(--main);">شبكة البحير</h2>
+            <h2 style="color:var(--main);">تسجيل جديد</h2>
             <img id="preview-img" src="https://cdn-icons-png.flaticon.com/512/149/149071.png">
             <input type="file" id="f-in" style="display:none" onchange="loadFile(this)">
-            <button onclick="document.getElementById('f-in').click()">تغيير الصورة</button>
-            <input type="text" id="r-name" placeholder="اسمك الكريم">
+            <button onclick="document.getElementById('f-in').click()" style="margin-bottom:10px; cursor:pointer;">اختيار صورة</button>
+            
+            <input type="text" id="r-name" placeholder="اسم المستخدم">
             <input type="password" id="r-pass" placeholder="كلمة السر">
-            <button class="btn-reg" onclick="doRegister()">بدء التعارف</button>
-            <button onclick="toggleView(true)" style="background:none; border:none; margin-top:10px;">دخول</button>
+            
+            <div style="display:flex; gap:5px;">
+                <input type="number" id="r-age" placeholder="العمر">
+                <select id="r-gen"><option value="ذكر">ذكر</option><option value="أنثى">أنثى</option></select>
+            </div>
+
+            <select id="r-st">
+                <option value="">اختر الولاية</option>
+                <option value="الخرطوم">الخرطوم</option>
+                <option value="الجزيرة">الجزيرة</option>
+                <option value="البحر الأحمر">البحر الأحمر</option>
+                <option value="كسلا">كسلا</option>
+                <option value="القضارف">القضارف</option>
+                <option value="سنار">سنار</option>
+                <option value="النيل الأبيض">النيل الأبيض</option>
+                <option value="النيل الأزرق">النيل الأزرق</option>
+                <option value="الشمالية">الشمالية</option>
+                <option value="نهر النيل">نهر النيل</option>
+                <option value="شمال كردفان">شمال كردفان</option>
+                <option value="جنوب كردفان">جنوب كردفان</option>
+                <option value="غرب كردفان">غرب كردفان</option>
+                <option value="شمال دارفور">شمال دارفور</option>
+                <option value="جنوب دارفور">جنوب دارفور</option>
+                <option value="غرب دارفور">غرب دارفور</option>
+                <option value="وسط دارفور">وسط دارفور</option>
+                <option value="شرق دارفور">شرق دارفور</option>
+            </select>
+
+            <select id="r-soc">
+                <option value="أعزب">أعزب</option>
+                <option value="مطلق">مطلق</option>
+                <option value="أرمل">أرمل</option>
+                <option value="متزوج">متزوج</option>
+            </select>
+
+            <button class="btn-reg" onclick="doRegister()">إنشاء حساب ودخول</button>
+            <button onclick="toggleView(true)" style="background:none; border:none; margin-top:10px; cursor:pointer;">لدي حساب بالفعل</button>
         </div>
+
         <div class="auth-box" id="log-box" style="display:none;">
-            <h2>دخول</h2>
-            <input type="text" id="l-name" placeholder="الاسم">
+            <h2 style="color:var(--dark);">دخول للموقع</h2>
+            <input type="text" id="l-name" placeholder="اسم المستخدم">
             <input type="password" id="l-pass" placeholder="كلمة السر">
-            <button class="btn-reg" onclick="doLogin()">دخول</button>
+            <button class="btn-reg" style="background:var(--dark)" onclick="doLogin()">دخول الآن</button>
+            <button onclick="toggleView(false)" style="background:none; border:none; margin-top:10px; cursor:pointer;">إنشاء حساب جديد</button>
         </div>
     </div>
 
@@ -62,34 +99,36 @@
         <div class="content">
             <div id="p-explore" class="page active-page"></div>
             <div id="p-chats" class="page"><div id="chats-list"></div></div>
-            <div id="p-notifs" class="page"><div id="notifs-list"></div></div>
-            <div id="p-settings" class="page" style="text-align:center;">
-                <button onclick="logOut()" style="width:100%; padding:15px; border-radius:10px;">خروج</button>
-                <button onclick="deleteAccount()" style="color:red; width:100%; padding:15px;">حذف الحساب</button>
+            <div id="p-settings" class="page">
+                <div style="background:white; padding:20px; border-radius:15px; text-align:center;">
+                    <button onclick="logOut()" style="width:100%; padding:12px; margin-bottom:10px; border:none; background:#eee; border-radius:10px;">تسجيل الخروج</button>
+                    <button onclick="deleteAccount()" style="width:100%; padding:12px; border:none; background:#ffebee; color:red; border-radius:10px; font-weight:bold;">حذف الحساب نهائياً</button>
+                </div>
             </div>
         </div>
 
         <div class="navbar">
             <div class="nav-item active" onclick="nav('explore','استكشف',this)">🔍<br>استكشف</div>
-            <div class="nav-item" onclick="nav('chats','الرسائل',this)">💬<br>الرسائل</div>
-            <div class="nav-item" onclick="nav('notifs','التنبيهات',this)">🔔<br>الإشعارات</div>
+            <div class="nav-item" onclick="nav('chats','المحادثات',this)">💬<br>الرسائل</div>
             <div class="nav-item" onclick="nav('settings','الإعدادات',this)">⚙️<br>الإعدادات</div>
         </div>
     </div>
 
     <div id="msg-panel">
-        <b id="target-user-name">مراسلة</b> 
-        <span id="target-typing" class="typing-text">يريد ان يخبرك شيئاً...</span>
-        <textarea id="msg-text" placeholder="اكتب رسالتك..." oninput="isTyping()"></textarea>
-        <button onclick="processSend('text')" style="background:var(--main); color:white; width:100%; padding:10px; border-radius:10px;">إرسال</button>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <b id="chat-with-name" style="color:var(--main); font-size:1.1rem;">اسم المستخدم</b>
+            <span id="typing-hint" class="typing-hint">يكتب الآن...</span>
+        </div>
+        <textarea id="msg-input" placeholder="اكتب رسالتك..." oninput="handleTyping()"></textarea>
+        <button class="btn-reg" onclick="sendMessage()">إرسال</button>
         <center><button onclick="closeMsg()" style="margin-top:10px; border:none; background:none; color:#999;">إغلاق</button></center>
     </div>
 
     <script>
-        let users = JSON.parse(localStorage.getItem('app_users_v7') || '[]');
-        let messages = JSON.parse(localStorage.getItem('app_msgs_v7') || '[]');
-        let current = JSON.parse(sessionStorage.getItem('active_user_v7'));
-        let selectedUserId = null;
+        let users = JSON.parse(localStorage.getItem('albeher_users') || '[]');
+        let msgs = JSON.parse(localStorage.getItem('albeher_msgs') || '[]');
+        let current = JSON.parse(sessionStorage.getItem('active_session'));
+        let targetId = null;
         let tempImg = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
         if(current) enter();
@@ -108,10 +147,18 @@
         function doRegister() {
             const n = document.getElementById('r-name').value.trim();
             const p = document.getElementById('r-pass').value;
-            if(!n || !p) return alert("اكمل البيانات");
-            const u = { id: Date.now(), name: n, pass: p, img: tempImg, likes: 0, likedBy: [], lastActive: Date.now(), typing: false };
-            users.push(u); save();
-            current = u; sessionStorage.setItem('active_user_v7', JSON.stringify(u));
+            const st = document.getElementById('r-st').value;
+            if(!n || !p || !st) return alert("الرجاء إكمال كافة البيانات");
+            
+            const u = {
+                id: Date.now(), name: n, pass: p,
+                age: document.getElementById('r-age').value,
+                gen: document.getElementById('r-gen').value,
+                st: st, soc: document.getElementById('r-soc').value,
+                img: tempImg, lastSeen: Date.now(), isTyping: false
+            };
+            users.push(u); saveAll();
+            current = u; sessionStorage.setItem('active_session', JSON.stringify(u));
             enter();
         }
 
@@ -119,89 +166,66 @@
             const n = document.getElementById('l-name').value;
             const p = document.getElementById('l-pass').value;
             const u = users.find(x => x.name === n && x.pass === p);
-            if(u) { current = u; sessionStorage.setItem('active_user_v7', JSON.stringify(u)); enter(); }
-            else alert("خطأ");
+            if(u) { current = u; sessionStorage.setItem('active_session', JSON.stringify(u)); enter(); }
+            else alert("بيانات خاطئة");
         }
 
         function enter() {
             document.getElementById('auth-screen').style.display = 'none';
             document.getElementById('main-app').style.display = 'block';
-            setInterval(() => { updateActivity(); drawExplore(); drawChats(); updateTypingStatus(); }, 2000);
+            setInterval(sync, 2000);
         }
 
-        function updateActivity() {
-            const u = users.find(x => x.id === current.id);
-            if(u) { u.lastActive = Date.now(); save(); }
-        }
-
-        function isTyping() {
-            const u = users.find(x => x.id === current.id);
-            u.typing = true;
-            setTimeout(() => { u.typing = false; save(); }, 3000);
-            save();
-        }
-
-        function updateTypingStatus() {
-            if(selectedUserId) {
-                const peer = users.find(x => x.id === selectedUserId);
-                document.getElementById('target-typing').style.display = peer.typing ? 'inline' : 'none';
+        function sync() {
+            const me = users.find(x => x.id === current.id);
+            if(me) me.lastSeen = Date.now();
+            saveAll();
+            drawExplore();
+            if(targetId) {
+                const peer = users.find(x => x.id === targetId);
+                document.getElementById('typing-hint').style.display = peer.isTyping ? 'block' : 'none';
             }
         }
 
         function drawExplore() {
             const box = document.getElementById('p-explore'); box.innerHTML = "";
             users.filter(u => u.id !== current.id).forEach(u => {
-                const isOnline = (Date.now() - u.lastActive) < 10000;
-                const statusText = isOnline ? '<span style="color:green">● متصل الآن</span>' : `<span style="color:gray">نشط منذ ${new Date(u.lastActive).toLocaleTimeString('ar-EG')}</span>`;
-                box.innerHTML += `<div class="user-card">
-                    <img src="${u.img}">
-                    <div class="user-info"><b>${u.name}</b><br><small>${statusText}</small></div>
-                    <div class="actions">
-                        <button class="btn-action" onclick="openMsgPanel(${u.id}, '${u.name}')">💬 مراسلة</button>
-                    </div>
-                </div>`;
+                const online = (Date.now() - u.lastSeen) < 10000;
+                box.innerHTML += `
+                    <div class="user-card">
+                        <img src="${u.img}">
+                        <div class="user-info">
+                            <b>${u.name}</b> ${online ? '<small style="color:green">● متصل</small>' : '<small style="color:gray">نشط منذ قليل</small>'}<br>
+                            <small>${u.gen} | ${u.age} سنة | ${u.st} | ${u.soc}</small>
+                        </div>
+                        <div style="padding:10px; border-top:1px solid #eee; text-align:center;">
+                            <button onclick="openChat(${u.id}, '${u.name}')" style="background:var(--main); color:white; border:none; padding:8px 20px; border-radius:20px; cursor:pointer;">مراسلة</button>
+                        </div>
+                    </div>`;
             });
         }
 
-        function openMsgPanel(id, name) {
-            selectedUserId = id;
-            document.getElementById('target-user-name').innerText = name;
+        function openChat(id, name) {
+            targetId = id;
+            document.getElementById('chat-with-name').innerText = name;
             document.getElementById('msg-panel').style.display = 'block';
-            // بمجرد فتح المحادثة، نعتبر الرسائل الواردة "مقروءة"
-            messages.filter(m => m.from === id && m.to === current.id).forEach(m => {
-                if(!m.readTime) m.readTime = new Date().toLocaleTimeString('ar-EG');
-            });
-            save();
         }
 
-        function processSend(type) {
-            const content = document.getElementById('msg-text').value.trim();
-            if(!content) return;
-            const time = new Date().toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'});
-            const newMsg = { from: current.id, to: selectedUserId, body: content, time: time, delivered: true, readTime: null };
-            messages.push(newMsg);
-            save();
-            document.getElementById('msg-text').value = "";
-            drawChats();
+        function handleTyping() {
+            const me = users.find(x => x.id === current.id);
+            me.isTyping = true;
+            clearTimeout(window.typeTimer);
+            window.typeTimer = setTimeout(() => { me.isTyping = false; saveAll(); }, 3000);
+            saveAll();
         }
 
-        function drawChats() {
-            const box = document.getElementById('chats-list'); box.innerHTML = "";
-            const myMsgs = messages.filter(m => m.to === current.id || m.from === current.id);
-            myMsgs.slice().reverse().forEach(m => {
-                const isMe = m.from === current.id;
-                let status = "";
-                if(isMe) {
-                    if(m.readTime) status = `✔ تمت القراءة ${m.readTime}`;
-                    else if(m.delivered) status = "✔ تم الاستلام";
-                }
-                box.innerHTML += `<div class="item-list">
-                    <b>${isMe ? "أنت" : users.find(u => u.id === m.from).name}:</b>
-                    <div>${m.body}</div>
-                    <div class="time-tag">${m.time}</div>
-                    <div class="msg-status">${status}</div>
-                </div>`;
-            });
+        function sendMessage() {
+            const txt = document.getElementById('msg-input').value.trim();
+            if(!txt) return;
+            msgs.push({ from: current.id, to: targetId, txt: txt, time: new Date().toLocaleTimeString('ar-EG') });
+            document.getElementById('msg-input').value = "";
+            saveAll();
+            alert("تم الإرسال");
         }
 
         function nav(p, t, el) {
@@ -210,12 +234,12 @@
             document.getElementById('h-title').innerText = t;
             document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
             el.classList.add('active');
-            if(p === 'chats') drawChats();
         }
 
-        function closeMsg() { document.getElementById('msg-panel').style.display = 'none'; selectedUserId = null; }
-        function save() { localStorage.setItem('app_users_v7', JSON.stringify(users)); localStorage.setItem('app_msgs_v7', JSON.stringify(messages)); }
+        function saveAll() { localStorage.setItem('albeher_users', JSON.stringify(users)); localStorage.setItem('albeher_msgs', JSON.stringify(msgs)); }
         function logOut() { sessionStorage.clear(); location.reload(); }
+        function deleteAccount() { if(confirm("حذف الحساب؟")) { users = users.filter(u => u.id !== current.id); saveAll(); logOut(); } }
+        function closeMsg() { document.getElementById('msg-panel').style.display = 'none'; targetId = null; }
     </script>
 </body>
 </html>
