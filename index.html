@@ -11,43 +11,35 @@
         :root { --main: #ff2d55; --bg: #f0f2f5; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 0; }
         
-        /* --- شاشة التسجيل --- */
+        /* شاشة التسجيل */
         #login-screen { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(135deg, #ff2d55, #4e085f); position: fixed; inset: 0; z-index: 9999; }
-        .auth-box { background: white; padding: 25px; border-radius: 20px; width: 340px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
-        #preview-img { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 3px solid var(--main); margin-bottom: 10px; }
-        .upload-row { display: flex; gap: 8px; margin-bottom: 15px; }
-        .btn-up { flex: 1; background: #eee; padding: 10px; border-radius: 10px; cursor: pointer; font-size: 0.8rem; }
+        .auth-box { background: white; padding: 25px; border-radius: 20px; width: 340px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); max-height: 90vh; overflow-y: auto; }
+        #preview-img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid var(--main); margin-bottom: 10px; }
+        .upload-row { display: flex; gap: 8px; margin-bottom: 10px; }
+        .btn-up { flex: 1; background: #eee; padding: 8px; border-radius: 10px; cursor: pointer; font-size: 0.8rem; }
 
-        input, select { width: 100%; padding: 12px; margin: 6px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; }
-        .btn-start { background: var(--main); color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: bold; font-size: 1.1rem; }
+        input, select { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; }
+        .btn-start { background: var(--main); color: white; border: none; padding: 14px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: bold; font-size: 1.1rem; margin-top: 10px; }
+        .pass-hint { font-size: 0.7rem; color: #666; text-align: right; margin-bottom: 5px; }
 
-        /* --- الهيكل الداخلي للموقع --- */
+        /* الهيكل الداخلي */
         #main-site { display: none; padding-bottom: 80px; }
         .header { background: var(--main); color: white; padding: 15px; text-align: center; position: fixed; top: 0; width: 100%; z-index: 1000; font-weight: bold; font-size: 1.2rem; }
-        
         .page { display: none; padding: 75px 15px 20px 15px; max-width: 600px; margin: 0 auto; }
         .active-page { display: block; }
 
-        /* كروت استكشف (المواعدة والتعارف) */
+        /* كروت استكشف */
         .explore-card { background: white; border-radius: 20px; overflow: hidden; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         .explore-img { width: 100%; height: 280px; object-fit: cover; cursor: pointer; }
         .explore-info { padding: 15px; }
-        .explore-info b { font-size: 1.3rem; display: block; margin-bottom: 5px; }
         .badge { background: #f0f2f5; padding: 4px 10px; border-radius: 8px; font-size: 0.8rem; color: #555; margin-left: 5px; border: 1px solid #eee; }
-        
         .action-btns { display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #eee; }
         .action-btn { background: none; border: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; font-size: 0.8rem; color: #444; flex: 1; }
-        .action-btn span { font-weight: bold; color: var(--main); margin-bottom: 2px; }
 
-        /* شريط التنقل السفلي */
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #ddd; z-index: 1000; }
         .nav-tab { color: #888; cursor: pointer; text-align: center; font-size: 0.85rem; }
         .nav-tab.active { color: var(--main); font-weight: bold; }
 
-        /* الإشعارات */
-        .notif-card { background: white; padding: 15px; border-radius: 15px; margin-bottom: 10px; border-right: 5px solid var(--main); display: flex; flex-direction: column; gap: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-
-        /* نافذة الدردشة */
         #chat-window { display: none; position: fixed; inset: 0; background: white; z-index: 2000; flex-direction: column; }
         #msg-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; background: #f0f2f5; }
         .bubble { padding: 12px; border-radius: 18px; margin-bottom: 8px; max-width: 75%; }
@@ -59,7 +51,7 @@
 
     <div id="login-screen">
         <div class="auth-box">
-            <h2 style="color:var(--main); margin-bottom:15px;">تسجيل جديد</h2>
+            <h2 style="color:var(--main); margin-bottom:10px;">تسجيل جديد</h2>
             <img id="preview-img" src="https://cdn-icons-png.flaticon.com/512/149/149071.png">
             <div class="upload-row">
                 <label class="btn-up" onclick="document.getElementById('file-gal').click()">📁 معرض</label>
@@ -69,19 +61,44 @@
             <input type="file" id="file-cam" accept="image/*" capture="user" style="display:none" onchange="previewImg(this)">
             
             <input type="text" id="reg-name" placeholder="اسم المستخدم">
+            
+            <input type="password" id="reg-pass" placeholder="كلمة السر">
+            <div class="pass-hint">يجب أن تحتوي على 6 أحرف ورقمين</div>
+
             <input type="number" id="reg-age" placeholder="العمر">
+            
             <select id="reg-country">
-                <option value="">اختر الدولة</option>
                 <option value="السودان">السودان</option>
-                <option value="مصر">مصر</option>
-                <option value="السعودية">السعودية</option>
-                <option value="الإمارات">الإمارات</option>
-                <option value="أخرى">أخرى</option>
             </select>
+
+            <select id="reg-state">
+                <option value="">اختر الولاية</option>
+                <option value="الخرطوم">الخرطوم</option>
+                <option value="الجزيرة">الجزيرة</option>
+                <option value="البحر الأحمر">البحر الأحمر</option>
+                <option value="كسلا">كسلا</option>
+                <option value="القضارف">القضارف</option>
+                <option value="سنار">سنار</option>
+                <option value="النيل الأبيض">النيل الأبيض</option>
+                <option value="النيل الأزرق">النيل الأزرق</option>
+                <option value="الشمالية">الشمالية</option>
+                <option value="نهر النيل">نهر النيل</option>
+                <option value="شمال كردفان">شمال كردفان</option>
+                <option value="جنوب كردفان">جنوب كردفان</option>
+                <option value="غرب كردفان">غرب كردفان</option>
+                <option value="شمال دارفور">شمال دارفور</option>
+                <option value="جنوب دارفور">جنوب دارفور</option>
+                <option value="غرب دارفور">غرب دارفور</option>
+                <option value="وسط دارفور">وسط دارفور</option>
+                <option value="شرق دارفور">شرق دارفور</option>
+            </select>
+
             <input type="text" id="reg-hobby" placeholder="الهواية">
+            
             <select id="reg-status">
                 <option value="أعزب">أعزب</option>
-                <option value="متزوج">متزوج</option>
+                <option value="مطلق">مطلق</option>
+                <option value="أرمل">أرمل</option>
             </select>
             <button class="btn-start" onclick="startJoin()">دخول للموقع</button>
         </div>
@@ -89,26 +106,11 @@
 
     <div id="main-site">
         <div class="header" id="main-hdr">استكشف أصدقاء</div>
-
-        <div id="p-explore" class="page active-page">
-            <div id="explore-list"></div>
-        </div>
-
-        <div id="p-chats" class="page">
-            <h3 style="padding: 10px;">المحادثات النشطة</h3>
-            <div id="inbox-list"></div>
-        </div>
-
-        <div id="p-notifs" class="page">
-            <h3 style="padding: 10px;">التنبيهات</h3>
-            <div id="notif-list"></div>
-        </div>
-
+        <div id="p-explore" class="page active-page"><div id="explore-list"></div></div>
+        <div id="p-chats" class="page"><div id="inbox-list"></div></div>
+        <div id="p-notifs" class="page"><div id="notif-list"></div></div>
         <div id="p-settings" class="page">
-            <div style="background:white; padding:20px; border-radius:15px; text-align:center;">
-                <p>اللغة: العربية</p>
-                <button class="btn-start" style="background:#555" onclick="location.reload()">تسجيل الخروج</button>
-            </div>
+            <button class="btn-start" style="background:#555" onclick="location.reload()">تسجيل الخروج</button>
         </div>
 
         <nav class="bottom-nav">
@@ -132,6 +134,7 @@
     </div>
 
     <script>
+        // --- إعدادات Firebase ---
         const firebaseConfig = {
             apiKey: "YOUR_API_KEY",
             authDomain: "YOUR_APP.firebaseapp.com",
@@ -159,15 +162,24 @@
             }
         }
 
+        function validatePassword(p) {
+            const letters = p.replace(/[^a-zA-Z]/g, "").length;
+            const numbers = p.replace(/[^0-9]/g, "").length;
+            return letters === 6 && numbers === 2;
+        }
+
         function startJoin() {
             myName = document.getElementById('reg-name').value.trim();
+            const pass = document.getElementById('reg-pass').value;
+            const state = document.getElementById('reg-state').value;
             const age = document.getElementById('reg-age').value;
-            const country = document.getElementById('reg-country').value;
-            if(!myName || !age || !country) return alert("أكمل البيانات أولاً");
+
+            if(!myName || !age || !state) return alert("أكمل البيانات أولاً");
+            if(!validatePassword(pass)) return alert("كلمة السر يجب أن تكون 6 أحرف ورقمين فقط!");
 
             const today = new Date().toLocaleString('ar-EG');
             db.ref('users/' + myName).set({
-                name: myName, age: age, country: country,
+                name: myName, age: age, country: "السودان", state: state,
                 photo: myPhoto, hobby: document.getElementById('reg-hobby').value,
                 status: document.getElementById('reg-status').value,
                 joined: today, online: true, lastSeen: "متصل الآن", likes: 0
@@ -203,10 +215,9 @@
                                 <img src="${u.photo}" class="explore-img" onclick="openFullPhoto('${u.photo}')">
                                 <div class="explore-info">
                                     <b>${u.name} (${u.age} سنة)</b>
-                                    <span class="badge">📍 ${u.country}</span>
+                                    <span class="badge">📍 ${u.state}</span>
                                     <span class="badge">🎨 ${u.hobby}</span>
                                     <p style="font-size:0.85rem; color:#666; margin:8px 0;">الحالة: ${u.status}</p>
-                                    <p style="font-size:0.75rem; color:#999;">تاريخ الانضمام: ${u.joined}</p>
                                     <span style="color:${u.online ? 'green' : 'red'}; font-size:0.8rem; font-weight:bold;">
                                         ● ${u.online ? 'نشط الآن' : 'آخر ظهور: ' + u.lastSeen}
                                     </span>
@@ -223,9 +234,7 @@
             });
         }
 
-        function like(name) {
-            db.ref('users/' + name + '/likes').transaction(c => (c || 0) + 1);
-        }
+        function like(name) { db.ref('users/' + name + '/likes').transaction(c => (c || 0) + 1); }
 
         function openFullPhoto(url) {
             const w = window.open("");
@@ -244,11 +253,10 @@
                     if(!document.getElementById(id)){
                         const card = document.createElement('div');
                         card.id = id;
-                        card.className = 'notif-card';
-                        card.innerHTML = `
-                            <span>الإشعار: المستخدم <b>${u.name}</b> متصل الآن.. اتريد مراسلته؟</span>
-                            <button class="btn-start" onclick="openChat('${u.name}')" style="padding:8px; font-size:0.9rem;">مراسلة الآن</button>
-                        `;
+                        card.className = 'notif-card' + ' card-notif-custom'; // Style reuse
+                        card.style = "background:white; padding:15px; border-radius:15px; margin-bottom:10px; border-right:5px solid #ff2d55;";
+                        card.innerHTML = `<span>المستخدم <b>${u.name}</b> من <b>${u.state}</b> متصل الآن..</span>
+                            <button class="btn-start" onclick="openChat('${u.name}')" style="padding:8px; font-size:0.9rem;">مراسلة الآن</button>`;
                         list.prepend(card);
                     }
                 }
@@ -272,7 +280,6 @@
         }
 
         function closeChat() { document.getElementById('chat-window').style.display = 'none'; }
-
         function send() {
             const t = document.getElementById('msgIn').value;
             if(!t) return;
