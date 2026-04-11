@@ -10,7 +10,7 @@
         body.dark-mode { --bg: #18191a; --text: #e4e6eb; --white: #242526; }
         body.dark-mode .card { background: var(--dark-card); color: white; }
 
-        header { background: var(--main); color: white; padding: 12px; position: sticky; top: 0; z-index: 1000; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        header { background: var(--main); color: white; padding: 12px; position: sticky; top: 0; z-index: 1000; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .nav-bar { position: fixed; bottom: 0; width: 100%; background: var(--white); display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #ddd; z-index: 1000; }
         .nav-item { cursor: pointer; text-align: center; font-size: 11px; color: var(--gray); flex: 1; transition: 0.3s; }
         .nav-item.active { color: var(--main); font-weight: bold; transform: scale(1.1); }
@@ -22,19 +22,23 @@
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .user-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
-        .chat-box { height: 300px; overflow-y: auto; border: 1px solid #eee; padding: 10px; margin-bottom: 10px; border-radius: 8px; }
-        .msg { margin-bottom: 8px; padding: 8px; border-radius: 10px; max-width: 80%; }
-        .msg.sent { background: var(--main); color: white; align-self: flex-end; margin-right: auto; }
-        .msg.received { background: #e4e6eb; color: black; }
+        /* Comments Styles */
+        .comments-section { margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px; }
+        .comment-item { background: #f0f2f5; padding: 8px; border-radius: 10px; margin-bottom: 5px; font-size: 13px; position: relative; }
+        body.dark-mode .comment-item { background: #3a3b3c; }
+        .comment-actions { font-size: 11px; color: var(--main); cursor: pointer; margin-right: 10px; }
 
         .btn { background: var(--main); color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; }
-        .btn-red { background: #dc3545; }
         input, textarea { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; background: inherit; color: inherit; }
         
-        /* Reactions System */
-        .react-wrapper { position: relative; flex: 1; text-align: center; }
-        .reactions-box { position: absolute; bottom: 45px; right: 0; background: white; border-radius: 30px; padding: 5px 10px; display: none; box-shadow: 0 2px 15px rgba(0,0,0,0.2); gap: 10px; z-index: 100; }
+        /* Toggle Switch */
+        .switch { position: relative; display: inline-block; width: 40px; height: 20px; vertical-align: middle; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 20px; }
+        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--main); }
+        input:checked + .slider:before { transform: translateX(20px); }
+
         .post-media { width: 100%; border-radius: 8px; margin-top: 10px; max-height: 400px; object-fit: cover; }
     </style>
 </head>
@@ -42,7 +46,6 @@
 
 <header>
     <div style="font-weight: bold; font-size: 18px;">SudanBook</div>
-    <div id="activity-status" style="font-size: 11px;">🟢 متصل الآن</div>
 </header>
 
 <div class="container">
@@ -60,38 +63,30 @@
     </div>
 
     <div id="msg-page" class="page">
-        <div class="card">
-            <h3>المحادثات</h3>
-            <div id="chats-list"></div>
-            <div id="active-chat" style="display:none;">
-                <button class="btn" onclick="closeChat()" style="margin-bottom:10px;">⬅️ عودة</button>
-                <div class="chat-box" id="chat-messages"></div>
-                <div style="display:flex; gap:5px;">
-                    <input type="text" id="msg-input" placeholder="اكتب رسالة...">
-                    <button class="btn" onclick="sendMessage()">إرسال</button>
-                </div>
-            </div>
-        </div>
+        <div class="card"><h3>المحادثات قريباً...</h3></div>
     </div>
 
     <div id="req-page" class="page">
-        <div class="card">
-            <h3>أشخاص قد تعرفهم</h3>
-            <div id="all-users-list"></div>
-        </div>
-        <div class="card">
-            <h3>طلبات الصداقة الواردة</h3>
-            <div id="friend-requests-list"></div>
-        </div>
+        <div class="card"><h3>طلبات الصداقة قريباً...</h3></div>
     </div>
 
     <div id="profile-page" class="page">
         <div class="card" style="text-align:center;">
             <div style="width:80px; height:80px; background:var(--main); border-radius:50%; margin:auto; display:flex; align-items:center; justify-content:center; color:white; font-size:30px;" id="user-avatar">👤</div>
             <h2 id="user-profile-name">اسم المستخدم</h2>
+            
+            <div style="margin: 15px 0; padding: 10px; border: 1px solid #eee; border-radius: 8px;">
+                <span>حالة النشاط (متصل الآن): </span>
+                <label class="switch">
+                    <input type="checkbox" id="status-toggle" checked onchange="updateOnlineStatus()">
+                    <span class="slider"></span>
+                </label>
+                <div id="status-text" style="font-size: 12px; margin-top:5px; color: var(--main);">🟢 نشط الآن</div>
+            </div>
+
             <p id="user-profile-bio">عضو في سودانبوك</p>
             <hr>
-            <div style="text-align:right;">
+            <div style="text-align:right; font-size: 14px;">
                 <p>🆔 المعرف: <span id="user-profile-id"></span></p>
                 <p>📅 انضم في: <span id="user-profile-date"></span></p>
             </div>
@@ -102,8 +97,7 @@
         <div class="card">
             <h3>⚙️ الإعدادات</h3>
             <button class="btn" style="width:100%; margin-bottom:10px; background:#444;" onclick="toggleDarkMode()">🌓 تبديل الوضع (داكن/فاتح)</button>
-            <button class="btn" style="width:100%; margin-bottom:10px; background:#007bff;" onclick="changeLang()">🌐 تغيير اللغة (العربية/English)</button>
-            <button class="btn btn-red" style="width:100%;" onclick="logout()">🚪 تسجيل الخروج</button>
+            <button class="btn btn-red" style="width:100%; background: #dc3545;" onclick="logout()">🚪 تسجيل الخروج</button>
         </div>
     </div>
 </div>
@@ -117,12 +111,8 @@
 </nav>
 
 <script>
-    // --- المحرك الأساسي (بناء على الكود السابق) ---
     let currentUser = JSON.parse(localStorage.getItem('sb_user')) || null;
     let posts = JSON.parse(localStorage.getItem('sb_posts')) || [];
-    let allUsers = JSON.parse(localStorage.getItem('sb_all_users')) || [];
-    let messages = JSON.parse(localStorage.getItem('sb_msgs')) || [];
-    let currentChatWith = null;
     let selectedFile = null;
 
     window.onload = function() {
@@ -133,114 +123,70 @@
                 name: name || "مستخدم مجهول", 
                 bio: "أنا أحب سودانبوك 🇸🇩", 
                 joined: new Date().toLocaleDateString('ar-EG'),
-                friends: [],
-                requests: []
+                isOnline: true
             };
             localStorage.setItem('sb_user', JSON.stringify(currentUser));
-            allUsers.push(currentUser);
-            localStorage.setItem('sb_all_users', JSON.stringify(allUsers));
         }
         updateProfileUI();
         renderPosts();
-        renderUsers();
-        renderRequests();
-        renderChats();
     }
 
-    // --- وظائف الصداقة ---
-    function renderUsers() {
-        const list = document.getElementById('all-users-list');
-        list.innerHTML = "";
-        allUsers.forEach(u => {
-            if(u.id !== currentUser.id) {
-                list.innerHTML += `
-                    <div class="user-item">
-                        <span>${u.name}</span>
-                        <button class="btn" onclick="sendFriendRequest('${u.id}')">إضافة صديق</button>
-                    </div>`;
-            }
-        });
+    // --- حالة النشاط في الملف الشخصي ---
+    function updateOnlineStatus() {
+        const isChecked = document.getElementById('status-toggle').checked;
+        currentUser.isOnline = isChecked;
+        localStorage.setItem('sb_user', JSON.stringify(currentUser));
+        document.getElementById('status-text').innerHTML = isChecked ? "🟢 نشط الآن" : "⚪ غير متصل";
+        document.getElementById('status-text').style.color = isChecked ? "var(--main)" : "gray";
     }
 
-    function sendFriendRequest(targetId) {
-        alert("تم إرسال طلب الصداقة بنجاح!");
-    }
-
-    function renderRequests() {
-        const list = document.getElementById('friend-requests-list');
-        list.innerHTML = "<p style='color:gray; font-size:12px;'>لا توجد طلبات جديدة حالياً.</p>";
-    }
-
-    // --- وظائف الرسائل ---
-    function renderChats() {
-        const list = document.getElementById('chats-list');
-        list.innerHTML = "";
-        allUsers.forEach(u => {
-            if(u.id !== currentUser.id) {
-                list.innerHTML += `
-                    <div class="user-item" onclick="openChat('${u.id}', '${u.name}')">
-                        <b>${u.name}</b>
-                        <small>اضغط للمراسلة</small>
-                    </div>`;
-            }
-        });
-    }
-
-    function openChat(id, name) {
-        currentChatWith = {id, name};
-        document.getElementById('chats-list').style.display = 'none';
-        document.getElementById('active-chat').style.display = 'block';
-        loadMessages();
-    }
-
-    function closeChat() {
-        document.getElementById('chats-list').style.display = 'block';
-        document.getElementById('active-chat').style.display = 'none';
-    }
-
-    function sendMessage() {
-        const input = document.getElementById('msg-input');
-        if(!input.value) return;
-        const msg = { from: currentUser.id, to: currentChatWith.id, text: input.value, time: new Date().toLocaleTimeString() };
-        messages.push(msg);
-        localStorage.setItem('sb_msgs', JSON.stringify(messages));
+    // --- وظائف التعليقات ---
+    function addComment(postId) {
+        const input = document.getElementById(`comment-in-${postId}`);
+        if (!input.value) return;
+        
+        const postIndex = posts.findIndex(p => p.id === postId);
+        if (!posts[postIndex].comments) posts[postIndex].comments = [];
+        
+        const newComment = {
+            id: Date.now(),
+            user: currentUser.name,
+            text: input.value
+        };
+        
+        posts[postIndex].comments.push(newComment);
+        saveAndRender();
         input.value = "";
-        loadMessages();
     }
 
-    function loadMessages() {
-        const box = document.getElementById('chat-messages');
-        box.innerHTML = "";
-        messages.filter(m => (m.from === currentUser.id && m.to === currentChatWith.id) || (m.to === currentUser.id && m.from === currentChatWith.id))
-                .forEach(m => {
-                    box.innerHTML += `<div class="msg ${m.from === currentUser.id ? 'sent' : 'received'}">${m.text}</div>`;
-                });
-        box.scrollTop = box.scrollHeight;
+    function deleteComment(postId, commentId) {
+        if(confirm("هل تريد حذف التعليق؟")) {
+            const postIndex = posts.findIndex(p => p.id === postId);
+            posts[postIndex].comments = posts[postIndex].comments.filter(c => c.id !== commentId);
+            saveAndRender();
+        }
     }
 
-    // --- الملف الشخصي والإعدادات ---
-    function updateProfileUI() {
-        document.getElementById('user-profile-name').innerText = currentUser.name;
-        document.getElementById('user-profile-bio').innerText = currentUser.bio;
-        document.getElementById('user-profile-id').innerText = currentUser.id;
-        document.getElementById('user-profile-date').innerText = currentUser.joined;
-        document.getElementById('user-avatar').innerText = currentUser.name[0];
+    function editComment(postId, commentId) {
+        const postIndex = posts.findIndex(p => p.id === postId);
+        const comment = posts[postIndex].comments.find(c => c.id === commentId);
+        const newText = prompt("تعديل التعليق:", comment.text);
+        if(newText) {
+            comment.text = newText;
+            saveAndRender();
+        }
     }
 
-    function toggleDarkMode() {
-        document.body.classList.toggle('dark-mode');
-        alert("تم تبديل الوضع!");
+    // --- الوظائف الأساسية ---
+    function saveAndRender() {
+        localStorage.setItem('sb_posts', JSON.stringify(posts));
+        renderPosts();
     }
 
-    function changeLang() {
-        alert("اللغة الحالية: العربية. سيتم إضافة الإنجليزية قريباً!");
-    }
-
-    // --- الوظائف الأساسية (نشر، تنقل) ---
     function previewMedia(e) {
         const file = e.target.files[0];
         const reader = new FileReader();
-        reader.onload = function(f) {
+        reader.onload = (f) => {
             selectedFile = {src: f.target.result, type: file.type};
             document.getElementById('media-preview').src = f.target.result;
             document.getElementById('media-preview').style.display = 'block';
@@ -253,11 +199,14 @@
         if(!txt && !selectedFile) return;
         const p = { 
             id: Date.now(), author: currentUser.name, content: txt, 
-            file: selectedFile, time: new Date().toLocaleTimeString(), myReact: "👍 لايك" 
+            file: selectedFile, time: new Date().toLocaleTimeString(), 
+            myReact: "👍 إعجاب", comments: [] 
         };
         posts.unshift(p);
-        localStorage.setItem('sb_posts', JSON.stringify(posts));
-        location.reload(); 
+        saveAndRender();
+        document.getElementById('post-input').value = "";
+        document.getElementById('media-preview').style.display = 'none';
+        selectedFile = null;
     }
 
     function renderPosts() {
@@ -265,6 +214,16 @@
         container.innerHTML = "";
         posts.forEach(p => {
             const media = p.file ? `<img src="${p.file.src}" class="post-media">` : "";
+            let commentsHtml = (p.comments || []).map(c => `
+                <div class="comment-item">
+                    <b>${c.user}:</b> ${c.text}
+                    <div style="margin-top:4px">
+                        <span class="comment-actions" onclick="editComment(${p.id}, ${c.id})">تعديل</span>
+                        <span class="comment-actions" style="color:red" onclick="deleteComment(${p.id}, ${c.id})">حذف</span>
+                    </div>
+                </div>
+            `).join('');
+
             container.innerHTML += `
                 <div class="card">
                     <b>${p.author}</b> <small style="color:gray;">${p.time}</small>
@@ -273,10 +232,28 @@
                     <div style="display:flex; justify-content:space-around; border-top:1px solid #eee; padding-top:10px; margin-top:10px; font-size:12px;">
                         <span>${p.myReact}</span> <span>💬 تعليق</span> <span>📤 مشاركة</span>
                     </div>
+                    <div class="comments-section">
+                        <div id="comments-list-${p.id}">${commentsHtml}</div>
+                        <div style="display:flex; gap:5px; margin-top:10px;">
+                            <input type="text" id="comment-in-${p.id}" placeholder="اكتب تعليقاً..." style="padding:5px; font-size:12px;">
+                            <button class="btn" onclick="addComment(${p.id})" style="padding:5px 10px; font-size:12px;">نشر</button>
+                        </div>
+                    </div>
                 </div>`;
         });
     }
 
+    function updateProfileUI() {
+        document.getElementById('user-profile-name').innerText = currentUser.name;
+        document.getElementById('user-profile-id').innerText = currentUser.id;
+        document.getElementById('user-profile-date').innerText = currentUser.joined;
+        document.getElementById('user-avatar').innerText = currentUser.name[0];
+        document.getElementById('status-toggle').checked = currentUser.isOnline;
+        updateOnlineStatus();
+    }
+
+    function toggleDarkMode() { document.body.classList.toggle('dark-mode'); }
+    
     function nav(pageId, el) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
