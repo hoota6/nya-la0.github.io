@@ -20,6 +20,7 @@
 
         input, select { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; }
         .btn-start { background: var(--main); color: white; border: none; padding: 14px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: bold; font-size: 1.1rem; margin-top: 10px; }
+        .btn-link { background: none; border: none; color: var(--main); text-decoration: underline; cursor: pointer; margin-top: 10px; font-size: 0.9rem; }
         .pass-hint { font-size: 0.7rem; color: #666; text-align: right; margin-bottom: 5px; }
 
         /* الهيكل الداخلي */
@@ -50,7 +51,7 @@
 <body>
 
     <div id="login-screen">
-        <div class="auth-box">
+        <div class="auth-box" id="register-box">
             <h2 style="color:var(--main); margin-bottom:10px;">تسجيل جديد</h2>
             <img id="preview-img" src="https://cdn-icons-png.flaticon.com/512/149/149071.png">
             <div class="upload-row">
@@ -59,48 +60,35 @@
             </div>
             <input type="file" id="file-gal" accept="image/*" style="display:none" onchange="previewImg(this)">
             <input type="file" id="file-cam" accept="image/*" capture="user" style="display:none" onchange="previewImg(this)">
-            
             <input type="text" id="reg-name" placeholder="اسم المستخدم">
-            
             <input type="password" id="reg-pass" placeholder="كلمة السر">
             <div class="pass-hint">يجب أن تحتوي على 6 أحرف ورقمين</div>
-
             <input type="number" id="reg-age" placeholder="العمر">
             
-            <select id="reg-country">
-                <option value="السودان">السودان</option>
-            </select>
-
             <select id="reg-state">
                 <option value="">اختر الولاية</option>
-                <option value="الخرطوم">الخرطوم</option>
-                <option value="الجزيرة">الجزيرة</option>
-                <option value="البحر الأحمر">البحر الأحمر</option>
-                <option value="كسلا">كسلا</option>
-                <option value="القضارف">القضارف</option>
-                <option value="سنار">سنار</option>
-                <option value="النيل الأبيض">النيل الأبيض</option>
-                <option value="النيل الأزرق">النيل الأزرق</option>
-                <option value="الشمالية">الشمالية</option>
-                <option value="نهر النيل">نهر النيل</option>
-                <option value="شمال كردفان">شمال كردفان</option>
-                <option value="جنوب كردفان">جنوب كردفان</option>
-                <option value="غرب كردفان">غرب كردفان</option>
-                <option value="شمال دارفور">شمال دارفور</option>
-                <option value="جنوب دارفور">جنوب دارفور</option>
-                <option value="غرب دارفور">غرب دارفور</option>
-                <option value="وسط دارفور">وسط دارفور</option>
-                <option value="شرق دارفور">شرق دارفور</option>
+                <option value="الخرطوم">الخرطوم</option><option value="الجزيرة">الجزيرة</option><option value="البحر الأحمر">البحر الأحمر</option>
+                <option value="كسلا">كسلا</option><option value="القضارف">القضارف</option><option value="سنار">سنار</option>
+                <option value="النيل الأبيض">النيل الأبيض</option><option value="النيل الأزرق">النيل الأزرق</option><option value="الشمالية">الشمالية</option>
+                <option value="نهر النيل">نهر النيل</option><option value="شمال كردفان">شمال كردفان</option><option value="جنوب كردفان">جنوب كردفان</option>
+                <option value="غرب كردفان">غرب كردفان</option><option value="شمال دارفور">شمال دارفور</option><option value="جنوب دارفور">جنوب دارفور</option>
+                <option value="غرب دارفور">غرب دارفور</option><option value="وسط دارفور">وسط دارفور</option><option value="شرق دارفور">شرق دارفور</option>
             </select>
 
             <input type="text" id="reg-hobby" placeholder="الهواية">
-            
             <select id="reg-status">
-                <option value="أعزب">أعزب</option>
-                <option value="مطلق">مطلق</option>
-                <option value="أرمل">أرمل</option>
+                <option value="أعزب">أعزب</option><option value="مطلق">مطلق</option><option value="أرمل">أرمل</option>
             </select>
             <button class="btn-start" onclick="startJoin()">دخول للموقع</button>
+            <button class="btn-link" onclick="toggleAuth(true)">لدي حساب بالفعل</button>
+        </div>
+
+        <div class="auth-box" id="login-box" style="display:none;">
+            <h2 style="color:var(--main); margin-bottom:10px;">تسجيل الدخول</h2>
+            <input type="text" id="log-name" placeholder="اسم المستخدم">
+            <input type="password" id="log-pass" placeholder="كلمة السر">
+            <button class="btn-start" onclick="login()">تسجيل الدخول</button>
+            <button class="btn-link" onclick="toggleAuth(false)">إنشاء حساب جديد</button>
         </div>
     </div>
 
@@ -112,7 +100,6 @@
         <div id="p-settings" class="page">
             <button class="btn-start" style="background:#555" onclick="location.reload()">تسجيل الخروج</button>
         </div>
-
         <nav class="bottom-nav">
             <div class="nav-tab active" onclick="navTo('explore', this)">❤️ استكشف</div>
             <div class="nav-tab" onclick="navTo('chats', this)">💬 الرسائل</div>
@@ -134,7 +121,6 @@
     </div>
 
     <script>
-        // --- إعدادات Firebase ---
         const firebaseConfig = {
             apiKey: "YOUR_API_KEY",
             authDomain: "YOUR_APP.firebaseapp.com",
@@ -148,8 +134,13 @@
         const db = firebase.database();
 
         let myName = "";
-        let myPhoto = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+        let myPhoto = "";
         let chatTarget = "";
+
+        function toggleAuth(isLogin) {
+            document.getElementById('register-box').style.display = isLogin ? 'none' : 'block';
+            document.getElementById('login-box').style.display = isLogin ? 'block' : 'none';
+        }
 
         function previewImg(input) {
             if (input.files && input.files[0]) {
@@ -174,23 +165,41 @@
             const state = document.getElementById('reg-state').value;
             const age = document.getElementById('reg-age').value;
 
-            if(!myName || !age || !state) return alert("أكمل البيانات أولاً");
-            if(!validatePassword(pass)) return alert("كلمة السر يجب أن تكون 6 أحرف ورقمين فقط!");
+            if(!myName || !age || !state || !myPhoto) return alert("أكمل البيانات واختر صورة أولاً");
+            if(!validatePassword(pass)) return alert("كلمة السر يجب أن تكون 6 أحرف ورقمين!");
 
-            const today = new Date().toLocaleString('ar-EG');
-            db.ref('users/' + myName).set({
-                name: myName, age: age, country: "السودان", state: state,
-                photo: myPhoto, hobby: document.getElementById('reg-hobby').value,
-                status: document.getElementById('reg-status').value,
-                joined: today, online: true, lastSeen: "متصل الآن", likes: 0
+            db.ref('users/' + myName).get().then(snap => {
+                if(snap.exists()) return alert("هذا الاسم موجود مسبقاً");
+                
+                const today = new Date().toLocaleString('ar-EG');
+                db.ref('users/' + myName).set({
+                    name: myName, password: pass, age: age, country: "السودان", state: state,
+                    photo: myPhoto, hobby: document.getElementById('reg-hobby').value,
+                    status: document.getElementById('reg-status').value,
+                    joined: today, online: true, lastSeen: "متصل الآن", likes: 0
+                }).then(enterSite);
             });
+        }
 
+        function login() {
+            const name = document.getElementById('log-name').value.trim();
+            const pass = document.getElementById('log-pass').value;
+            if(!name || !pass) return alert("ادخل الاسم وكلمة السر");
+            db.ref('users/' + name).get().then(snap => {
+                if(snap.exists() && snap.val().password === pass) {
+                    myName = name;
+                    myPhoto = snap.val().photo;
+                    db.ref('users/' + myName).update({ online: true, lastSeen: "متصل الآن" });
+                    enterSite();
+                } else { alert("البيانات غير صحيحة"); }
+            });
+        }
+
+        function enterSite() {
             db.ref('users/' + myName + '/online').onDisconnect().set(false);
             db.ref('users/' + myName + '/lastSeen').onDisconnect().set(new Date().toLocaleString('ar-EG'));
-
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('main-site').style.display = 'block';
-            
             loadExplore();
             listenToNotifs();
         }
@@ -227,8 +236,7 @@
                                     <button class="action-btn" onclick="openFullPhoto('${u.photo}')">👤 الملف</button>
                                     <button class="action-btn" onclick="openChat('${u.name}')">💬 مراسلة</button>
                                 </div>
-                            </div>
-                        `;
+                            </div>`;
                     }
                 });
             });
@@ -238,9 +246,9 @@
 
         function openFullPhoto(url) {
             const w = window.open("");
-            w.document.write(`<div style="text-align:center; background:#000; height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center;">
-                <img src="${url}" style="max-width:100%; max-height:80vh;">
-                <br><a href="${url}" download="photo.png" style="color:#fff; font-family:sans-serif; text-decoration:none; padding:15px; background:#ff2d55; border-radius:10px; margin-top:20px;">تحميل الصورة الشخصية</a>
+            w.document.write(`<div style="text-align:center; background:#000; height:100vh; display:flex; justify-content:center; align-items:center;">
+                <img src="${url}" style="max-width:100%; max-height:80vh;"><br>
+                <a href="${url}" download="photo.png" style="color:#fff; font-family:sans-serif; text-decoration:none; padding:15px; background:#ff2d55; border-radius:10px; margin-top:20px;">تحميل الصورة الشخصية</a>
             </div>`);
         }
 
@@ -253,7 +261,7 @@
                     if(!document.getElementById(id)){
                         const card = document.createElement('div');
                         card.id = id;
-                        card.className = 'notif-card' + ' card-notif-custom'; // Style reuse
+                        card.className = 'notif-card';
                         card.style = "background:white; padding:15px; border-radius:15px; margin-bottom:10px; border-right:5px solid #ff2d55;";
                         card.innerHTML = `<span>المستخدم <b>${u.name}</b> من <b>${u.state}</b> متصل الآن..</span>
                             <button class="btn-start" onclick="openChat('${u.name}')" style="padding:8px; font-size:0.9rem;">مراسلة الآن</button>`;
