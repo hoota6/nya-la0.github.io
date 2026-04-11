@@ -3,369 +3,219 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SudanBook Pro - نظام تواصل اجتماعي متكامل</title>
+    <title>SudanBook Pro | النسخة المتكاملة</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: #00a859;
-            --primary-soft: #e6f6ef;
-            --bg-color: #f2f4f7;
-            --card-bg: #ffffff;
-            --text-main: #1a1a1b;
-            --text-muted: #65676b;
-            --border-color: #dee2e6;
-            --shadow: 0 4px 12px rgba(0,0,0,0.08);
+            --primary: #00a859; --bg: #f0f2f5; --card: #ffffff;
+            --text: #1c1e21; --muted: #65676b; --border: #dddfe2;
         }
-
-        body.dark-mode {
-            --bg-color: #121212;
-            --card-bg: #1e1e1e;
-            --text-main: #e4e6eb;
-            --text-muted: #b0b3b8;
-            --border-color: #333;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            margin: 0;
-            padding-bottom: 80px;
-            transition: all 0.3s ease;
-        }
-
-        /* Header System */
-        header {
-            background: var(--card-bg);
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 20px;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: var(--shadow);
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .logo { font-size: 22px; font-weight: 800; color: var(--primary-color); letter-spacing: -1px; }
-
-        /* Navigation Bar */
-        .nav-bar {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            background: var(--card-bg);
-            display: flex;
-            height: 65px;
-            border-top: 1px solid var(--border-color);
-            z-index: 1000;
-        }
-
-        .nav-item {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-muted);
-            cursor: pointer;
-            transition: 0.2s;
-            position: relative;
-        }
-
-        .nav-item i { font-size: 20px; margin-bottom: 4px; }
-        .nav-item span { font-size: 10px; font-weight: 600; }
-        .nav-item.active { color: var(--primary-color); }
-        .nav-item.active::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            width: 30%;
-            height: 3px;
-            background: var(--primary-color);
-            border-radius: 0 0 5px 5px;
-        }
-
-        /* Main Container */
-        .app-container { max-width: 600px; margin: 20px auto; padding: 0 15px; }
-
-        /* Post Card Engine */
-        .card {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 18px;
-            margin-bottom: 20px;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border-color);
-        }
-
-        .post-header { display: flex; align-items: center; margin-bottom: 12px; }
-        .avatar-sm { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; margin-left: 12px; background: #ddd; }
-        .user-info b { display: block; font-size: 15px; }
-        .user-info small { color: var(--text-muted); font-size: 12px; }
-
-        .post-content { font-size: 15px; line-height: 1.6; margin-bottom: 15px; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 60px; }
         
-        /* Reaction System */
-        .post-stats {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-top: 1px solid var(--border-color);
-            border-bottom: 1px solid var(--border-color);
-            margin-bottom: 10px;
+        /* Header & Search */
+        header { 
+            background: var(--card); padding: 10px 15px; display: flex; align-items: center; 
+            gap: 10px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
         }
-
-        .stat-item { font-size: 13px; color: var(--text-muted); display: flex; align-items: center; gap: 5px; }
-
-        .post-actions { display: flex; justify-content: space-around; }
-        .action-btn {
-            flex: 1;
-            padding: 10px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 14px;
-            color: var(--text-muted);
-            transition: 0.2s;
-            position: relative;
+        .search-box { 
+            flex: 1; background: var(--bg); border-radius: 20px; padding: 8px 15px; 
+            display: flex; align-items: center; gap: 8px;
         }
+        .search-box input { border: none; background: transparent; outline: none; width: 100%; }
 
-        .action-btn:hover { background: var(--primary-soft); color: var(--primary-color); }
+        /* Container */
+        .app-container { max-width: 600px; margin: 15px auto; padding: 0 10px; }
 
-        /* Facebook-Style Reactions Flyout */
-        .reactions-box {
-            position: absolute;
-            bottom: 45px;
-            background: var(--card-bg);
-            padding: 8px 15px;
-            border-radius: 30px;
-            display: none;
-            gap: 15px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
-            z-index: 100;
-            animation: slideUp 0.3s ease;
+        /* User Card in Search */
+        .user-result { 
+            background: var(--card); padding: 10px; border-radius: 8px; margin-bottom: 5px;
+            display: flex; align-items: center; gap: 10px; cursor: pointer; border: 1px solid var(--border);
         }
+        .user-result img { width: 40px; height: 40px; border-radius: 50%; }
 
-        @keyframes slideUp { from { transform: translateY(10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        /* Post & Profile */
+        .card { background: var(--card); border-radius: 10px; padding: 15px; margin-bottom: 15px; border: 1px solid var(--border); }
+        .avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; }
+        .post-header { display: flex; gap: 10px; margin-bottom: 10px; }
+        .post-img { width: 100%; border-radius: 8px; margin-top: 10px; }
 
-        .reactions-box span { font-size: 26px; transition: 0.2s; }
-        .reactions-box span:hover { transform: scale(1.4); }
+        /* Profile Header Custom */
+        .profile-hero { text-align: center; padding: 20px; }
+        .profile-hero img { width: 100px; height: 100px; border-radius: 50%; border: 4px solid var(--primary); }
 
-        /* Profile Pro */
-        .profile-header { position: relative; border-radius: 20px; overflow: hidden; margin-bottom: 60px; }
-        .cover-photo { width: 100%; height: 200px; background: #ddd; object-fit: cover; }
-        .profile-main-pic {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            border: 5px solid var(--card-bg);
-            position: absolute;
-            bottom: -50px;
-            right: 20px;
-            object-fit: cover;
-            background: var(--primary-color);
+        nav { 
+            position: fixed; bottom: 0; width: 100%; background: var(--card); 
+            display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid var(--border);
         }
-
-        .page { display: none; }
-        .page.active { display: block; }
-
-        /* Professional Inputs */
-        .input-group { position: relative; margin-bottom: 15px; }
-        .main-input {
-            width: 100%;
-            padding: 12px 15px;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            background: var(--bg-color);
-            color: var(--text-main);
-            font-size: 15px;
-            outline: none;
-        }
-
-        .btn-primary {
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 10px;
-            font-weight: 700;
-            cursor: pointer;
-            width: 100%;
-        }
-
+        .nav-item { color: var(--muted); cursor: pointer; font-size: 20px; }
+        .nav-item.active { color: var(--primary); }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="logo">SudanBook <span style="color: #333; font-size: 12px;">PRO</span></div>
-    <div onclick="toggleDarkMode()" style="cursor: pointer; font-size: 20px;">
-        <i class="fas fa-moon"></i>
+    <div style="color: var(--primary); font-weight: bold; font-size: 20px;">S</div>
+    <div class="search-box">
+        <i class="fas fa-search" style="color: var(--muted);"></i>
+        <input type="text" id="searchInput" placeholder="ابحث عن أصدقاء..." oninput="handleSearch()">
     </div>
+    <div id="search-results" class="hidden" style="position: absolute; top: 55px; left: 10px; right: 10px; background: white; z-index: 2000; box-shadow: 0 4px 10px rgba(0,0,0,0.2); border-radius: 10px; padding: 10px;">
+        </div>
 </header>
 
 <div class="app-container">
-    
-    <div id="home" class="page active">
+    <div id="home-page">
         <div class="card">
-            <div class="post-header">
-                <img src="https://via.placeholder.com/500" class="avatar-sm" id="user-avatar-post">
-                <div class="user-info"><b id="user-name-display">مستخدم سودانبوك</b></div>
-            </div>
-            <textarea class="main-input" id="post-text" placeholder="ماذا يدور في ذهنك اليوم؟" rows="3" style="resize: none;"></textarea>
-            <button class="btn-primary" style="margin-top: 10px;" onclick="handlePublish()">نشر الآن</button>
+            <textarea id="postText" style="width: 100%; border: none; outline: none; font-size: 16px;" placeholder="ماذا يدور في ذهنك؟"></textarea>
+            <hr style="border: 0.5px solid var(--border); margin: 10px 0;">
+            <button onclick="publishPost()" style="background: var(--primary); color: white; border: none; padding: 8px 20px; border-radius: 5px; cursor: pointer; width: 100%; font-weight: bold;">نشر</button>
         </div>
-        <div id="feed-render"></div>
+        <div id="feed"></div>
     </div>
 
-    <div id="profile" class="page">
-        <div class="profile-header">
-            <img id="my-cover" src="https://images.unsplash.com/photo-1557683316-973673baf926" class="cover-photo">
-            <img id="my-avatar" src="https://via.placeholder.com/150" class="profile-main-pic">
+    <div id="profile-page" class="hidden">
+        <button onclick="showPage('home')" style="border: none; background: none; color: var(--primary); cursor: pointer;"><i class="fas fa-arrow-right"></i> عودة للموجز</button>
+        <div class="card profile-hero">
+            <img id="prof-img" src="">
+            <h2 id="prof-name"></h2>
+            <p id="prof-bio" style="color: var(--muted);"></p>
+            <button class="btn-follow" style="background: var(--primary); color: white; border: none; padding: 5px 15px; border-radius: 5px;">متابعة</button>
         </div>
-        <div style="margin-top: 60px; text-align: right; padding: 0 10px;">
-            <h2 id="prof-name" style="margin: 0;">اسم المستخدم</h2>
-            <p id="prof-bio" style="color: var(--text-muted);">مطور برمجيات | سوداني 🇸🇩</p>
-            <div style="display: flex; gap: 10px; margin: 15px 0;">
-                <button class="btn-primary" style="flex: 1;" onclick="document.getElementById('avatar-file').click()">تعديل الملف</button>
-                <input type="file" id="avatar-file" hidden onchange="uploadImage(this, 'avatar')">
-            </div>
-        </div>
-        <div id="my-posts-render"></div>
+        <div id="user-posts"></div>
     </div>
-
-    <div id="messages" class="page">
-        <div class="card"><h3>المحادثات</h3><p>لا توجد رسائل جديدة.</p></div>
-    </div>
-
 </div>
 
-<nav class="nav-bar">
-    <div class="nav-item active" onclick="navigate('home', this)"><i class="fas fa-home"></i><span>الموجز</span></div>
-    <div class="nav-item" onclick="navigate('messages', this)"><i class="fas fa-comment-dots"></i><span>الرسائل</span></div>
-    <div class="nav-item" onclick="navigate('notifications', this)"><i class="fas fa-bell"></i><span>التنبيهات</span></div>
-    <div class="nav-item" onclick="navigate('profile', this)"><i class="fas fa-user-circle"></i><span>الملف</span></div>
+<nav>
+    <div class="nav-item active" onclick="showPage('home')"><i class="fas fa-home"></i></div>
+    <div class="nav-item"><i class="fas fa-user-friends"></i></div>
+    <div class="nav-item"><i class="fas fa-comment"></i></div>
+    <div class="nav-item" onclick="viewProfile('ahmed_99')"><i class="fas fa-user-circle"></i></div>
 </nav>
 
-<audio id="like-sound" src="https://www.soundjay.com/buttons/sounds/button-10.mp3"></audio>
-
 <script>
-    // --- بنية البيانات للربط مع قاعدة البيانات مستقبلاً ---
-    let appState = {
-        user: JSON.parse(localStorage.getItem('user')) || {
-            id: 1,
-            name: "أحمد علي",
-            avatar: "https://i.pravatar.cc/150?u=1",
-            cover: "https://images.unsplash.com/photo-1506744038136-46273834b3fb",
-            bio: "أهلاً بك في عالمي!"
-        },
-        posts: JSON.parse(localStorage.getItem('posts')) || []
+    // 1. قاعدة بيانات المستخدمين (للبحث والروابط)
+    const usersData = {
+        "ahmed_99": { name: "أحمد علي", bio: "مطور برمجيات من الخرطوم 🇸🇩", img: "https://i.pravatar.cc/150?u=ahmed" },
+        "sara_sudan": { name: "سارة محمد", bio: "مصورة فوتوغرافية | مدني", img: "https://i.pravatar.cc/150?u=sara" },
+        "omar_pro": { name: "عمر خالد", bio: "عاشق للسودان والنيل", img: "https://i.pravatar.cc/150?u=omar" }
     };
 
-    // --- المحرك الأساسي (Core Engine) ---
-    function init() {
-        document.getElementById('user-name-display').innerText = appState.user.name;
-        document.getElementById('prof-name').innerText = appState.user.name;
-        document.getElementById('prof-bio').innerText = appState.user.bio;
-        document.getElementById('my-avatar').src = appState.user.avatar;
-        document.getElementById('user-avatar-post').src = appState.user.avatar;
-        renderFeed();
+    // 2. قاعدة بيانات المنشورات
+    let allPosts = JSON.parse(localStorage.getItem('sb_pro_posts')) || [
+        { id: 1, userHandle: "ahmed_99", text: "أهلاً بكم في السودان الكبير!", time: "منذ ساعة" }
+    ];
+
+    // 3. محرك البحث
+    function handleSearch() {
+        const query = document.getElementById('searchInput').value.toLowerCase();
+        const resultsDiv = document.getElementById('search-results');
+        
+        if (query.length < 1) { resultsDiv.classList.add('hidden'); return; }
+        
+        let html = '';
+        for (let handle in usersData) {
+            if (usersData[handle].name.includes(query) || handle.includes(query)) {
+                html += `
+                    <div class="user-result" onclick="viewProfile('${handle}')">
+                        <img src="${usersData[handle].img}">
+                        <div>
+                            <b>${usersData[handle].name}</b><br>
+                            <small>@${handle}</small>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        resultsDiv.innerHTML = html || '<p style="padding:10px; color:gray;">لا توجد نتائج</p>';
+        resultsDiv.classList.remove('hidden');
     }
 
-    // --- نظام النشر (Publishing System) ---
-    function handlePublish() {
-        const text = document.getElementById('post-text').value;
-        if(!text.trim()) return;
+    // 4. نظام الملف الشخصي والروابط
+    function viewProfile(handle) {
+        const user = usersData[handle];
+        if (!user) return;
+
+        // إخفاء البحث والموجز
+        document.getElementById('search-results').classList.add('hidden');
+        document.getElementById('home-page').classList.add('hidden');
+        document.getElementById('profile-page').classList.remove('hidden');
+
+        // تعبئة البيانات
+        document.getElementById('prof-img').src = user.img;
+        document.getElementById('prof-name').innerText = user.name;
+        document.getElementById('prof-bio').innerText = user.bio;
+
+        // عرض منشورات هذا المستخدم فقط
+        const userPosts = allPosts.filter(p => p.userHandle === handle);
+        renderPosts(userPosts, 'user-posts');
+        
+        // تحديث الرابط في المتصفح (تزييف الرابط ليصبح واقعي)
+        window.history.pushState({}, '', `?user=${handle}`);
+    }
+
+    // 5. نظام النشر
+    function publishPost() {
+        const text = document.getElementById('postText').value;
+        if (!text) return;
 
         const newPost = {
             id: Date.now(),
-            userId: appState.user.id,
-            author: appState.user.name,
-            avatar: appState.user.avatar,
-            content: text,
-            timestamp: "الآن",
-            likes: 0,
-            reactions: "👍",
-            comments: []
+            userHandle: "ahmed_99", // المستخدم الحالي
+            text: text,
+            time: "الآن"
         };
 
-        appState.posts.unshift(newPost);
-        syncStorage();
-        document.getElementById('post-text').value = "";
-        renderFeed();
+        allPosts.unshift(newPost);
+        localStorage.setItem('sb_pro_posts', JSON.stringify(allPosts));
+        document.getElementById('postText').value = "";
+        renderPosts(allPosts, 'feed');
     }
 
-    // --- نظام التفاعل (Facebook Reactions) ---
-    function showReactions(postId) {
-        const box = document.getElementById(`react-box-${postId}`);
-        box.style.display = (box.style.display === 'flex') ? 'none' : 'flex';
-    }
-
-    function applyReaction(postId, emoji) {
-        const post = appState.posts.find(p => p.id === postId);
-        post.reactions = emoji;
-        document.getElementById(`like-sound`).play();
-        syncStorage();
-        renderFeed();
-    }
-
-    // --- عرض المحتوى (Rendering) ---
-    function renderFeed() {
-        const container = document.getElementById('feed-render');
-        container.innerHTML = appState.posts.map(post => `
-            <div class="card">
-                <div class="post-header">
-                    <img src="${post.avatar}" class="avatar-sm">
-                    <div class="user-info">
-                        <b>${post.author}</b>
-                        <small>${post.timestamp}</small>
-                    </div>
-                </div>
-                <div class="post-content">${post.content}</div>
-                <div class="post-stats">
-                    <div class="stat-item"><i class="fas fa-heart" style="color: #e0245e;"></i> ${post.likes} تفاعلات</div>
-                    <div class="stat-item">${post.comments.length} تعليقات</div>
-                </div>
-                <div class="post-actions">
-                    <div class="action-btn" oncontextmenu="event.preventDefault(); showReactions(${post.id})" onclick="applyReaction(${post.id}, '👍')">
-                        <div class="reactions-box" id="react-box-${post.id}">
-                            <span onclick="applyReaction(${post.id}, '❤️')">❤️</span>
-                            <span onclick="applyReaction(${post.id}, '😂')">😂</span>
-                            <span onclick="applyReaction(${post.id}, '😮')">😮</span>
-                            <span onclick="applyReaction(${post.id}, '😡')">😡</span>
+    // 6. العرض (Rendering)
+    function renderPosts(data, containerId) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = data.map(post => {
+            const user = usersData[post.userHandle];
+            return `
+                <div class="card">
+                    <div class="post-header" onclick="viewProfile('${post.userHandle}')" style="cursor:pointer">
+                        <img src="${user.img}" class="avatar">
+                        <div>
+                            <b>${user.name}</b><br>
+                            <small>${post.time}</small>
                         </div>
-                        <span style="font-size: 20px;">${post.reactions}</span> إعجاب
                     </div>
-                    <div class="action-btn"><i class="far fa-comment"></i> تعليق</div>
-                    <div class="action-btn"><i class="far fa-share-square"></i> مشاركة</div>
+                    <div style="font-size:15px;">${post.text}</div>
+                    <div style="display:flex; justify-content: space-around; margin-top:15px; color:var(--muted); font-size:14px;">
+                        <span><i class="far fa-heart"></i> إعجاب</span>
+                        <span><i class="far fa-comment"></i> تعليق</span>
+                    </div>
                 </div>
-            </div>
-        `).join('');
+            `;
+        }).join('');
     }
 
-    // --- خدمات إضافية ---
-    function navigate(pageId, el) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        document.getElementById(pageId).classList.add('active');
-        el.classList.add('active');
+    function showPage(page) {
+        if (page === 'home') {
+            document.getElementById('home-page').classList.remove('hidden');
+            document.getElementById('profile-page').classList.add('hidden');
+            window.history.pushState({}, '', '/');
+            renderPosts(allPosts, 'feed');
+        }
     }
 
-    function toggleDarkMode() { document.body.classList.toggle('dark-mode'); }
-    
-    function syncStorage() {
-        localStorage.setItem('posts', JSON.stringify(appState.posts));
-        localStorage.setItem('user', JSON.stringify(appState.user));
-    }
-
-    init();
+    // فحص الرابط عند الفتح (إذا دخل شخص برابط مباشر)
+    window.onload = () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const userParam = urlParams.get('user');
+        if (userParam && usersData[userParam]) {
+            viewProfile(userParam);
+        } else {
+            renderPosts(allPosts, 'feed');
+        }
+    };
 </script>
+
 </body>
 </html>
