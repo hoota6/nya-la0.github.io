@@ -13,14 +13,14 @@
         
         /* شاشة التسجيل والدخول */
         #login-screen { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(135deg, #ff2d55, #4e085f); position: fixed; inset: 0; z-index: 9999; }
-        .auth-box { background: white; padding: 25px; border-radius: 20px; width: 340px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); max-height: 90vh; overflow-y: auto; }
+        .auth-box { background: white; padding: 25px; border-radius: 20px; width: 340px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); max-height: 95vh; overflow-y: auto; position: relative; }
         #preview-img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid var(--main); margin-bottom: 10px; }
         .upload-row { display: flex; gap: 8px; margin-bottom: 10px; }
         .btn-up { flex: 1; background: #eee; padding: 8px; border-radius: 10px; cursor: pointer; font-size: 0.8rem; }
 
-        input, select { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; }
-        .btn-start { background: var(--main); color: white; border: none; padding: 14px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: bold; font-size: 1.1rem; margin-top: 10px; }
-        .btn-link { background: none; border: none; color: var(--main); text-decoration: underline; cursor: pointer; margin-top: 10px; font-size: 0.9rem; width: 100%; }
+        input, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 1rem; }
+        .btn-start { background: var(--main); color: white; border: none; padding: 14px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: bold; font-size: 1.1rem; margin-top: 15px; display: block; }
+        .btn-link { background: none; border: none; color: var(--main); text-decoration: underline; cursor: pointer; margin-top: 15px; font-size: 0.95rem; width: 100%; display: block; font-weight: bold; }
         .pass-hint { font-size: 0.7rem; color: #666; text-align: right; margin-bottom: 5px; }
 
         /* الهيكل الداخلي */
@@ -29,7 +29,7 @@
         .page { display: none; padding: 75px 15px 20px 15px; max-width: 600px; margin: 0 auto; }
         .active-page { display: block; }
 
-        /* كروت استكشف */
+        /* كروت استكشف والدردشة */
         .explore-card { background: white; border-radius: 20px; overflow: hidden; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         .explore-img { width: 100%; height: 280px; object-fit: cover; cursor: pointer; }
         .explore-info { padding: 15px; }
@@ -60,12 +60,10 @@
             </div>
             <input type="file" id="file-gal" accept="image/*" style="display:none" onchange="previewImg(this)">
             <input type="file" id="file-cam" accept="image/*" capture="user" style="display:none" onchange="previewImg(this)">
-            
-            <input type="text" id="reg-name" placeholder="اسم المستخدم">
+            <input type="text" id="reg-name" placeholder="اسم المستخدم الجديد">
             <input type="password" id="reg-pass" placeholder="كلمة السر">
             <div class="pass-hint">يجب أن تحتوي على 6 أحرف ورقمين</div>
             <input type="number" id="reg-age" placeholder="العمر">
-            
             <select id="reg-state">
                 <option value="">اختر الولاية</option>
                 <option value="الخرطوم">الخرطوم</option><option value="الجزيرة">الجزيرة</option><option value="البحر الأحمر">البحر الأحمر</option>
@@ -75,22 +73,21 @@
                 <option value="غرب كردفان">غرب كردفان</option><option value="شمال دارفور">شمال دارفور</option><option value="جنوب دارفور">جنوب دارفور</option>
                 <option value="غرب دارفور">غرب دارفور</option><option value="وسط دارفور">وسط دارفور</option><option value="شرق دارفور">شرق دارفور</option>
             </select>
-
             <input type="text" id="reg-hobby" placeholder="الهواية">
             <select id="reg-status">
                 <option value="أعزب">أعزب</option><option value="مطلق">مطلق</option><option value="أرمل">أرمل</option>
             </select>
-            <button class="btn-start" onclick="startJoin()">دخول للموقع</button>
-            <button class="btn-link" onclick="toggleAuth(true)">لدي حساب بالفعل</button>
+            <button class="btn-start" onclick="startJoin()">إنشاء الحساب والدخول</button>
+            <button class="btn-link" onclick="toggleAuth(true)">لدي حساب بالفعل؟ دخول</button>
         </div>
 
         <div class="auth-box" id="login-box" style="display:none;">
             <h2 style="color:var(--main); margin-bottom:10px;">تسجيل الدخول</h2>
-            <p style="font-size: 0.8rem; color: #666;">أهلاً بك مجدداً، ادخل بياناتك</p>
+            <p style="font-size: 0.9rem; color: #666; margin-bottom: 20px;">ادخل اسم المستخدم وكلمة السر</p>
             <input type="text" id="log-name" placeholder="اسم المستخدم">
             <input type="password" id="log-pass" placeholder="كلمة السر">
-            <button class="btn-start" onclick="login()">دخول</button>
-            <button class="btn-link" onclick="toggleAuth(false)">لا أملك حساباً؟ سجل الآن</button>
+            <button class="btn-start" onclick="login()">دخول للموقع</button>
+            <button class="btn-link" onclick="toggleAuth(false)">لا أملك حساب؟ تسجيل جديد</button>
         </div>
     </div>
 
@@ -102,7 +99,6 @@
         <div id="p-settings" class="page">
             <button class="btn-start" style="background:#555" onclick="location.reload()">تسجيل الخروج</button>
         </div>
-
         <nav class="bottom-nav">
             <div class="nav-tab active" onclick="navTo('explore', this)">❤️ استكشف</div>
             <div class="nav-tab" onclick="navTo('chats', this)">💬 الرسائل</div>
@@ -113,13 +109,13 @@
 
     <div id="chat-window">
         <div style="padding:15px; background:var(--main); color:white; display:flex; align-items:center;">
-            <button onclick="closeChat()" style="background:none; border:none; color:white; font-size:22px; cursor:pointer">➡️</button>
+            <button onclick="closeChat()" style="background:none; border:none; color:white; font-size:22px;">➡️</button>
             <span id="chat-name" style="margin-right:15px; font-weight:bold">...</span>
         </div>
         <div id="msg-container"></div>
         <div style="padding:15px; display:flex; background:white; border-top:1px solid #ddd;">
             <input type="text" id="msgIn" placeholder="اكتب رسالة..." style="margin:0; border-radius:25px;">
-            <button onclick="send()" style="width:80px; margin-right:8px; border-radius:25px; background:var(--main); color:white; border:none; cursor:pointer">إرسال</button>
+            <button onclick="send()" style="width:80px; margin-right:8px; border-radius:25px; background:var(--main); color:white; border:none;">إرسال</button>
         </div>
     </div>
 
@@ -139,9 +135,7 @@
 
         let myName = "";
         let myPhoto = "";
-        let chatTarget = "";
 
-        // التبديل بين التسجيل والدخول
         function toggleAuth(isLogin) {
             document.getElementById('register-box').style.display = isLogin ? 'none' : 'block';
             document.getElementById('login-box').style.display = isLogin ? 'block' : 'none';
@@ -164,44 +158,41 @@
             return letters === 6 && numbers === 2;
         }
 
-        // إنشاء حساب جديد
         function startJoin() {
             myName = document.getElementById('reg-name').value.trim();
             const pass = document.getElementById('reg-pass').value;
             const state = document.getElementById('reg-state').value;
             const age = document.getElementById('reg-age').value;
 
-            if(!myName || !age || !state || !myPhoto) return alert("أكمل البيانات واختر صورة أولاً");
-            if(!validatePassword(pass)) return alert("كلمة السر يجب أن تكون 6 أحرف ورقمين!");
+            if(!myName || !age || !state || !myPhoto) return alert("أكمل البيانات واختر صورة");
+            if(!validatePassword(pass)) return alert("كلمة السر: 6 أحرف + رقمين!");
 
-            db.ref('users/' + myName).get().then(snap => {
-                if(snap.exists()) return alert("هذا الاسم موجود مسبقاً");
+            db.ref('users/' + myName).once('value', snap => {
+                if(snap.exists()) return alert("الاسم مستخدم! اختر غيره أو سجل دخولك");
                 
-                const today = new Date().toLocaleString('ar-EG');
                 db.ref('users/' + myName).set({
                     name: myName, password: pass, age: age, country: "السودان", state: state,
                     photo: myPhoto, hobby: document.getElementById('reg-hobby').value,
                     status: document.getElementById('reg-status').value,
-                    joined: today, online: true, lastSeen: "متصل الآن", likes: 0
+                    online: true, lastSeen: "متصل الآن", likes: 0
                 }).then(enterSite);
             });
         }
 
-        // تسجيل الدخول (لدي حساب)
         function login() {
-            const nameInput = document.getElementById('log-name').value.trim();
-            const passInput = document.getElementById('log-pass').value;
+            const n = document.getElementById('log-name').value.trim();
+            const p = document.getElementById('log-pass').value;
+            if(!n || !p) return alert("ادخل الاسم وكلمة السر");
 
-            if(!nameInput || !passInput) return alert("ادخل البيانات المطلوبة");
-
-            db.ref('users/' + nameInput).get().then(snap => {
-                if(snap.exists() && snap.val().password === passInput) {
-                    myName = nameInput;
-                    myPhoto = snap.val().photo;
-                    db.ref('users/' + myName).update({ online: true, lastSeen: "متصل الآن" });
+            db.ref('users/' + n).once('value', snap => {
+                const user = snap.val();
+                if(snap.exists() && user.password === p) {
+                    myName = n;
+                    myPhoto = user.photo;
+                    db.ref('users/' + n).update({ online: true, lastSeen: "متصل الآن" });
                     enterSite();
                 } else {
-                    alert("الاسم أو كلمة السر غير صحيحة!");
+                    alert("خطأ في الاسم أو كلمة السر!");
                 }
             });
         }
@@ -215,7 +206,6 @@
             listenToNotifs();
         }
 
-        // وظائف التنقل
         function navTo(pageId, el) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
             document.getElementById('p-' + pageId).classList.add('active-page');
@@ -233,19 +223,17 @@
                     if(u.name !== myName) {
                         list.innerHTML += `
                             <div class="explore-card">
-                                <img src="${u.photo}" class="explore-img" onclick="openFullPhoto('${u.photo}')">
+                                <img src="${u.photo}" class="explore-img">
                                 <div class="explore-info">
-                                    <b>${u.name} (${u.age} سنة)</b>
+                                    <b>${u.name} (${u.age})</b>
                                     <span class="badge">📍 ${u.state}</span>
-                                    <span class="badge">🎨 ${u.hobby}</span>
-                                    <p style="font-size:0.85rem; color:#666; margin:8px 0;">الحالة: ${u.status}</p>
+                                    <p style="font-size:0.85rem; color:#666; margin:8px 0;">${u.status} | ${u.hobby}</p>
                                     <span style="color:${u.online ? 'green' : 'red'}; font-size:0.8rem; font-weight:bold;">
                                         ● ${u.online ? 'نشط الآن' : 'آخر ظهور: ' + u.lastSeen}
                                     </span>
                                 </div>
                                 <div class="action-btns">
-                                    <button class="action-btn" onclick="like('${u.name}')"><span>${u.likes || 0}</span>❤️ أحببته</button>
-                                    <button class="action-btn" onclick="openFullPhoto('${u.photo}')">👤 الملف</button>
+                                    <button class="action-btn" onclick="like('${u.name}')">❤️ ${u.likes || 0}</button>
                                     <button class="action-btn" onclick="openChat('${u.name}')">💬 مراسلة</button>
                                 </div>
                             </div>`;
@@ -254,14 +242,24 @@
             });
         }
 
-        function like(name) { db.ref('users/' + name + '/likes').transaction(c => (c || 0) + 1); }
-
-        function openFullPhoto(url) {
-            const w = window.open("");
-            w.document.write(`<div style="text-align:center; background:#000; height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center;">
-                <img src="${url}" style="max-width:100%; max-height:80vh;"><br>
-                <a href="${url}" download="photo.png" style="color:#fff; font-family:sans-serif; text-decoration:none; padding:15px; background:#ff2d55; border-radius:10px; margin-top:20px;">تحميل الصورة</a>
-            </div>`);
+        function like(n) { db.ref('users/' + n + '/likes').transaction(c => (c || 0) + 1); }
+        function openChat(n) {
+            chatTarget = n;
+            document.getElementById('chat-name').innerText = n;
+            document.getElementById('chat-window').style.display = 'flex';
+            const id = [myName, n].sort().join('_');
+            db.ref('chats/' + id).on('value', s => {
+                const box = document.getElementById('msg-container'); box.innerHTML = "";
+                s.forEach(m => { const d = m.val(); box.innerHTML += `<div class="bubble ${d.sender===myName?'sent':'received'}">${d.text}</div>`; });
+                box.scrollTop = box.scrollHeight;
+            });
+        }
+        function closeChat() { document.getElementById('chat-window').style.display = 'none'; }
+        function send() {
+            const t = document.getElementById('msgIn').value; if(!t) return;
+            const id = [myName, chatTarget].sort().join('_');
+            db.ref('chats/' + id).push({ sender: myName, text: t });
+            document.getElementById('msgIn').value = "";
         }
 
         function listenToNotifs() {
@@ -273,39 +271,13 @@
                     if(!document.getElementById(id)){
                         const card = document.createElement('div');
                         card.id = id;
-                        card.className = 'notif-card';
                         card.style = "background:white; padding:15px; border-radius:15px; margin-bottom:10px; border-right:5px solid #ff2d55;";
-                        card.innerHTML = `<span><b>${u.name}</b> من <b>${u.state}</b> متصل الآن..</span>
-                            <button class="btn-start" onclick="openChat('${u.name}')" style="padding:8px; font-size:0.9rem;">مراسلة الآن</button>`;
+                        card.innerHTML = `<span><b>${u.name}</b> من ${u.state} متصل الآن..</span>
+                            <button class="btn-start" onclick="openChat('${u.name}')" style="padding:8px; font-size:0.9rem; margin-top:5px;">مراسلة</button>`;
                         list.prepend(card);
                     }
                 }
             });
-        }
-
-        function openChat(n) {
-            chatTarget = n;
-            document.getElementById('chat-name').innerText = n;
-            document.getElementById('chat-window').style.display = 'flex';
-            const id = [myName, chatTarget].sort().join('_');
-            db.ref('chats/' + id).on('value', s => {
-                const box = document.getElementById('msg-container');
-                box.innerHTML = "";
-                s.forEach(m => {
-                    const d = m.val();
-                    box.innerHTML += `<div class="bubble ${d.sender===myName?'sent':'received'}">${d.text}</div>`;
-                });
-                box.scrollTop = box.scrollHeight;
-            });
-        }
-
-        function closeChat() { document.getElementById('chat-window').style.display = 'none'; }
-        function send() {
-            const t = document.getElementById('msgIn').value;
-            if(!t) return;
-            const id = [myName, chatTarget].sort().join('_');
-            db.ref('chats/' + id).push({ sender: myName, text: t });
-            document.getElementById('msgIn').value = "";
         }
     </script>
 </body>
