@@ -22,7 +22,7 @@
         input, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 1rem; }
         .btn-start { background: var(--main); color: white; border: none; padding: 14px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: bold; font-size: 1.1rem; margin-top: 15px; }
         
-        /* زر "لدي حساب" بتصميم مميز ومنفصل */
+        /* زر "لدي حساب بالفعل" تحت زر التسجيل */
         .btn-login-toggle { background: #4e085f; color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: bold; margin-top: 10px; }
         .btn-link { background: none; border: none; color: var(--main); text-decoration: underline; cursor: pointer; margin-top: 15px; display: block; width: 100%; }
 
@@ -32,7 +32,6 @@
         .page { display: none; padding: 75px 15px 20px 15px; max-width: 600px; margin: 0 auto; }
         .active-page { display: block; }
 
-        /* كروت المستخدمين والدردشة */
         .explore-card { background: white; border-radius: 20px; overflow: hidden; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         .explore-img { width: 100%; height: 280px; object-fit: cover; }
         .explore-info { padding: 15px; }
@@ -63,8 +62,8 @@
             </div>
             <input type="file" id="file-gal" accept="image/*" style="display:none" onchange="previewImg(this)">
             <input type="file" id="file-cam" accept="image/*" capture="user" style="display:none" onchange="previewImg(this)">
-            <input type="text" id="reg-name" placeholder="اسم المستخدم الجديد">
-            <input type="password" id="reg-pass" placeholder="كلمة السر (6 أحرف ورقمين)">
+            <input type="text" id="reg-name" placeholder="اسم المستخدم">
+            <input type="password" id="reg-pass" placeholder="كلمة السر">
             <input type="number" id="reg-age" placeholder="العمر">
             <select id="reg-state">
                 <option value="">اختر الولاية</option>
@@ -79,18 +78,18 @@
             <select id="reg-status">
                 <option value="أعزب">أعزب</option><option value="مطلق">مطلق</option><option value="أرمل">أرمل</option>
             </select>
-            <button class="btn-start" onclick="startJoin()">إنشاء حساب ودخول</button>
-            <hr style="margin: 20px 0; opacity: 0.2;">
-            <button class="btn-login-toggle" onclick="showLogin(true)">لدي حساب بالفعل</button>
+            
+            <button class="btn-start" onclick="startJoin()">تسجيل حساب جديد</button>
+            <button class="btn-login-toggle" onclick="toggleAuth(true)">لدي حساب بالفعل</button>
         </div>
 
         <div class="auth-box" id="login-box" style="display:none;">
-            <h2 style="color:#4e085f; margin-bottom:10px;">تسجيل الدخول</h2>
-            <p style="font-size: 0.9rem; color: #666; margin-bottom: 20px;">الرجاء إدخال بيانات حسابك</p>
+            <h2 style="color:#4e085f; margin-bottom:10px;">دخول</h2>
+            <p style="font-size: 0.9rem; color: #666; margin-bottom: 20px;">الرجاء إدخال بيانات حسابك المسجل</p>
             <input type="text" id="log-name" placeholder="اسم المستخدم">
             <input type="password" id="log-pass" placeholder="كلمة السر">
-            <button class="btn-start" style="background:#4e085f" onclick="login()">دخول الآن</button>
-            <button class="btn-link" onclick="showLogin(false)">الرجوع لإنشاء حساب جديد</button>
+            <button class="btn-start" style="background:#4e085f" onclick="login()">دخول</button>
+            <button class="btn-link" onclick="toggleAuth(false)">رجوع للتسجيل</button>
         </div>
     </div>
 
@@ -139,8 +138,8 @@
         let myName = "";
         let myPhoto = "";
 
-        // وظيفة التبديل الحقيقي بين الواجهات
-        function showLogin(isLogin) {
+        // التبديل بين الواجهات
+        function toggleAuth(isLogin) {
             document.getElementById('register-box').style.display = isLogin ? 'none' : 'block';
             document.getElementById('login-box').style.display = isLogin ? 'block' : 'none';
         }
@@ -162,6 +161,7 @@
             return letters === 6 && numbers === 2;
         }
 
+        // تسجيل حساب جديد
         function startJoin() {
             myName = document.getElementById('reg-name').value.trim();
             const pass = document.getElementById('reg-pass').value;
@@ -172,9 +172,9 @@
             if(!validatePassword(pass)) return alert("كلمة السر يجب أن تكون 6 أحرف ورقمين!");
 
             db.ref('users/' + myName).once('value', snap => {
-                if(snap.exists()) return alert("الاسم مسجل مسبقاً! استخدم 'لدي حساب' للدخول");
+                if(snap.exists()) return alert("الاسم موجود مسبقاً! سجل دخولك");
                 db.ref('users/' + myName).set({
-                    name: myName, password: pass, age: age, country: "السودان", state: state,
+                    name: myName, password: pass, age: age, state: state,
                     photo: myPhoto, hobby: document.getElementById('reg-hobby').value,
                     status: document.getElementById('reg-status').value,
                     online: true, lastSeen: "متصل الآن", likes: 0
@@ -182,10 +182,11 @@
             });
         }
 
+        // تسجيل الدخول (لدي حساب بالفعل) - الربط مع قاعدة البيانات
         function login() {
             const n = document.getElementById('log-name').value.trim();
             const p = document.getElementById('log-pass').value;
-            if(!n || !p) return alert("ادخل الاسم وكلمة السر");
+            if(!n || !p) return alert("ادخل البيانات");
 
             db.ref('users/' + n).once('value', snap => {
                 if(snap.exists() && snap.val().password === p) {
@@ -193,7 +194,9 @@
                     myPhoto = snap.val().photo;
                     db.ref('users/' + n).update({ online: true, lastSeen: "متصل الآن" });
                     enterSite();
-                } else { alert("بيانات الدخول غير صحيحة!"); }
+                } else {
+                    alert("بيانات الدخول غير صحيحة! تأكد من الاسم وكلمة السر");
+                }
             });
         }
 
@@ -260,23 +263,6 @@
             const id = [myName, chatTarget].sort().join('_');
             db.ref('chats/' + id).push({ sender: myName, text: t });
             document.getElementById('msgIn').value = "";
-        }
-        function listenToNotifs() {
-            db.ref('users').on('child_changed', snap => {
-                const u = snap.val();
-                if(u.name !== myName && u.online === true) {
-                    const list = document.getElementById('notif-list');
-                    const id = "notif_" + u.name.replace(/\s/g, '');
-                    if(!document.getElementById(id)){
-                        const card = document.createElement('div');
-                        card.id = id;
-                        card.style = "background:white; padding:15px; border-radius:15px; margin-bottom:10px; border-right:5px solid #ff2d55;";
-                        card.innerHTML = `<span><b>${u.name}</b> من ${u.state} متصل الآن..</span>
-                            <button class="btn-start" onclick="openChat('${u.name}')" style="padding:8px; font-size:0.9rem; margin-top:5px;">مراسلة</button>`;
-                        list.prepend(card);
-                    }
-                }
-            });
         }
     </script>
 </body>
