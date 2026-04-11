@@ -8,33 +8,26 @@
         :root { --main: #ff2d55; --dark: #4e085f; --bg: #f0f2f5; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 0; overflow-x: hidden; }
         
-        /* شاشة الدخول */
         #auth-screen { position: fixed; inset: 0; background: linear-gradient(135deg, var(--main), var(--dark)); display: flex; justify-content: center; align-items: center; z-index: 10000; }
-        .auth-box { background: white; padding: 20px; border-radius: 20px; width: 340px; text-align: center; }
-        #preview-img { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 3px solid var(--main); }
+        .auth-box { background: white; padding: 20px; border-radius: 20px; width: 340px; text-align: center; max-height: 90vh; overflow-y: auto; }
+        #preview-img { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 3px solid var(--main); margin-bottom: 10px; }
         input, select, textarea { width: 100%; padding: 12px; margin: 6px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; }
         .btn-reg { background: var(--main); color: white; border: none; padding: 14px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: bold; }
 
-        /* التطبيق */
         #main-app { display: none; }
         .header { background: var(--main); color: white; padding: 15px; text-align: center; position: fixed; top: 0; width: 100%; z-index: 1000; font-weight: bold; }
         .content { padding: 70px 10px 80px 10px; max-width: 600px; margin: 0 auto; }
         .page { display: none; }
         .active-page { display: block; }
 
-        /* الكروت والحالات */
         .user-card { background: white; border-radius: 15px; overflow: hidden; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .user-card img { width: 100%; height: 280px; object-fit: cover; }
-        .status-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-left: 5px; }
-        .online { background: #4caf50; }
-        .offline { background: #9e9e9e; }
-        .typing-text { color: var(--main); font-size: 0.8rem; font-style: italic; font-weight: bold; display: none; }
-
-        /* الرسائل */
-        .item-list { background: white; padding: 15px; border-radius: 12px; margin-bottom: 10px; position: relative; border-right: 5px solid var(--main); }
-        .msg-status { font-size: 0.7rem; color: #2196f3; margin-top: 5px; text-align: left; }
-        .time-tag { font-size: 0.7rem; color: #999; }
-        .badge { background: red; color: white; padding: 2px 7px; border-radius: 50%; font-size: 0.7rem; position: absolute; top: 5px; left: 5px; }
+        .user-card img { width: 100%; height: 300px; object-fit: cover; }
+        .user-info { padding: 15px; }
+        .status-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+        
+        .item-list { background: white; padding: 15px; border-radius: 12px; margin-bottom: 10px; border-right: 5px solid var(--main); display: flex; flex-direction: column; }
+        .msg-status { font-size: 0.7rem; color: #4caf50; font-weight: bold; margin-top: 5px; text-align: left; }
+        .typing-text { font-size: 0.8rem; color: #ff2d55; font-style: italic; display: none; }
 
         .navbar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #ddd; z-index: 1000; }
         .nav-item { cursor: pointer; color: #888; font-size: 0.8rem; text-align: center; position: relative; width: 25%; }
@@ -50,39 +43,46 @@
             <h2 style="color:var(--main);">شبكة البحير</h2>
             <img id="preview-img" src="https://cdn-icons-png.flaticon.com/512/149/149071.png">
             <input type="file" id="f-in" style="display:none" onchange="loadFile(this)">
-            <button onclick="document.getElementById('f-in').click()" style="margin-bottom:10px; cursor:pointer; background:none; border:1px solid #eee; padding:5px;">تغيير الصورة</button>
-            <input type="text" id="r-name" placeholder="الاسم الكامل">
+            <button onclick="document.getElementById('f-in').click()">تغيير الصورة</button>
+            <input type="text" id="r-name" placeholder="اسمك الكريم">
             <input type="password" id="r-pass" placeholder="كلمة السر">
-            <button class="btn-reg" onclick="doRegister()">دخول</button>
+            <button class="btn-reg" onclick="doRegister()">بدء التعارف</button>
+            <button onclick="toggleView(true)" style="background:none; border:none; margin-top:10px;">دخول</button>
+        </div>
+        <div class="auth-box" id="log-box" style="display:none;">
+            <h2>دخول</h2>
+            <input type="text" id="l-name" placeholder="الاسم">
+            <input type="password" id="l-pass" placeholder="كلمة السر">
+            <button class="btn-reg" onclick="doLogin()">دخول</button>
         </div>
     </div>
 
     <div id="main-app">
-        <div class="header" id="h-title">استكشف</div>
+        <div class="header" id="h-title">استكشف أصدقاء</div>
         <div class="content">
             <div id="p-explore" class="page active-page"></div>
             <div id="p-chats" class="page"><div id="chats-list"></div></div>
             <div id="p-notifs" class="page"><div id="notifs-list"></div></div>
             <div id="p-settings" class="page" style="text-align:center;">
-                <button onclick="logOut()" style="width:100%; padding:15px; border:none; background:#eee; border-radius:10px;">خروج</button>
+                <button onclick="logOut()" style="width:100%; padding:15px; border-radius:10px;">خروج</button>
+                <button onclick="deleteAccount()" style="color:red; width:100%; padding:15px;">حذف الحساب</button>
             </div>
         </div>
 
         <div class="navbar">
             <div class="nav-item active" onclick="nav('explore','استكشف',this)">🔍<br>استكشف</div>
-            <div class="nav-item" onclick="nav('chats','المحادثات',this)">💬<span id="chat-badge" class="badge" style="display:none">0</span><br>الرسائل</div>
-            <div class="nav-item" onclick="nav('notifs','التنبيهات',this)">🔔<br>التنبيهات</div>
+            <div class="nav-item" onclick="nav('chats','الرسائل',this)">💬<br>الرسائل</div>
+            <div class="nav-item" onclick="nav('notifs','التنبيهات',this)">🔔<br>الإشعارات</div>
             <div class="nav-item" onclick="nav('settings','الإعدادات',this)">⚙️<br>الإعدادات</div>
         </div>
     </div>
 
     <div id="msg-panel">
-        <b id="target-user-name">...</b>
-        <textarea id="msg-text" placeholder="اكتب رسالتك..." oninput="handleTyping()"></textarea>
-        <div style="display:flex; justify-content: space-between; align-items: center;">
-            <button onclick="processSend()" style="background:var(--main); color:white; border:none; padding:10px 30px; border-radius:10px;">إرسال</button>
-            <button onclick="closeMsg()" style="background:none; border:none; color:#999;">إلغاء</button>
-        </div>
+        <b id="target-user-name">مراسلة</b> 
+        <span id="target-typing" class="typing-text">يريد ان يخبرك شيئاً...</span>
+        <textarea id="msg-text" placeholder="اكتب رسالتك..." oninput="isTyping()"></textarea>
+        <button onclick="processSend('text')" style="background:var(--main); color:white; width:100%; padding:10px; border-radius:10px;">إرسال</button>
+        <center><button onclick="closeMsg()" style="margin-top:10px; border:none; background:none; color:#999;">إغلاق</button></center>
     </div>
 
     <script>
@@ -100,58 +100,62 @@
             r.readAsDataURL(i.files[0]);
         }
 
+        function toggleView(v) {
+            document.getElementById('reg-box').style.display = v ? 'none' : 'block';
+            document.getElementById('log-box').style.display = v ? 'block' : 'none';
+        }
+
         function doRegister() {
             const n = document.getElementById('r-name').value.trim();
             const p = document.getElementById('r-pass').value;
             if(!n || !p) return alert("اكمل البيانات");
-            const u = { id: Date.now(), name: n, pass: p, img: tempImg, lastSeen: 'متصل الآن', isTyping: false };
+            const u = { id: Date.now(), name: n, pass: p, img: tempImg, likes: 0, likedBy: [], lastActive: Date.now(), typing: false };
             users.push(u); save();
             current = u; sessionStorage.setItem('active_user_v7', JSON.stringify(u));
             enter();
         }
 
+        function doLogin() {
+            const n = document.getElementById('l-name').value;
+            const p = document.getElementById('l-pass').value;
+            const u = users.find(x => x.name === n && x.pass === p);
+            if(u) { current = u; sessionStorage.setItem('active_user_v7', JSON.stringify(u)); enter(); }
+            else alert("خطأ");
+        }
+
         function enter() {
             document.getElementById('auth-screen').style.display = 'none';
             document.getElementById('main-app').style.display = 'block';
-            updateStatus(true);
-            drawExplore();
-            setInterval(() => { drawExplore(); updateBadges(); checkTyping(); }, 2000);
+            setInterval(() => { updateActivity(); drawExplore(); drawChats(); updateTypingStatus(); }, 2000);
         }
 
-        // تحديث حالة النشاط
-        function updateStatus(isOnline) {
+        function updateActivity() {
             const u = users.find(x => x.id === current.id);
-            u.lastSeen = isOnline ? 'متصل الآن' : 'نشط منذ ' + new Date().toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'});
+            if(u) { u.lastActive = Date.now(); save(); }
+        }
+
+        function isTyping() {
+            const u = users.find(x => x.id === current.id);
+            u.typing = true;
+            setTimeout(() => { u.typing = false; save(); }, 3000);
             save();
         }
 
-        window.onbeforeunload = () => updateStatus(false);
-
-        function handleTyping() {
-            const u = users.find(x => x.id === current.id);
-            u.isTyping = true; save();
-            clearTimeout(window.typeTimer);
-            window.typeTimer = setTimeout(() => { u.isTyping = false; save(); }, 3000);
-        }
-
-        function checkTyping() {
-            users.forEach(u => {
-                const el = document.getElementById(`typing-${u.id}`);
-                if(el) el.style.display = u.isTyping ? 'block' : 'none';
-            });
+        function updateTypingStatus() {
+            if(selectedUserId) {
+                const peer = users.find(x => x.id === selectedUserId);
+                document.getElementById('target-typing').style.display = peer.typing ? 'inline' : 'none';
+            }
         }
 
         function drawExplore() {
             const box = document.getElementById('p-explore'); box.innerHTML = "";
             users.filter(u => u.id !== current.id).forEach(u => {
-                const statusClass = u.lastSeen === 'متصل الآن' ? 'online' : 'offline';
+                const isOnline = (Date.now() - u.lastActive) < 10000;
+                const statusText = isOnline ? '<span style="color:green">● متصل الآن</span>' : `<span style="color:gray">نشط منذ ${new Date(u.lastActive).toLocaleTimeString('ar-EG')}</span>`;
                 box.innerHTML += `<div class="user-card">
                     <img src="${u.img}">
-                    <div class="user-info">
-                        <b>${u.name}</b> <span class="status-dot ${statusClass}"></span> 
-                        <small>${u.lastSeen}</small>
-                        <div id="typing-${u.id}" class="typing-text">يريد أن يخبرك شيئاً...</div>
-                    </div>
+                    <div class="user-info"><b>${u.name}</b><br><small>${statusText}</small></div>
                     <div class="actions">
                         <button class="btn-action" onclick="openMsgPanel(${u.id}, '${u.name}')">💬 مراسلة</button>
                     </div>
@@ -163,42 +167,41 @@
             selectedUserId = id;
             document.getElementById('target-user-name').innerText = name;
             document.getElementById('msg-panel').style.display = 'block';
-        }
-
-        function processSend() {
-            const txt = document.getElementById('msg-text').value.trim();
-            if(!txt) return;
-            const time = new Date().toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'});
-            const m = { from: current.id, to: selectedUserId, body: txt, time: time, status: 'تم الإرسال', readTime: '' };
-            messages.push(m);
-            save();
-            document.getElementById('msg-text').value = "";
-            closeMsg();
-        }
-
-        function drawChats() {
-            const box = document.getElementById('chats-list'); box.innerHTML = "";
-            messages.filter(m => m.to === current.id || m.from === current.id).slice().reverse().forEach(m => {
-                const isMe = m.from === current.id;
-                // إذا كانت الرسالة لي، تصبح "تمت القراءة" الآن
-                if(!isMe && m.status !== 'تمت القراءة') {
-                    m.status = 'تمت القراءة';
-                    m.readTime = new Date().toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'});
-                }
-                const sender = isMe ? "أنت" : users.find(u => u.id === m.from).name;
-                box.innerHTML += `<div class="item-list">
-                    <div style="display:flex; justify-content:space-between"><b>${sender}</b> <span class="time-tag">${m.time}</span></div>
-                    <div>${m.body}</div>
-                    <div class="msg-status">${isMe ? m.status + (m.readTime ? ' ' + m.readTime : '') : '✓ تم الاستلام'}</div>
-                </div>`;
+            // بمجرد فتح المحادثة، نعتبر الرسائل الواردة "مقروءة"
+            messages.filter(m => m.from === id && m.to === current.id).forEach(m => {
+                if(!m.readTime) m.readTime = new Date().toLocaleTimeString('ar-EG');
             });
             save();
         }
 
-        function updateBadges() {
-            const unread = messages.filter(m => m.to === current.id && m.status !== 'تمت القراءة').length;
-            document.getElementById('chat-badge').innerText = unread;
-            document.getElementById('chat-badge').style.display = unread > 0 ? 'block' : 'none';
+        function processSend(type) {
+            const content = document.getElementById('msg-text').value.trim();
+            if(!content) return;
+            const time = new Date().toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'});
+            const newMsg = { from: current.id, to: selectedUserId, body: content, time: time, delivered: true, readTime: null };
+            messages.push(newMsg);
+            save();
+            document.getElementById('msg-text').value = "";
+            drawChats();
+        }
+
+        function drawChats() {
+            const box = document.getElementById('chats-list'); box.innerHTML = "";
+            const myMsgs = messages.filter(m => m.to === current.id || m.from === current.id);
+            myMsgs.slice().reverse().forEach(m => {
+                const isMe = m.from === current.id;
+                let status = "";
+                if(isMe) {
+                    if(m.readTime) status = `✔ تمت القراءة ${m.readTime}`;
+                    else if(m.delivered) status = "✔ تم الاستلام";
+                }
+                box.innerHTML += `<div class="item-list">
+                    <b>${isMe ? "أنت" : users.find(u => u.id === m.from).name}:</b>
+                    <div>${m.body}</div>
+                    <div class="time-tag">${m.time}</div>
+                    <div class="msg-status">${status}</div>
+                </div>`;
+            });
         }
 
         function nav(p, t, el) {
@@ -210,9 +213,9 @@
             if(p === 'chats') drawChats();
         }
 
-        function closeMsg() { document.getElementById('msg-panel').style.display = 'none'; }
+        function closeMsg() { document.getElementById('msg-panel').style.display = 'none'; selectedUserId = null; }
         function save() { localStorage.setItem('app_users_v7', JSON.stringify(users)); localStorage.setItem('app_msgs_v7', JSON.stringify(messages)); }
-        function logOut() { updateStatus(false); sessionStorage.clear(); location.reload(); }
+        function logOut() { sessionStorage.clear(); location.reload(); }
     </script>
 </body>
 </html>
