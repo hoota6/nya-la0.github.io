@@ -3,288 +3,369 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>سودانبوك - SudanBook</title>
+    <title>SudanBook Pro - نظام تواصل اجتماعي متكامل</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --main: #00a859; --bg: #f0f2f5; --white: #ffffff; --text: #1c1e21; --gray: #65676b; --dark-card: #242526; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding-bottom: 130px; color: var(--text); transition: 0.3s; overflow-x: hidden; }
-        body.dark-mode { --bg: #18191a; --text: #e4e6eb; --white: #242526; }
-        body.dark-mode .card { background: var(--dark-card); color: white; border: none; }
+        :root {
+            --primary-color: #00a859;
+            --primary-soft: #e6f6ef;
+            --bg-color: #f2f4f7;
+            --card-bg: #ffffff;
+            --text-main: #1a1a1b;
+            --text-muted: #65676b;
+            --border-color: #dee2e6;
+            --shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
 
-        header { background: var(--main); color: white; padding: 12px; position: sticky; top: 0; z-index: 1000; text-align: center; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .nav-bar { position: fixed; bottom: 0; width: 100%; background: var(--white); display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #ddd; z-index: 1000; }
-        .nav-item { cursor: pointer; text-align: center; font-size: 11px; color: var(--gray); flex: 1; transition: 0.2s; }
-        .nav-item.active { color: var(--main); font-weight: bold; transform: scale(1.1); }
+        body.dark-mode {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-main: #e4e6eb;
+            --text-muted: #b0b3b8;
+            --border-color: #333;
+        }
 
-        .container { max-width: 550px; margin: auto; padding: 10px; }
-        .card { background: var(--white); border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: relative; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding-bottom: 80px;
+            transition: all 0.3s ease;
+        }
+
+        /* Header System */
+        header {
+            background: var(--card-bg);
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: var(--shadow);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo { font-size: 22px; font-weight: 800; color: var(--primary-color); letter-spacing: -1px; }
+
+        /* Navigation Bar */
+        .nav-bar {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: var(--card-bg);
+            display: flex;
+            height: 65px;
+            border-top: 1px solid var(--border-color);
+            z-index: 1000;
+        }
+
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: 0.2s;
+            position: relative;
+        }
+
+        .nav-item i { font-size: 20px; margin-bottom: 4px; }
+        .nav-item span { font-size: 10px; font-weight: 600; }
+        .nav-item.active { color: var(--primary-color); }
+        .nav-item.active::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            width: 30%;
+            height: 3px;
+            background: var(--primary-color);
+            border-radius: 0 0 5px 5px;
+        }
+
+        /* Main Container */
+        .app-container { max-width: 600px; margin: 20px auto; padding: 0 15px; }
+
+        /* Post Card Engine */
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .post-header { display: flex; align-items: center; margin-bottom: 12px; }
+        .avatar-sm { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; margin-left: 12px; background: #ddd; }
+        .user-info b { display: block; font-size: 15px; }
+        .user-info small { color: var(--text-muted); font-size: 12px; }
+
+        .post-content { font-size: 15px; line-height: 1.6; margin-bottom: 15px; }
         
-        /* Profile & Status */
-        .profile-cover { width: 100%; height: 180px; background: #ccc; border-radius: 12px 12px 0 0; object-fit: cover; cursor: pointer; }
-        .profile-pic-container { width: 110px; height: 110px; margin: -55px auto 10px; position: relative; }
-        .profile-pic { width: 100%; height: 100%; border-radius: 50%; border: 4px solid var(--white); background: var(--main); object-fit: cover; cursor: pointer; }
-        .status-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; margin-left: 5px; }
+        /* Reaction System */
+        .post-stats {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 10px;
+        }
 
-        /* Reaction Engine */
-        .react-area { position: relative; flex: 1; text-align: center; cursor: pointer; padding: 10px 0; user-select: none; }
-        .flyout { position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%); background: white; border-radius: 30px; padding: 8px 12px; display: none; box-shadow: 0 5px 20px rgba(0,0,0,0.3); gap: 12px; z-index: 2000; animation: pop 0.2s ease; }
-        @keyframes pop { from { opacity: 0; transform: translateX(-50%) scale(0.5); } to { opacity: 1; transform: translateX(-50%) scale(1); } }
-        .flyout span { font-size: 26px; transition: 0.2s; }
-        .flyout span:hover { transform: scale(1.4); }
+        .stat-item { font-size: 13px; color: var(--text-muted); display: flex; align-items: center; gap: 5px; }
 
-        /* Lists & Search */
-        .user-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
-        .search-container { position: fixed; bottom: 68px; width: 100%; max-width: 550px; left: 50%; transform: translateX(-50%); padding: 5px 10px; background: var(--bg); z-index: 999; }
-        .search-bar { width: 100%; padding: 10px 15px; border-radius: 25px; border: 1px solid #ddd; outline: none; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .post-actions { display: flex; justify-content: space-around; }
+        .action-btn {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-muted);
+            transition: 0.2s;
+            position: relative;
+        }
 
-        /* Lightbox */
-        #lightbox { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; z-index: 5000; flex-direction: column; align-items: center; justify-content: center; }
-        #lightbox img { max-width: 95%; max-height: 75%; border-radius: 10px; }
+        .action-btn:hover { background: var(--primary-soft); color: var(--primary-color); }
 
-        .btn { background: var(--main); color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 13px; }
-        .post-media { width: 100%; border-radius: 8px; margin-top: 10px; cursor: pointer; }
-        .comment-item { background: #f0f2f5; padding: 8px; border-radius: 10px; margin-top: 5px; font-size: 12px; }
+        /* Facebook-Style Reactions Flyout */
+        .reactions-box {
+            position: absolute;
+            bottom: 45px;
+            background: var(--card-bg);
+            padding: 8px 15px;
+            border-radius: 30px;
+            display: none;
+            gap: 15px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+            z-index: 100;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp { from { transform: translateY(10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        .reactions-box span { font-size: 26px; transition: 0.2s; }
+        .reactions-box span:hover { transform: scale(1.4); }
+
+        /* Profile Pro */
+        .profile-header { position: relative; border-radius: 20px; overflow: hidden; margin-bottom: 60px; }
+        .cover-photo { width: 100%; height: 200px; background: #ddd; object-fit: cover; }
+        .profile-main-pic {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 5px solid var(--card-bg);
+            position: absolute;
+            bottom: -50px;
+            right: 20px;
+            object-fit: cover;
+            background: var(--primary-color);
+        }
+
+        .page { display: none; }
+        .page.active { display: block; }
+
+        /* Professional Inputs */
+        .input-group { position: relative; margin-bottom: 15px; }
+        .main-input {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-color);
+            color: var(--text-main);
+            font-size: 15px;
+            outline: none;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+        }
+
     </style>
 </head>
 <body>
 
-<header id="header-text">SudanBook - سودانبوك</header>
+<header>
+    <div class="logo">SudanBook <span style="color: #333; font-size: 12px;">PRO</span></div>
+    <div onclick="toggleDarkMode()" style="cursor: pointer; font-size: 20px;">
+        <i class="fas fa-moon"></i>
+    </div>
+</header>
 
-<div class="container">
+<div class="app-container">
     
-    <div id="home-page" class="page active">
+    <div id="home" class="page active">
         <div class="card">
-            <textarea id="post-input" placeholder="ماذا يدور في ذهنك؟"></textarea>
-            <button class="btn" style="width:100%" onclick="publishPost()">نشر</button>
-        </div>
-        <div id="feed-container"></div>
-    </div>
-
-    <div id="msg-page" class="page">
-        <div class="card"><h3 id="msg-label">الرسائل</h3><div id="chat-list"></div></div>
-    </div>
-
-    <div id="req-page" class="page">
-        <div class="card"><h3 id="req-label">طلبات الصداقة</h3><div id="users-list"></div></div>
-    </div>
-
-    <div id="profile-page" class="page">
-        <div class="card" style="padding:0; overflow:hidden;">
-            <img id="user-cover" class="profile-cover" src="https://via.placeholder.com/500x180" onclick="viewPhoto(this.src)">
-            <div class="profile-pic-container">
-                <img id="user-avatar" class="profile-pic" src="https://via.placeholder.com/110" onclick="viewPhoto(this.src)">
+            <div class="post-header">
+                <img src="https://via.placeholder.com/500" class="avatar-sm" id="user-avatar-post">
+                <div class="user-info"><b id="user-name-display">مستخدم سودانبوك</b></div>
             </div>
-            <div style="text-align:center; padding: 10px;">
-                <h2 id="prof-name">المستخدم</h2>
-                <div style="margin-bottom:10px;">
-                    <span id="status-dot-ui" class="status-dot" style="background: #31a24c;"></span>
-                    <span id="status-text-ui" style="font-size:13px; color:var(--main);">نشط الآن</span>
-                </div>
-                <p id="prof-bio">عضو في سودانبوك</p>
-                <div style="display:flex; justify-content:center; gap:8px; flex-wrap:wrap;">
-                    <button class="btn" onclick="document.getElementById('avatar-in').click()">تغيير الصورة</button>
-                    <button class="btn" onclick="document.getElementById('cover-in').click()">تغيير الغلاف</button>
-                    <button class="btn" style="background:#4267B2" onclick="copyProfileLink()">نسخ الرابط</button>
-                </div>
-                <input type="text" id="bio-update" placeholder="تحديث الحالة..." onchange="updateBio()" style="width:90%; margin-top:10px; padding:8px; border-radius:8px; border:1px solid #ddd;">
+            <textarea class="main-input" id="post-text" placeholder="ماذا يدور في ذهنك اليوم؟" rows="3" style="resize: none;"></textarea>
+            <button class="btn-primary" style="margin-top: 10px;" onclick="handlePublish()">نشر الآن</button>
+        </div>
+        <div id="feed-render"></div>
+    </div>
+
+    <div id="profile" class="page">
+        <div class="profile-header">
+            <img id="my-cover" src="https://images.unsplash.com/photo-1557683316-973673baf926" class="cover-photo">
+            <img id="my-avatar" src="https://via.placeholder.com/150" class="profile-main-pic">
+        </div>
+        <div style="margin-top: 60px; text-align: right; padding: 0 10px;">
+            <h2 id="prof-name" style="margin: 0;">اسم المستخدم</h2>
+            <p id="prof-bio" style="color: var(--text-muted);">مطور برمجيات | سوداني 🇸🇩</p>
+            <div style="display: flex; gap: 10px; margin: 15px 0;">
+                <button class="btn-primary" style="flex: 1;" onclick="document.getElementById('avatar-file').click()">تعديل الملف</button>
+                <input type="file" id="avatar-file" hidden onchange="uploadImage(this, 'avatar')">
             </div>
-            <input type="file" id="cover-in" hidden onchange="updateProfileAsset(event, 'cover')">
-            <input type="file" id="avatar-in" hidden onchange="updateProfileAsset(event, 'avatar')">
         </div>
-        
-        <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
-            <span>ظهور حالة النشاط:</span>
-            <input type="checkbox" id="online-toggle" checked onchange="toggleOnlineStatus()">
-        </div>
-
-        <div id="user-posts-container"></div>
+        <div id="my-posts-render"></div>
     </div>
 
-    <div id="settings-page" class="page">
-        <div class="card">
-            <h3 id="set-label">الإعدادات</h3>
-            <label>اختار اللغة / Language:</label>
-            <select id="lang-select" onchange="changeLang()" style="width:100%; padding:10px; margin:10px 0;">
-                <option value="ar">العربية</option>
-                <option value="en">English</option>
-            </select>
-            <button class="btn" style="width:100%; background:#444;" onclick="document.body.classList.toggle('dark-mode')">الوضع الداكن</button>
-            <button class="btn" style="width:100%; background:#dc3545; margin-top:10px;" onclick="logout()">خروج نهائي</button>
-        </div>
+    <div id="messages" class="page">
+        <div class="card"><h3>المحادثات</h3><p>لا توجد رسائل جديدة.</p></div>
     </div>
-</div>
 
-<div class="search-container">
-    <input type="text" class="search-bar" id="search-in" placeholder="بحث عن منشورات أو أشخاص..." oninput="searchApp()">
 </div>
 
 <nav class="nav-bar">
-    <div class="nav-item active" onclick="nav('home-page', this)" id="n-home">🏠<br>الموجز</div>
-    <div class="nav-item" onclick="nav('msg-page', this)" id="n-msg">💬<br>الرسائل</div>
-    <div class="nav-item" onclick="nav('req-page', this)" id="n-req">👥<br>الطلبات</div>
-    <div class="nav-item" onclick="nav('profile-page', this)" id="n-prof">👤<br>الملف</div>
-    <div class="nav-item" onclick="nav('settings-page', this)" id="n-set">⚙️<br>الإعدادات</div>
+    <div class="nav-item active" onclick="navigate('home', this)"><i class="fas fa-home"></i><span>الموجز</span></div>
+    <div class="nav-item" onclick="navigate('messages', this)"><i class="fas fa-comment-dots"></i><span>الرسائل</span></div>
+    <div class="nav-item" onclick="navigate('notifications', this)"><i class="fas fa-bell"></i><span>التنبيهات</span></div>
+    <div class="nav-item" onclick="navigate('profile', this)"><i class="fas fa-user-circle"></i><span>الملف</span></div>
 </nav>
 
-<div id="lightbox" onclick="this.style.display='none'">
-    <img id="lightbox-img" src="">
-    <div style="margin-top:20px;">
-        <a id="dl-btn" href="" download="sudanbook_img.jpg" class="btn" onclick="event.stopPropagation()">تنزيل الصورة</a>
-    </div>
-</div>
-
-<audio id="snd-like" src="https://www.soundjay.com/buttons/sounds/button-3.mp3"></audio>
+<audio id="like-sound" src="https://www.soundjay.com/buttons/sounds/button-10.mp3"></audio>
 
 <script>
-    let user = JSON.parse(localStorage.getItem('sb_user')) || { name: "مستخدم", bio: "عضو في سودانبوك", online: true, lang: "ar", avatar: "", cover: "" };
-    let posts = JSON.parse(localStorage.getItem('sb_posts')) || [];
-    let pressTimer;
-
-    window.onload = () => {
-        if(!user.name || user.name === "مستخدم") {
-            user.name = prompt("مرحباً! أدخل اسمك:") || "مستخدم";
-            save();
-        }
-        applyLang();
-        updateUI();
-        renderPosts();
-        renderOtherPages();
+    // --- بنية البيانات للربط مع قاعدة البيانات مستقبلاً ---
+    let appState = {
+        user: JSON.parse(localStorage.getItem('user')) || {
+            id: 1,
+            name: "أحمد علي",
+            avatar: "https://i.pravatar.cc/150?u=1",
+            cover: "https://images.unsplash.com/photo-1506744038136-46273834b3fb",
+            bio: "أهلاً بك في عالمي!"
+        },
+        posts: JSON.parse(localStorage.getItem('posts')) || []
     };
 
-    // --- نظام التفاعلات فيسبوك ---
-    function playLike() { document.getElementById('snd-like').play(); }
-    function hStart(id) { pressTimer = setTimeout(() => { document.getElementById('fly-'+id).style.display='flex'; }, 600); }
-    function hEnd() { clearTimeout(pressTimer); }
-    function setReact(id, emoji) {
-        let p = posts.find(x => x.id === id);
-        p.myReact = emoji;
-        document.getElementById('fly-'+id).style.display='none';
-        save(); renderPosts();
+    // --- المحرك الأساسي (Core Engine) ---
+    function init() {
+        document.getElementById('user-name-display').innerText = appState.user.name;
+        document.getElementById('prof-name').innerText = appState.user.name;
+        document.getElementById('prof-bio').innerText = appState.user.bio;
+        document.getElementById('my-avatar').src = appState.user.avatar;
+        document.getElementById('user-avatar-post').src = appState.user.avatar;
+        renderFeed();
     }
 
-    // --- تحديثات الملف الشخصي كمنشورات ---
-    function updateProfileAsset(e, type) {
-        let r = new FileReader();
-        r.onload = (f) => {
-            let data = f.target.result;
-            let msg = type === 'avatar' ? "قام بتحديث صورته الشخصية" : "قام بتحديث صورة الغلاف";
-            if(type === 'avatar') user.avatar = data; else user.cover = data;
-            
-            posts.unshift({
-                id: Date.now(), author: user.name, content: msg,
-                file: {src: data}, time: new Date().toLocaleString(),
-                comments: [], myReact: '👍 إعجاب'
-            });
-            save(); updateUI(); renderPosts();
+    // --- نظام النشر (Publishing System) ---
+    function handlePublish() {
+        const text = document.getElementById('post-text').value;
+        if(!text.trim()) return;
+
+        const newPost = {
+            id: Date.now(),
+            userId: appState.user.id,
+            author: appState.user.name,
+            avatar: appState.user.avatar,
+            content: text,
+            timestamp: "الآن",
+            likes: 0,
+            reactions: "👍",
+            comments: []
         };
-        r.readAsDataURL(e.target.files[0]);
+
+        appState.posts.unshift(newPost);
+        syncStorage();
+        document.getElementById('post-text').value = "";
+        renderFeed();
     }
 
-    function updateBio() {
-        user.bio = document.getElementById('bio-update').value;
-        save(); updateUI();
+    // --- نظام التفاعل (Facebook Reactions) ---
+    function showReactions(postId) {
+        const box = document.getElementById(`react-box-${postId}`);
+        box.style.display = (box.style.display === 'flex') ? 'none' : 'flex';
     }
 
-    function toggleOnlineStatus() {
-        user.online = document.getElementById('online-toggle').checked;
-        save(); updateUI();
+    function applyReaction(postId, emoji) {
+        const post = appState.posts.find(p => p.id === postId);
+        post.reactions = emoji;
+        document.getElementById(`like-sound`).play();
+        syncStorage();
+        renderFeed();
     }
 
-    // --- البحث والنسخ والمعاينة ---
-    function searchApp() {
-        let q = document.getElementById('search-in').value.toLowerCase();
-        let filtered = posts.filter(p => p.content.toLowerCase().includes(q) || p.author.toLowerCase().includes(q));
-        renderPosts(filtered);
-    }
-
-    function copyProfileLink() {
-        navigator.clipboard.writeText(window.location.href + "#profile");
-        alert("تم نسخ رابط الملف الشخصي!");
-    }
-
-    function viewPhoto(src) {
-        document.getElementById('lightbox').style.display='flex';
-        document.getElementById('lightbox-img').src = src;
-        document.getElementById('dl-btn').href = src;
-    }
-
-    // --- الوظائف الأساسية ---
-    function publishPost() {
-        let txt = document.getElementById('post-input').value;
-        if(!txt) return;
-        posts.unshift({ id: Date.now(), author: user.name, content: txt, time: new Date().toLocaleString(), comments: [], myReact: '👍 إعجاب' });
-        document.getElementById('post-input').value = "";
-        save(); renderPosts();
-    }
-
-    function renderPosts(data = posts) {
-        let feed = document.getElementById('feed-container');
-        let profFeed = document.getElementById('user-posts-container');
-        feed.innerHTML = ""; profFeed.innerHTML = "";
-
-        data.forEach(p => {
-            let media = p.file ? `<img src="${p.file.src}" class="post-media" onclick="viewPhoto(this.src)">` : "";
-            let html = `
-                <div class="card">
-                    <div style="display:flex; justify-content:space-between">
-                        <b>${p.author}</b> <small style="color:gray">${p.time}</small>
+    // --- عرض المحتوى (Rendering) ---
+    function renderFeed() {
+        const container = document.getElementById('feed-render');
+        container.innerHTML = appState.posts.map(post => `
+            <div class="card">
+                <div class="post-header">
+                    <img src="${post.avatar}" class="avatar-sm">
+                    <div class="user-info">
+                        <b>${post.author}</b>
+                        <small>${post.timestamp}</small>
                     </div>
-                    <p>${p.content}</p>
-                    ${media}
-                    <div style="display:flex; border-top:1px solid #eee; margin-top:10px;">
-                        <div class="react-area" onmousedown="hStart(${p.id})" onmouseup="hEnd()" onclick="playLike(); setReact(${p.id}, '👍')">
-                            <span>${p.myReact || '👍 إعجاب'}</span>
-                            <div class="flyout" id="fly-${p.id}">
-                                <span onclick="event.stopPropagation(); setReact(${p.id}, '❤️')">❤️</span>
-                                <span onclick="event.stopPropagation(); setReact(${p.id}, '😂')">😂</span>
-                                <span onclick="event.stopPropagation(); setReact(${p.id}, '😡')">😡</span>
-                            </div>
+                </div>
+                <div class="post-content">${post.content}</div>
+                <div class="post-stats">
+                    <div class="stat-item"><i class="fas fa-heart" style="color: #e0245e;"></i> ${post.likes} تفاعلات</div>
+                    <div class="stat-item">${post.comments.length} تعليقات</div>
+                </div>
+                <div class="post-actions">
+                    <div class="action-btn" oncontextmenu="event.preventDefault(); showReactions(${post.id})" onclick="applyReaction(${post.id}, '👍')">
+                        <div class="reactions-box" id="react-box-${post.id}">
+                            <span onclick="applyReaction(${post.id}, '❤️')">❤️</span>
+                            <span onclick="applyReaction(${post.id}, '😂')">😂</span>
+                            <span onclick="applyReaction(${post.id}, '😮')">😮</span>
+                            <span onclick="applyReaction(${post.id}, '😡')">😡</span>
                         </div>
-                        <div class="react-area" onclick="alert('التعليقات مفعلة أدناه')">💬 تعليق</div>
+                        <span style="font-size: 20px;">${post.reactions}</span> إعجاب
                     </div>
-                    <div id="coms-${p.id}"></div>
-                    <input type="text" placeholder="اكتب تعليقاً..." onchange="addComment(${p.id}, this.value)" style="width:100%; border:none; padding:5px; font-size:12px;">
-                </div>`;
-            feed.innerHTML += html;
-            if(p.author === user.name) profFeed.innerHTML += html;
-        });
+                    <div class="action-btn"><i class="far fa-comment"></i> تعليق</div>
+                    <div class="action-btn"><i class="far fa-share-square"></i> مشاركة</div>
+                </div>
+            </div>
+        `).join('');
     }
 
-    function changeLang() { user.lang = document.getElementById('lang-select').value; save(); applyLang(); }
-
-    function applyLang() {
-        let isEn = user.lang === 'en';
-        document.documentElement.dir = isEn ? 'ltr' : 'rtl';
-        document.getElementById('n-home').innerHTML = isEn ? "🏠<br>Home" : "🏠<br>الموجز";
-        document.getElementById('n-msg').innerHTML = isEn ? "💬<br>Chat" : "💬<br>الرسائل";
-        document.getElementById('n-req').innerHTML = isEn ? "👥<br>Requests" : "👥<br>الطلبات";
-        document.getElementById('n-prof').innerHTML = isEn ? "👤<br>Profile" : "👤<br>الملف";
-        document.getElementById('n-set').innerHTML = isEn ? "⚙️<br>Settings" : "⚙️<br>الإعدادات";
-    }
-
-    function updateUI() {
-        document.getElementById('prof-name').innerText = user.name;
-        document.getElementById('prof-bio').innerText = user.bio;
-        document.getElementById('status-dot-ui').style.background = user.online ? "#31a24c" : "#ccc";
-        document.getElementById('status-text-ui').innerText = user.online ? "نشط الآن" : "غير متصل";
-        if(user.avatar) document.getElementById('user-avatar').src = user.avatar;
-        if(user.cover) document.getElementById('user-cover').src = user.cover;
-    }
-
-    function renderOtherPages() {
-        let uL = document.getElementById('users-list');
-        uL.innerHTML = '<div class="user-row"><span>أحمد محمد</span><button class="btn">إضافة</button></div>';
-        let cL = document.getElementById('chat-list');
-        cL.innerHTML = '<div class="user-row"><span>سارة علي</span><button class="btn" style="background:#007bff">دردشة</button></div>';
-    }
-
-    function save() { localStorage.setItem('sb_user', JSON.stringify(user)); localStorage.setItem('sb_posts', JSON.stringify(posts)); }
-    function nav(id, el) {
+    // --- خدمات إضافية ---
+    function navigate(pageId, el) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
+        document.getElementById(pageId).classList.add('active');
         el.classList.add('active');
     }
-    function logout() { localStorage.clear(); location.reload(); }
+
+    function toggleDarkMode() { document.body.classList.toggle('dark-mode'); }
+    
+    function syncStorage() {
+        localStorage.setItem('posts', JSON.stringify(appState.posts));
+        localStorage.setItem('user', JSON.stringify(appState.user));
+    }
+
+    init();
 </script>
 </body>
 </html>
