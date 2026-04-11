@@ -6,14 +6,14 @@
     <title>سودانبوك - SudanBook</title>
     <style>
         :root { --main: #00a859; --bg: #f0f2f5; --white: #ffffff; --text: #1c1e21; --gray: #65676b; --dark-card: #242526; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding-bottom: 70px; color: var(--text); user-select: none; transition: 0.3s; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding-bottom: 120px; color: var(--text); transition: 0.3s; }
         body.dark-mode { --bg: #18191a; --text: #e4e6eb; --white: #242526; }
         body.dark-mode .card { background: var(--dark-card); color: white; }
 
-        header { background: var(--main); color: white; padding: 12px; position: sticky; top: 0; z-index: 1000; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        header { background: var(--main); color: white; padding: 12px; position: sticky; top: 0; z-index: 1000; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .nav-bar { position: fixed; bottom: 0; width: 100%; background: var(--white); display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #ddd; z-index: 1000; }
-        .nav-item { cursor: pointer; text-align: center; font-size: 11px; color: var(--gray); flex: 1; transition: 0.3s; }
-        .nav-item.active { color: var(--main); font-weight: bold; transform: scale(1.1); }
+        .nav-item { cursor: pointer; text-align: center; font-size: 11px; color: var(--gray); flex: 1; }
+        .nav-item.active { color: var(--main); font-weight: bold; }
 
         .container { max-width: 550px; margin: auto; padding: 10px; }
         .card { background: var(--white); border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: relative; }
@@ -22,248 +22,230 @@
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Profile Styles */
-        .profile-cover { width: 100%; height: 160px; background: #ccc; border-radius: 12px 12px 0 0; object-fit: cover; cursor: pointer; }
-        .profile-pic-container { width: 100px; height: 100px; margin: -50px auto 10px; position: relative; }
+        /* Profile & Cover Display */
+        .profile-cover { width: 100%; height: 180px; background: #ccc; border-radius: 12px 12px 0 0; object-fit: cover; cursor: pointer; }
+        .profile-pic-container { width: 110px; height: 110px; margin: -55px auto 10px; position: relative; }
         .profile-pic { width: 100%; height: 100%; border-radius: 50%; border: 4px solid var(--white); background: var(--main); object-fit: cover; cursor: pointer; }
 
-        /* Reactions */
-        .react-area { position: relative; flex: 1; text-align: center; cursor: pointer; padding: 10px 0; }
-        .flyout { position: absolute; bottom: 45px; right: 0; background: white; border-radius: 30px; padding: 5px 10px; display: none; box-shadow: 0 2px 15px rgba(0,0,0,0.2); gap: 10px; z-index: 100; }
-        .flyout span { font-size: 22px; transition: 0.2s; }
-        .flyout span:hover { transform: scale(1.3); }
+        /* Reactions Flyout (Facebook Style) */
+        .react-area { position: relative; flex: 1; text-align: center; cursor: pointer; padding: 10px 0; user-select: none; -webkit-user-select: none; }
+        .flyout { position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%); background: white; border-radius: 30px; padding: 8px 12px; display: none; box-shadow: 0 5px 20px rgba(0,0,0,0.3); gap: 12px; z-index: 2000; animation: flyIn 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28); }
+        @keyframes flyIn { from { bottom: 20px; opacity: 0; } to { bottom: 50px; opacity: 1; } }
+        .flyout span { font-size: 28px; transition: transform 0.2s; }
+        .flyout span:hover { transform: scale(1.4) translateY(-5px); }
 
-        /* Comments & Lists */
-        .comment-box { background: #f0f2f5; padding: 8px; border-radius: 10px; margin-top: 5px; font-size: 12px; }
-        body.dark-mode .comment-box { background: #3a3b3c; }
-        .user-item { display: flex; align-items: center; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee; }
-        
-        .btn { background: var(--main); color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; }
-        input, textarea, select { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; background: inherit; color: inherit; }
+        /* Lightbox for Photos */
+        #lightbox { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; z-index: 3000; flex-direction: column; align-items: center; justify-content: center; }
+        #lightbox img { max-width: 90%; max-height: 70%; border-radius: 8px; }
 
-        .post-media { width: 100%; border-radius: 8px; margin-top: 10px; max-height: 350px; object-fit: cover; }
+        /* Search Bar At Bottom */
+        .search-container { position: fixed; bottom: 65px; width: 100%; max-width: 550px; left: 50%; transform: translateX(-50%); padding: 5px 10px; background: var(--bg); z-index: 999; }
+        .search-bar { width: 100%; padding: 8px 15px; border-radius: 20px; border: 1px solid #ddd; outline: none; }
+
+        .btn { background: var(--main); color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; }
+        .post-media { width: 100%; border-radius: 8px; margin-top: 10px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<header><div id="header-title">سودانبوك - SudanBook</div></header>
+<header>SudanBook</header>
 
 <div class="container">
     
     <div id="home-page" class="page active">
         <div class="card">
             <textarea id="post-input" placeholder="ماذا يدور في ذهنك؟"></textarea>
-            <div style="display:flex; gap:10px;">
-                <button class="btn" style="background:#eee; color:#333;" onclick="document.getElementById('post-file').click()">🖼️</button>
-                <button class="btn" style="flex:1" onclick="publishPost()" id="btn-pub">نشر</button>
-            </div>
-            <input type="file" id="post-file" hidden onchange="previewMedia(event)">
-            <img id="media-preview" style="width:100%; display:none; margin-top:10px; border-radius:8px;">
+            <button class="btn" style="width:100%" onclick="publishPost()">نشر</button>
         </div>
         <div id="feed-container"></div>
     </div>
 
-    <div id="msg-page" class="page">
-        <div class="card">
-            <h3 id="msg-title">المحادثات</h3>
-            <div id="chat-list"></div>
-        </div>
-    </div>
+    <div id="msg-page" class="page"><div class="card"><h3>المحادثات</h3><div id="chat-list"></div></div></div>
 
-    <div id="req-page" class="page">
-        <div class="card">
-            <h3 id="req-title">طلبات الصداقة والمقترحون</h3>
-            <div id="users-list"></div>
-        </div>
-    </div>
+    <div id="req-page" class="page"><div class="card"><h3>طلبات الصداقة</h3><div id="users-list"></div></div></div>
 
     <div id="profile-page" class="page">
         <div class="card" style="padding:0; overflow:hidden;">
-            <img id="user-cover" class="profile-cover" src="https://via.placeholder.com/500x160" onclick="document.getElementById('cover-in').click()">
+            <img id="user-cover" class="profile-cover" src="https://via.placeholder.com/500x180" onclick="viewPhoto(this.src)">
             <div class="profile-pic-container">
-                <img id="user-avatar" class="profile-pic" src="https://via.placeholder.com/100" onclick="document.getElementById('avatar-in').click()">
+                <img id="user-avatar" class="profile-pic" src="https://via.placeholder.com/110" onclick="viewPhoto(this.src)">
             </div>
             <div style="text-align:center; padding: 10px;">
-                <h2 id="prof-display-name">المستخدم</h2>
-                <p id="prof-bio-text" style="font-style:italic; color:var(--gray);">لا توجد حالة...</p>
-                <input type="text" id="status-update-in" placeholder="حدّث حالتك هنا..." onchange="updateBio()" style="width:80%; font-size:12px; margin-top:5px;">
-                <div style="font-size:10px; color:#aaa; margin-top:5px;" id="last-update-time"></div>
+                <h2 id="prof-name">المستخدم</h2>
+                <p id="prof-bio">عضو في سودانبوك</p>
+                <div style="display:flex; justify-content:center; gap:5px;">
+                    <button class="btn" onclick="document.getElementById('avatar-in').click()">تغيير الصورة</button>
+                    <button class="btn" onclick="document.getElementById('cover-in').click()">تغيير الغلاف</button>
+                    <button class="btn" style="background:#4267B2" onclick="copyProfileLink()">نسخ الرابط</button>
+                </div>
             </div>
-            <input type="file" id="cover-in" hidden onchange="updatePhoto(event, 'cover')">
-            <input type="file" id="avatar-in" hidden onchange="updatePhoto(event, 'avatar')">
+            <input type="file" id="cover-in" hidden onchange="updateProfileAsset(event, 'cover')">
+            <input type="file" id="avatar-in" hidden onchange="updateProfileAsset(event, 'avatar')">
         </div>
-        <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
-            <span id="activity-label">حالة النشاط (متصل)</span>
-            <input type="checkbox" id="online-switch" checked onchange="toggleOnline()">
-        </div>
+        <div id="user-posts-container"></div>
     </div>
 
     <div id="settings-page" class="page">
         <div class="card">
-            <h3 id="set-title">الإعدادات</h3>
-            <label id="lang-label">اختر اللغة:</label>
-            <select id="lang-select" onchange="setLanguage()">
-                <option value="ar">العربية</option>
-                <option value="en">English</option>
-            </select>
-            <button class="btn" style="width:100%; margin-top:15px; background:#444;" onclick="document.body.classList.toggle('dark-mode')" id="dark-btn">الوضع الداكن</button>
-            <button class="btn" style="width:100%; margin-top:10px; background:#dc3545;" onclick="logout()" id="logout-btn">تسجيل الخروج</button>
+            <h3>الإعدادات</h3>
+            <button class="btn" style="width:100%; background:#444;" onclick="document.body.classList.toggle('dark-mode')">الوضع الداكن</button>
+            <button class="btn" style="width:100%; background:#dc3545; margin-top:10px;" onclick="logout()">خروج</button>
         </div>
     </div>
+</div>
 
+<div class="search-container">
+    <input type="text" class="search-bar" placeholder="بحث عن أشخاص أو منشورات..." oninput="searchApp(this.value)">
 </div>
 
 <nav class="nav-bar">
-    <div class="nav-item active" onclick="nav('home-page', this)" id="n-home">🏠<br>الموجز</div>
-    <div class="nav-item" onclick="nav('msg-page', this)" id="n-msg">💬<br>الرسائل</div>
-    <div class="nav-item" onclick="nav('req-page', this)" id="n-req">👥<br>الطلبات</div>
-    <div class="nav-item" onclick="nav('profile-page', this)" id="n-prof">👤<br>الملف</div>
-    <div class="nav-item" onclick="nav('settings-page', this)" id="n-set">⚙️<br>الإعدادات</div>
+    <div class="nav-item active" onclick="nav('home-page', this)">🏠<br>الموجز</div>
+    <div class="nav-item" onclick="nav('msg-page', this)">💬<br>الرسائل</div>
+    <div class="nav-item" onclick="nav('req-page', this)">👥<br>الطلبات</div>
+    <div class="nav-item" onclick="nav('profile-page', this)">👤<br>الملف</div>
+    <div class="nav-item" onclick="nav('settings-page', this)">⚙️<br>الإعدادات</div>
 </nav>
+
+<div id="lightbox" onclick="this.style.display='none'">
+    <img id="lightbox-img" src="">
+    <div style="margin-top:20px;">
+        <a id="download-btn" href="" download="sudanbook_photo.jpg" class="btn">تنزيل الصورة</a>
+    </div>
+</div>
 
 <audio id="snd-like" src="https://www.soundjay.com/buttons/sounds/button-3.mp3"></audio>
 
 <script>
-    let user = JSON.parse(localStorage.getItem('sb_user')) || { name: "مستخدم جديد", lang: "ar", bio: "", cover: "", avatar: "", update: "", online: true };
+    let user = JSON.parse(localStorage.getItem('sb_user')) || { name: "مستخدم", bio: "عضو جديد", avatar: "", cover: "" };
     let posts = JSON.parse(localStorage.getItem('sb_posts')) || [];
-    let pTimer;
+    let pressTimer;
 
     window.onload = () => {
-        if(!user.name || user.name === "مستخدم جديد") {
-            user.name = prompt("أهلاً بك في سودانبوك، ما اسمك؟") || "مستخدم";
-            save();
-        }
-        applyLang();
         renderPosts();
-        renderLists();
-        updateProfUI();
+        updateUI();
     };
 
-    // --- التفاعلات (Like & Long Press) ---
-    function doLike(id) {
-        document.getElementById('snd-like').play();
-        setReact(id, '👍 إعجاب');
+    // --- نظام التفاعل والصوت ---
+    function playLikeSound() { document.getElementById('snd-like').play(); }
+
+    function holdStart(id) { 
+        pressTimer = setTimeout(() => { 
+            document.getElementById(`flyout-${id}`).style.display = 'flex'; 
+        }, 600); 
     }
-    function holdStart(id) { pTimer = setTimeout(() => { document.getElementById('fly-'+id).style.display='flex'; }, 600); }
-    function holdEnd() { clearTimeout(pTimer); }
-    function setReact(id, emoji) {
-        let p = posts.find(x => x.id === id);
+    function holdEnd() { clearTimeout(pressTimer); }
+
+    function setReact(postId, emoji) {
+        const p = posts.find(x => x.id === postId);
         p.myReact = emoji;
-        document.getElementById('fly-'+id).style.display='none';
+        document.getElementById(`flyout-${postId}`).style.display = 'none';
         save(); renderPosts();
     }
 
-    // --- التعليقات ---
-    function addComm(id) {
-        let inp = document.getElementById('ci-'+id);
-        if(!inp.value) return;
-        let p = posts.find(x => x.id === id);
-        if(!p.comments) p.comments = [];
-        p.comments.push({
-            u: user.name,
-            t: inp.value,
-            time: new Date().toLocaleTimeString(user.lang==='ar'?'ar-EG':'en-US', {hour:'2-digit', minute:'2-digit'})
-        });
-        inp.value = ""; save(); renderPosts();
-    }
-
-    // --- الملف الشخصي ---
-    function updatePhoto(e, type) {
-        let reader = new FileReader();
+    // --- تحديث الصور كمنشورات ---
+    function updateProfileAsset(e, type) {
+        const reader = new FileReader();
         reader.onload = (f) => {
-            if(type === 'cover') user.cover = f.target.result;
-            else user.avatar = f.target.result;
-            user.update = new Date().toLocaleString();
-            save(); updateProfUI();
+            const imgData = f.target.result;
+            const msg = type === 'avatar' ? "قام بتحديث صورته الشخصية" : "قام بتحديث صورة الغلاف";
+            if(type === 'avatar') user.avatar = imgData; else user.cover = imgData;
+            
+            // إضافة التحديث كمنشور في الموجز والملف
+            posts.unshift({
+                id: Date.now(), author: user.name, content: msg,
+                file: {src: imgData, type: 'image'}, time: new Date().toLocaleString(),
+                comments: [], myReact: '👍 إعجاب', isSystem: true
+            });
+            
+            save(); updateUI(); renderPosts();
         };
         reader.readAsDataURL(e.target.files[0]);
     }
-    function updateBio() {
-        user.bio = document.getElementById('status-update-in').value;
-        user.update = new Date().toLocaleString();
-        save(); updateProfUI();
-    }
-    function updateProfUI() {
-        document.getElementById('prof-display-name').innerText = user.name;
-        document.getElementById('prof-bio-text').innerText = user.bio || "...";
-        document.getElementById('last-update-time').innerText = user.update ? "تحديث: " + user.update : "";
-        if(user.cover) document.getElementById('user-cover').src = user.cover;
-        if(user.avatar) document.getElementById('user-avatar').src = user.avatar;
-    }
-    function toggleOnline() { user.online = document.getElementById('online-switch').checked; save(); }
 
-    // --- القوائم (رسائل وطلبات) ---
-    function renderLists() {
-        let uList = document.getElementById('users-list');
-        let cList = document.getElementById('chat-list');
-        let dummy = ["أحمد عوض", "سارة علي", "محمد عثمان"];
-        uList.innerHTML = ""; cList.innerHTML = "";
-        dummy.forEach(d => {
-            uList.innerHTML += `<div class="user-item"><span>${d}</span><button class="btn" onclick="alert('تم إرسال الطلب')">إضافة</button></div>`;
-            cList.innerHTML += `<div class="user-item"><span>${d}</span><button class="btn" style="background:#007bff">مراسلة</button></div>`;
-        });
+    // --- معاينة وتنزيل الصور ---
+    function viewPhoto(src) {
+        document.getElementById('lightbox').style.display = 'flex';
+        document.getElementById('lightbox-img').src = src;
+        document.getElementById('download-btn').href = src;
     }
 
-    // --- اللغة ---
-    function setLanguage() { user.lang = document.getElementById('lang-select').value; save(); applyLang(); }
-    function applyLang() {
-        let isAr = user.lang === 'ar';
-        document.documentElement.dir = isAr ? 'rtl' : 'ltr';
-        let texts = {
-            ar: { h: "الموجز", m: "الرسائل", r: "الطلبات", p: "الملف", s: "الإعدادات", pub: "نشر" },
-            en: { h: "Home", m: "Chat", r: "Requests", p: "Profile", s: "Settings", pub: "Post" }
-        }[user.lang];
-        document.getElementById('n-home').innerHTML = `🏠<br>${texts.h}`;
-        document.getElementById('n-msg').innerHTML = `💬<br>${texts.m}`;
-        document.getElementById('n-req').innerHTML = `👥<br>${texts.r}`;
-        document.getElementById('n-prof').innerHTML = `👤<br>${texts.p}`;
-        document.getElementById('n-set').innerHTML = `⚙️<br>${texts.s}`;
-        document.getElementById('btn-pub').innerText = texts.pub;
+    // --- نسخ الرابط والبحث ---
+    function copyProfileLink() {
+        const link = window.location.href + "?user=" + user.name.replace(/\s/g, '');
+        navigator.clipboard.writeText(link);
+        alert("تم نسخ رابط الملف الشخصي!");
     }
 
-    // --- نظام النشر ---
-    function previewMedia(e) {
-        let f = e.target.files[0];
-        let r = new FileReader();
-        r.onload = (x) => {
-            document.getElementById('media-preview').src = x.target.result;
-            document.getElementById('media-preview').style.display = 'block';
-        };
-        r.readAsDataURL(f);
+    function searchApp(query) {
+        const filtered = posts.filter(p => p.content.includes(query) || p.author.includes(query));
+        renderPosts(filtered);
     }
+
+    // --- حذف وتعديل المنشورات ---
+    function deletePost(id) {
+        if(confirm("حذف هذا المنشور؟")) {
+            posts = posts.filter(p => p.id !== id);
+            save(); renderPosts();
+        }
+    }
+
+    function editPost(id) {
+        const p = posts.find(x => x.id === id);
+        const newTxt = prompt("تعديل المنشور:", p.content);
+        if(newTxt) { p.content = newTxt; save(); renderPosts(); }
+    }
+
+    // --- الوظائف الأساسية ---
     function publishPost() {
-        let txt = document.getElementById('post-input').value;
+        const txt = document.getElementById('post-input').value;
         if(!txt) return;
-        posts.unshift({ id: Date.now(), author: user.name, content: txt, comments: [], myReact: '👍 إعجاب' });
+        posts.unshift({ id: Date.now(), author: user.name, content: txt, time: new Date().toLocaleString(), comments: [], myReact: '👍 إعجاب' });
         document.getElementById('post-input').value = "";
         save(); renderPosts();
     }
-    function renderPosts() {
-        let cont = document.getElementById('feed-container');
-        cont.innerHTML = "";
-        posts.forEach(p => {
-            let cs = (p.comments || []).map(c => `<div class="comment-box"><b>${c.u}</b>: ${c.t} <br><small style="color:gray; font-size:9px">${c.time}</small></div>`).join('');
-            cont.innerHTML += `
+
+    function renderPosts(data = posts) {
+        const feed = document.getElementById('feed-container');
+        const profFeed = document.getElementById('user-posts-container');
+        feed.innerHTML = ""; profFeed.innerHTML = "";
+
+        data.forEach(p => {
+            const media = p.file ? `<img src="${p.file.src}" class="post-media" onclick="viewPhoto(this.src)">` : "";
+            const controls = `<div style="font-size:10px; color:var(--main); cursor:pointer">
+                                <span onclick="editPost(${p.id})">تعديل</span> | <span onclick="deletePost(${p.id})" style="color:red">حذف</span>
+                             </div>`;
+            
+            const postHtml = `
                 <div class="card">
-                    <b>${p.author}</b>
+                    <div style="display:flex; justify-content:space-between">
+                        <b>${p.author}</b> <small style="color:gray">${p.time}</small>
+                    </div>
                     <p>${p.content}</p>
-                    <div style="display:flex; justify-content:space-around; border-top:1px solid #eee; padding-top:10px;">
-                        <div class="react-area" onmousedown="holdStart(${p.id})" onmouseup="holdEnd()" onclick="doLike(${p.id})">
+                    ${media}
+                    ${controls}
+                    <div style="display:flex; border-top:1px solid #eee; margin-top:10px;">
+                        <div class="react-area" onmousedown="holdStart(${p.id})" onmouseup="holdEnd()" onclick="playLikeSound(); setReact(${p.id}, '👍')">
                             <span id="re-${p.id}">${p.myReact || '👍 إعجاب'}</span>
-                            <div class="flyout" id="fly-${p.id}">
-                                <span onclick="event.stopPropagation(); setReact(${p.id}, '❤️ أحببته')">❤️</span>
-                                <span onclick="event.stopPropagation(); setReact(${p.id}, '😂 هاها')">😂</span>
-                                <span onclick="event.stopPropagation(); setReact(${p.id}, '😡 أغضبني')">😡</span>
+                            <div class="flyout" id="flyout-${p.id}">
+                                <span onclick="event.stopPropagation(); setReact(${p.id}, '❤️')">❤️</span>
+                                <span onclick="event.stopPropagation(); setReact(${p.id}, '😂')">😂</span>
+                                <span onclick="event.stopPropagation(); setReact(${p.id}, '😡')">😡</span>
                             </div>
                         </div>
                         <div class="react-area">💬 تعليق</div>
                     </div>
-                    <div id="cl-${p.id}">${cs}</div>
-                    <input type="text" id="ci-${p.id}" placeholder="اكتب تعليقاً..." onchange="addComm(${p.id})" style="font-size:11px;">
                 </div>`;
+            
+            feed.innerHTML += postHtml;
+            if(p.author === user.name) profFeed.innerHTML += postHtml;
         });
     }
 
+    function updateUI() {
+        document.getElementById('prof-name').innerText = user.name;
+        if(user.avatar) document.getElementById('user-avatar').src = user.avatar;
+        if(user.cover) document.getElementById('user-cover').src = user.cover;
+    }
     function save() { localStorage.setItem('sb_user', JSON.stringify(user)); localStorage.setItem('sb_posts', JSON.stringify(posts)); }
     function nav(id, el) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -271,7 +253,6 @@
         document.getElementById(id).classList.add('active');
         el.classList.add('active');
     }
-    function logout() { localStorage.clear(); location.reload(); }
 </script>
 </body>
 </html>
