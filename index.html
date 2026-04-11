@@ -18,6 +18,11 @@
         input, select, textarea { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-family: inherit; }
         button { background: var(--main); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; }
 
+        /* قسم الصورة الشخصية في التسجيل */
+        .photo-preview-container { text-align: center; margin: 10px 0; }
+        #preview-img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid var(--main); display: none; margin: 0 auto 10px; }
+        .file-input-label { display: block; background: #eee; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 0.9rem; color: #555; }
+
         /* الواجهة الرئيسية */
         #main-app { display: none; }
         .nav { background: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: fixed; width: 100%; top: 0; z-index: 100; box-sizing: border-box;}
@@ -27,7 +32,7 @@
         /* كرت المستخدم */
         .user-card { background: white; padding: 15px; border-radius: 15px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
         .user-info-flex { display: flex; align-items: center; }
-        .user-img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; background: #eee; border: 2px solid var(--main); }
+        .user-img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; background: #eee; border: 2px solid var(--main); cursor: pointer; }
         .user-details { margin-right: 15px; flex: 1; }
         .user-details b { font-size: 1.1rem; }
         .status-tag { font-size: 0.75rem; color: #666; background: #eee; padding: 2px 8px; border-radius: 10px; }
@@ -46,6 +51,13 @@
     <div id="login-screen">
         <div class="auth-box">
             <h2 style="text-align:center; color: var(--main);">إنشاء حساب جديد</h2>
+            
+            <div class="photo-preview-container">
+                <img id="preview-img" src="">
+                <label class="file-input-label" for="photo-file">📷 اختر صورة أو التقط واحدة</label>
+                <input type="file" id="photo-file" accept="image/*" capture="user" style="display:none" onchange="previewFile()">
+            </div>
+
             <input type="text" id="username" placeholder="اسم المستخدم">
             <input type="password" id="password" placeholder="كلمة السر">
             <input type="text" id="hobby" placeholder="هوايتك (مثلاً: البرمجة، السفر)">
@@ -54,8 +66,7 @@
                 <option value="متزوج">متزوج</option>
                 <option value="خاطب">خاطب</option>
             </select>
-            <p style="font-size: 0.8rem; margin: 5px 0;">رابط صورة البروفايل (اختياري):</p>
-            <input type="text" id="photoURL" placeholder="https://example.com/image.jpg">
+            
             <button onclick="registerAndLogin()">تسجيل والدخول</button>
         </div>
     </div>
@@ -73,7 +84,7 @@
 
     <div id="chat-window">
         <div class="chat-header">
-            <button onclick="closeChat()" style="width:auto; background:none; font-size:20px;">➡️</button>
+            <button onclick="closeChat()" style="width:auto; background:none; font-size:20px; border:none; color:white; cursor:pointer;">➡️</button>
             <span id="chat-with-name">الدردشة</span>
             <div></div>
         </div>
@@ -100,34 +111,59 @@
 
         let myUser = "";
         let chatTarget = "";
+        let base64Image = "https://cdn-icons-png.flaticon.com/512/149/149071.png"; // الصورة الافتراضية
+
+        // وظيفة معاينة الصورة وتحويلها
+        function previewFile() {
+            const file = document.getElementById('photo-file').files[0];
+            const reader = new FileReader();
+
+            reader.onloadend = function() {
+                base64Image = reader.result; // النص البرمجي للصورة
+                const preview = document.getElementById('preview-img');
+                preview.src = reader.result;
+                preview.style.display = "block";
+            }
+
+            if (file) {
+                reader.readAsDataURL(file);
+            }
+        }
 
         function registerAndLogin() {
             const user = document.getElementById('username').value.trim();
             const hobby = document.getElementById('hobby').value.trim();
             const status = document.getElementById('social-status').value;
-            const photo = document.getElementById('photoURL').value.trim() || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
             if (!user) return alert("ادخل اسم المستخدم");
 
             myUser = user;
             
-            // حفظ بيانات المستخدم مع التوقيت
             const userData = {
                 username: myUser,
                 hobby: hobby,
                 socialStatus: status,
-                photo: photo,
+                photo: base64Image,
                 lastSeen: "نشط الآن"
             };
 
             db.ref('users/' + myUser).set(userData);
             
-            // تحديث آخر ظهور عند إغلاق المتصفح
             db.ref('users/' + myUser + '/lastSeen').onDisconnect().set(new Date().toLocaleString('ar-EG'));
 
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('main-app').style.display = 'block';
             loadUsers();
+        }
+
+        // إضافة وظيفة تنزيل الصورة عند الضغط عليها
+        function downloadImage(url, name) {
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `photo_${name}.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
         function loadUsers() {
@@ -140,7 +176,7 @@
                         list.innerHTML += `
                             <div class="user-card">
                                 <div class="user-info-flex">
-                                    <img src="${u.photo}" class="user-img">
+                                    <img src="${u.photo}" class="user-img" onclick="downloadImage('${u.photo}', '${u.username}')" title="اضغط لتحميل الصورة">
                                     <div class="user-details">
                                         <b>${u.username}</b> <span class="status-tag">${u.socialStatus}</span><br>
                                         <small>الهواية: ${u.hobby || 'غير محددة'}</small><br>
@@ -155,7 +191,7 @@
             });
         }
 
-        // --- وظائف الدردشة (نفس المنطق السابق) ---
+        // وظائف الدردشة
         function openChat(name) {
             chatTarget = name;
             document.getElementById('chat-with-name').innerText = name;
