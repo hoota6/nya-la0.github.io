@@ -11,7 +11,7 @@
         :root { --main: #ff2d55; --bg: #f0f2f5; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 0; }
         
-        /* شاشة التسجيل */
+        /* شاشة التسجيل والدخول */
         #login-screen { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(135deg, #ff2d55, #4e085f); position: fixed; inset: 0; z-index: 9999; }
         .auth-box { background: white; padding: 25px; border-radius: 20px; width: 340px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); max-height: 90vh; overflow-y: auto; }
         #preview-img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid var(--main); margin-bottom: 10px; }
@@ -20,7 +20,7 @@
 
         input, select { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; }
         .btn-start { background: var(--main); color: white; border: none; padding: 14px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: bold; font-size: 1.1rem; margin-top: 10px; }
-        .btn-link { background: none; border: none; color: var(--main); text-decoration: underline; cursor: pointer; margin-top: 10px; font-size: 0.9rem; }
+        .btn-link { background: none; border: none; color: var(--main); text-decoration: underline; cursor: pointer; margin-top: 10px; font-size: 0.9rem; width: 100%; }
         .pass-hint { font-size: 0.7rem; color: #666; text-align: right; margin-bottom: 5px; }
 
         /* الهيكل الداخلي */
@@ -60,6 +60,7 @@
             </div>
             <input type="file" id="file-gal" accept="image/*" style="display:none" onchange="previewImg(this)">
             <input type="file" id="file-cam" accept="image/*" capture="user" style="display:none" onchange="previewImg(this)">
+            
             <input type="text" id="reg-name" placeholder="اسم المستخدم">
             <input type="password" id="reg-pass" placeholder="كلمة السر">
             <div class="pass-hint">يجب أن تحتوي على 6 أحرف ورقمين</div>
@@ -85,10 +86,11 @@
 
         <div class="auth-box" id="login-box" style="display:none;">
             <h2 style="color:var(--main); margin-bottom:10px;">تسجيل الدخول</h2>
+            <p style="font-size: 0.8rem; color: #666;">أهلاً بك مجدداً، ادخل بياناتك</p>
             <input type="text" id="log-name" placeholder="اسم المستخدم">
             <input type="password" id="log-pass" placeholder="كلمة السر">
-            <button class="btn-start" onclick="login()">تسجيل الدخول</button>
-            <button class="btn-link" onclick="toggleAuth(false)">إنشاء حساب جديد</button>
+            <button class="btn-start" onclick="login()">دخول</button>
+            <button class="btn-link" onclick="toggleAuth(false)">لا أملك حساباً؟ سجل الآن</button>
         </div>
     </div>
 
@@ -100,6 +102,7 @@
         <div id="p-settings" class="page">
             <button class="btn-start" style="background:#555" onclick="location.reload()">تسجيل الخروج</button>
         </div>
+
         <nav class="bottom-nav">
             <div class="nav-tab active" onclick="navTo('explore', this)">❤️ استكشف</div>
             <div class="nav-tab" onclick="navTo('chats', this)">💬 الرسائل</div>
@@ -121,6 +124,7 @@
     </div>
 
     <script>
+        // --- إعدادات Firebase ---
         const firebaseConfig = {
             apiKey: "YOUR_API_KEY",
             authDomain: "YOUR_APP.firebaseapp.com",
@@ -137,6 +141,7 @@
         let myPhoto = "";
         let chatTarget = "";
 
+        // التبديل بين التسجيل والدخول
         function toggleAuth(isLogin) {
             document.getElementById('register-box').style.display = isLogin ? 'none' : 'block';
             document.getElementById('login-box').style.display = isLogin ? 'block' : 'none';
@@ -159,6 +164,7 @@
             return letters === 6 && numbers === 2;
         }
 
+        // إنشاء حساب جديد
         function startJoin() {
             myName = document.getElementById('reg-name').value.trim();
             const pass = document.getElementById('reg-pass').value;
@@ -181,17 +187,22 @@
             });
         }
 
+        // تسجيل الدخول (لدي حساب)
         function login() {
-            const name = document.getElementById('log-name').value.trim();
-            const pass = document.getElementById('log-pass').value;
-            if(!name || !pass) return alert("ادخل الاسم وكلمة السر");
-            db.ref('users/' + name).get().then(snap => {
-                if(snap.exists() && snap.val().password === pass) {
-                    myName = name;
+            const nameInput = document.getElementById('log-name').value.trim();
+            const passInput = document.getElementById('log-pass').value;
+
+            if(!nameInput || !passInput) return alert("ادخل البيانات المطلوبة");
+
+            db.ref('users/' + nameInput).get().then(snap => {
+                if(snap.exists() && snap.val().password === passInput) {
+                    myName = nameInput;
                     myPhoto = snap.val().photo;
                     db.ref('users/' + myName).update({ online: true, lastSeen: "متصل الآن" });
                     enterSite();
-                } else { alert("البيانات غير صحيحة"); }
+                } else {
+                    alert("الاسم أو كلمة السر غير صحيحة!");
+                }
             });
         }
 
@@ -204,6 +215,7 @@
             listenToNotifs();
         }
 
+        // وظائف التنقل
         function navTo(pageId, el) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
             document.getElementById('p-' + pageId).classList.add('active-page');
@@ -246,9 +258,9 @@
 
         function openFullPhoto(url) {
             const w = window.open("");
-            w.document.write(`<div style="text-align:center; background:#000; height:100vh; display:flex; justify-content:center; align-items:center;">
+            w.document.write(`<div style="text-align:center; background:#000; height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center;">
                 <img src="${url}" style="max-width:100%; max-height:80vh;"><br>
-                <a href="${url}" download="photo.png" style="color:#fff; font-family:sans-serif; text-decoration:none; padding:15px; background:#ff2d55; border-radius:10px; margin-top:20px;">تحميل الصورة الشخصية</a>
+                <a href="${url}" download="photo.png" style="color:#fff; font-family:sans-serif; text-decoration:none; padding:15px; background:#ff2d55; border-radius:10px; margin-top:20px;">تحميل الصورة</a>
             </div>`);
         }
 
@@ -263,7 +275,7 @@
                         card.id = id;
                         card.className = 'notif-card';
                         card.style = "background:white; padding:15px; border-radius:15px; margin-bottom:10px; border-right:5px solid #ff2d55;";
-                        card.innerHTML = `<span>المستخدم <b>${u.name}</b> من <b>${u.state}</b> متصل الآن..</span>
+                        card.innerHTML = `<span><b>${u.name}</b> من <b>${u.state}</b> متصل الآن..</span>
                             <button class="btn-start" onclick="openChat('${u.name}')" style="padding:8px; font-size:0.9rem;">مراسلة الآن</button>`;
                         list.prepend(card);
                     }
