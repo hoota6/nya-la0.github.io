@@ -1,329 +1,357 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
+    <meta property="og:description" content="معالجة المشاكل التي تخص مواقع التواصل الاجتماعي وإنشاء المواقع الإلكترونية">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>شبكة البحير | Albeher Net</title>
+    <title>البحير نت</title>
+
     <style>
-        :root { --main: #ff2d55; --dark: #4e085f; --bg: #f0f2f5; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 0; overflow-x: hidden; }
+        /* --- تأثيرات شاشة الترحيب الذكية (AI Splash Screen) --- */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #1a1a2e 0%, #000000 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 1s ease-out, visibility 1s;
+            color: #ffffff !important;
+            text-align: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+        }
+
+        .ai-loader {
+            width: 80px;
+            height: 80px;
+            border: 3px solid transparent;
+            border-top-color: #0055d4;
+            border-radius: 50%;
+            animation: spin 1.5s linear infinite;
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .ai-loader::before {
+            content: "";
+            position: absolute;
+            top: 10px; left: 10px; right: 10px; bottom: 10px;
+            border: 3px solid transparent;
+            border-top-color: #ff0606;
+            border-radius: 50%;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .welcome-msg {
+            font-size: 1.2rem;
+            text-shadow: 0 0 15px #0055d4;
+            margin: 10px 0;
+            display: none; 
+            color: #ffffff !important;
+            max-width: 300px;
+        }
+
+        #welcome-msg-1 { display: block; animation: pulse 2s infinite; }
+
+        .success-company-img {
+            width: 70%;
+            max-width: 300px;
+            height: auto;
+            border-radius: 15px;
+            margin-top: 20px;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+            display: none;
+            animation: fadeIn 1s forwards;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.05); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #000000; 
+            font-size: large;
+            background-color: #f0f2f5;
+        }
+
+        #main-content p, #main-content h2, #main-content h6, #main-content label, #main-content div, #main-content span {
+            color: #000000 !important;
+        }
+
+        .contact-container {
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            width: 90%;
+            max-width: 550px;
+            text-align: center;
+            margin: 20px auto 40px auto;
+        }
+
+        .back-link-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 25px;
+            background: linear-gradient(45deg, #0055d4, #00a2ff);
+            color: white !important;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0, 85, 212, 0.3);
+            transition: 0.3s;
+        }
+
+        .back-link-btn:hover { transform: translateY(-3px); }
+
+        @media (max-width: 600px) {
+            .contact-container { padding: 20px; width: 95%; }
+            .welcome-msg { font-size: 1rem; }
+        }
+
+        .tech-main-image {
+            width: 100%;
+            max-width: 500px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        #clock-container {
+            background-color: #f8f8f8;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            width: fit-content;
+            margin: 20px auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #time { color: #0055d4 !important; font-size: 2rem; font-weight: bold; }
+
+        .form-group { margin-bottom: 20px; text-align: center; }
         
-        #auth-screen { position: fixed; inset: 0; background: linear-gradient(135deg, var(--main), var(--dark)); display: flex; justify-content: center; align-items: center; z-index: 10000; }
-        .auth-box { background: white; padding: 20px; border-radius: 20px; width: 340px; text-align: center; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
-        #preview-img { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 3px solid var(--main); margin-bottom: 10px; }
-        input, select, textarea { width: 100%; padding: 12px; margin: 6px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 1rem; }
-        .btn-reg { background: var(--main); color: white; border: none; padding: 14px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: bold; font-size: 1.1rem; }
-        
-        #main-app { display: none; }
-        .header { background: var(--main); color: white; padding: 15px; text-align: center; position: fixed; top: 0; width: 100%; z-index: 1000; font-weight: bold; }
-        .content { padding: 70px 10px 80px 10px; max-width: 600px; margin: 0 auto; }
-        .page { display: none; }
-        .active-page { display: block; }
+        textarea, input, select {
+            width: 95%;
+            padding: 12px;
+            border: 2px solid #979393;
+            border-radius: 10px;
+            box-sizing: border-box;
+            outline: none;
+            color: #000000;
+        }
 
-        .user-card { background: white; border-radius: 15px; overflow: hidden; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .user-card img { width: 100%; height: 300px; object-fit: cover; }
-        .user-info { padding: 15px; }
+        button {
+            background-color: rgb(0, 116, 231);
+            color: white !important;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 85%;
+        }
 
-        .navbar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #ddd; z-index: 1000; }
-        .nav-item { cursor: pointer; color: #888; font-size: 0.85rem; text-align: center; }
-        .nav-item.active { color: var(--main); font-weight: bold; }
+        .fb-link {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #f0f2f5;
+            color: #0055d4 !important;
+            text-decoration: none !important;
+            border-radius: 50px;
+            font-weight: bold;
+            transition: 0.3s;
+            border: 1px solid #0055d4;
+            margin-bottom: 10px;
+        }
 
-        #msg-panel { position: fixed; bottom: 0; width: 100%; background: white; padding: 20px; border-radius: 20px 20px 0 0; box-shadow: 0 -5px 25px rgba(0,0,0,0.2); z-index: 2000; display: none; box-sizing: border-box; }
-        .typing-hint { font-size: 0.75rem; color: var(--main); font-style: italic; display: none; }
+        #main-content { display: none; width: 100%; }
+
+        #success-page {
+            display: none;
+            text-align: center;
+            padding: 50px 20px;
+            position: fixed; /* لضمان ظهورها فوق كل شيء عند الإرسال */
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #f0f2f5;
+            z-index: 10000;
+        }
     </style>
 </head>
+
 <body>
 
-    <div id="auth-screen">
-        <div class="auth-box" id="reg-box">
-            <h2 style="color:var(--main);">تسجيل جديد</h2>
-            <img id="preview-img" src="https://cdn-icons-png.flaticon.com/512/149/149071.png">
-            <input type="file" id="f-in" style="display:none" onchange="loadFile(this)">
-            <button onclick="document.getElementById('f-in').click()" style="margin-bottom:10px; cursor:pointer;">اختيار صورة</button>
-            
-            <input type="text" id="r-name" placeholder="اسم المستخدم">
-            <input type="password" id="r-pass" placeholder="كلمة السر">
-            
-            <div style="display:flex; gap:5px;">
-                <input type="number" id="r-age" placeholder="العمر">
-                <select id="r-gen">
-                    <option value="ذكر">ذكر</option>
-                    <option value="أنثى">أنثى</option>
-                </select>
-            </div>
-
-            <select id="r-st">
-                <option value="">اختر الولاية</option>
-                <option value="الخرطوم">الخرطوم</option>
-                <option value="الجزيرة">الجزيرة</option>
-                <option value="البحر الأحمر">البحر الأحمر</option>
-                <option value="كسلا">كسلا</option>
-                <option value="القضارف">القضارف</option>
-                <option value="سنار">سنار</option>
-                <option value="النيل الأبيض">النيل الأبيض</option>
-                <option value="النيل الأزرق">النيل الأزرق</option>
-                <option value="الشمالية">الشمالية</option>
-                <option value="نهر النيل">نهر النيل</option>
-                <option value="شمال كردفان">شمال كردفان</option>
-                <option value="جنوب كردفان">جنوب كردفان</option>
-                <option value="غرب كردفان">غرب كردفان</option>
-                <option value="شمال دارفور">شمال دارفور</option>
-                <option value="جنوب دارفور">جنوب دارفور</option>
-                <option value="غرب دارفور">غرب دارفور</option>
-                <option value="وسط دارفور">وسط دارفور</option>
-                <option value="شرق دارفور">شرق دارفور</option>
-            </select>
-
-            <select id="r-soc">
-                <option value="أعزب">أعزب</option>
-                <option value="مطلق">مطلق</option>
-                <option value="أرمل">أرمل</option>
-                <option value="متزوج">متزوج</option>
-            </select>
-
-            <button class="btn-reg" onclick="doRegister()">إنشاء حساب ودخول</button>
-            <button onclick="toggleView(true)" style="background:none; border:none; margin-top:10px; cursor:pointer;">لدي حساب بالفعل</button>
-        </div>
-
-        <div class="auth-box" id="log-box" style="display:none;">
-            <h2 style="color:var(--dark);">دخول للموقع</h2>
-            <input type="text" id="l-name" placeholder="اسم المستخدم">
-            <input type="password" id="l-pass" placeholder="كلمة السر">
-            <button class="btn-reg" style="background:var(--dark)" onclick="doLogin()">دخول الآن</button>
-            <button onclick="toggleView(false)" style="background:none; border:none; margin-top:10px; cursor:pointer;">إنشاء حساب جديد</button>
+    <div id="success-page">
+        <div class="contact-container" style="margin-top: 100px;">
+            <h2 style="color: #28a745 !important;">✅ تم إرسال الرسالة بنجاح</h2>
+            <p>شكراً لتواصلك معنا، سنرد عليك قريباً جداً.</p>
+            <br>
+            <a href="javascript:void(0)" onclick="goToHome()" class="back-link-btn">هل تريد الرجوع لموقع البحير نت؟ 🌐</a>
         </div>
     </div>
 
-    <div id="main-app">
-        <div class="header" id="h-title">استكشف أصدقاء</div>
-        <div class="content">
-            <div id="p-explore" class="page active-page"></div>
-            <div id="p-chats" class="page">
-                <div id="chats-list"></div>
+    <div id="splash-screen">
+        <div class="ai-loader"></div>
+        <div class="welcome-msg-container">
+            <div id="welcome-msg-1" class="welcome-msg">مرحباً بكم في موقع البحير نت <br> عالم التكنولوجيا والذكاء الاصطناعي</div>
+            <div id="welcome-msg-2" class="welcome-msg">نسعى دائماً لتقديم الأفضل لكم في عالم البرمجة</div>
+            <div id="thanks-msg" class="welcome-msg">شكرآ لصبرك ايها الزائر</div>
+            <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=600&q=80" alt="Success" class="success-company-img" id="success-img">
+        </div>
+    </div>
+
+    <div id="main-content">
+        <div class="contact-container">
+            <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=800&q=80" class="tech-main-image" alt="Tech Solutions">
+
+            <div id="clock-container">
+                <div id="date">جاري التحميل...</div>
+                <div id="time">00:00:00</div>
             </div>
-            <div id="p-settings" class="page">
-                <div style="background:white; padding:20px; border-radius:15px; text-align:center;">
-                    <button onclick="logOut()" style="width:100%; padding:12px; margin-bottom:10px; border:none; background:#eee; border-radius:10px;">تسجيل الخروج</button>
-                    <button onclick="deleteAccount()" style="width:100%; padding:12px; border:none; background:#ffebee; color:red; border-radius:10px; font-weight:bold;">حذف الحساب نهائياً</button>
+
+            <hr>
+            <p>يوفر موقع البحير نت حلول تقنية كاملة في مجال التكنولوجيا ومواقع التواصل الاجتماعية...</p>
+            <h6 style="font-weight: bold;">تم بناء وتصميم الموقع بواسطة المبرمج محمود عصام...</h6>
+            <hr>
+
+            <br>
+            <a href="https://www.facebook.com/profile.php?id=100077831043049" target="_blank" class="fb-link">لمتابعة مبرمج الموقع على فيسبوك 🌐</a>
+            <br>
+            <a href="https://www.facebook.com/profile.php?id=61573366409779" target="_blank" class="fb-link">لمتابعة اخبار صفحتنا علي فيسبوك 🌐</a>
+            <br><br>
+
+            <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=600&q=80" style="width: 100%; border-radius: 10px;">
+
+            <form action="https://formsubmit.co/fastfyks@gmail.com" method="post">
+                <input type="hidden" name="_next" id="next-url" value="">
+                <input type="hidden" name="_captcha" value="false">
+                <input type="hidden" name="_template" value="table">
+                <input type="hidden" name="_subject" value="رسالة جديدة!">
+
+                <div class="form-group">
+                    <input type="text" name="الاسم الكامل" placeholder="ادخل الاسم الكامل" required>
                 </div>
-            </div>
-        </div>
+                <div class="form-group">
+                    <select name="المشكلة" required>
+                        <option value="" disabled selected>اختار نوع تواصلك</option>
+                        <option value="فتح حساب او كاش">فتح حساب او كاش</option> 
+                        <option value="امرا اخر"> امرا اخر</option>
+                        <option value="برمجة شبكات الواي فاي"> برمجة شبكات الواي فاي</option>
+                        <option value="ربط أنتينا"> ربط أنتينا</option>
+                        <option value="استضافة لموقع إنتيرنيتي">استضافة لموقع إلكتروني</option>
+                        <option value="تم قفل حسابي علي فيسبوك">تم قفل حسابي علي فيسبوك</option>
+                        <option value="تأمين حساب فايسبوك ومواقع التواصل الاجتماعية الاخري">تأمين حساب فيسبوك ومواقع التواصل الاجتماعية الاخري</option>
+                        <option value="انا تقني تكنولوجيا المعلومات واريد شراكة معك"> انا تقني تكنولوجيا المعلومات واريد شراكة معك</option>
+                        <option value="تأكيد حساب الفيسبوك بالبطاقة القومية"> تأكيد حساب فيسبوك بالبطاقة القومية</option>
+                        <option value="فتح حساب واتساب/تويتر/انستغرام">فتح حساب (واتساب/تويتر/انستغرام)</option>
+                        <option value="فتح حساب بنكك">فتح حساب بنكك</option>
+                        <option value="فتح حساب فوري">فتح حساب فوري</option>
+                        <option value="فتح حساب بنك المشرق">فتح حساب بنك المشرق</option>
+                        <option value="فتح حساب البنك الاسلامي السوداني">فتح حساب البنك الاسلامي السوداني</option>
+                        <option value="فتح حساب بنك النيل">فتح حساب بنك النيل</option>
+                        <option value="فتح محفظة الكترونية">فتح محفظة الكترونية</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>اكتب رسالتك داخل المستطيل</label>
+                    <textarea name="الرسالة" rows="4" placeholder="اكتب رسالتك..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>ما تقييمك لخدماتنا؟</label>
+                    <select name="تقييم الخدمات" required>
+                        <option value="" disabled selected>اختر خياراً...</option>
+                        <option value="راضي جدا">راضي جدا</option>
+                        <option value="راضي">راضي</option>
+                        <option value="غير راضي">غير راضي</option>
+                    </select>
+                </div>
+                <button type="submit">إرسال البيانات</button>
+            </form>
 
-        <div class="navbar">
-            <div class="nav-item active" onclick="nav('explore','استكشف',this)">🔍<br>استكشف</div>
-            <div class="nav-item" onclick="nav('chats','المحادثات',this)">💬<br>الرسائل</div>
-            <div class="nav-item" onclick="nav('settings','الإعدادات',this)">⚙️<br>الإعدادات</div>
+            <hr>
+            <a href="#" style="color: #0055d4 !important; font-weight: bold; text-decoration: none;">اضغط هنا للرجوع للأعلى</a>
         </div>
-    </div>
-
-    <div id="msg-panel">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-            <b id="chat-with-name" style="color:var(--main); font-size:1.1rem;">اسم المستخدم</b>
-            <span id="typing-hint" class="typing-hint">يكتب الآن...</span>
-        </div>
-        <textarea id="msg-input" placeholder="اكتب رسالتك..." oninput="handleTyping()"></textarea>
-        <button class="btn-reg" onclick="sendMessage()">إرسال</button>
-        <center><button onclick="closeMsg()" style="margin-top:10px; border:none; background:none; color:#999;">إغلاق</button></center>
     </div>
 
     <script>
-        // استخدام مفاتيح تخزين فريدة لضمان عدم حدوث تضارب
-        const STORAGE_KEY_USERS = 'albeher_users_final_v1';
-        const STORAGE_KEY_MSGS = 'albeher_msgs_final_v1';
-        const SESSION_KEY = 'albeher_session_v1';
+        // إعداد رابط العودة بشكل يضمن بقاء المستخدم في نفس الصفحة مع معامل success
+        document.getElementById('next-url').value = window.location.origin + window.location.pathname + "?status=success";
 
-        let users = JSON.parse(localStorage.getItem(STORAGE_KEY_USERS) || '[]');
-        let msgs = JSON.parse(localStorage.getItem(STORAGE_KEY_MSGS) || '[]');
-        let current = JSON.parse(sessionStorage.getItem(SESSION_KEY));
-        let targetId = null;
-        let tempImg = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+        function updateClock() {
+            const now = new Date();
+            const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('date').textContent = now.toLocaleDateString('ar-EG', dateOptions);
+            document.getElementById('time').textContent = now.toLocaleTimeString('ar-EG');
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
 
-        if(current) enter();
-
-        function loadFile(i) {
-            const r = new FileReader();
-            r.onload = (e) => { tempImg = e.target.result; document.getElementById('preview-img').src = tempImg; };
-            if(i.files[0]) r.readAsDataURL(i.files[0]);
+        function goToHome() {
+            window.location.href = window.location.pathname;
         }
 
-        function toggleView(v) {
-            document.getElementById('reg-box').style.display = v ? 'none' : 'block';
-            document.getElementById('log-box').style.display = v ? 'block' : 'none';
-        }
-
-        function doRegister() {
-            const n = document.getElementById('r-name').value.trim();
-            const p = document.getElementById('r-pass').value.trim();
-            const age = document.getElementById('r-age').value;
-            const st = document.getElementById('r-st').value;
-
-            // التحقق من الحقول الأساسية
-            if(!n) return alert("الرجاء كتابة اسم المستخدم");
-            if(!p) return alert("الرجاء كتابة كلمة السر");
-            if(!age) return alert("الرجاء تحديد العمر");
-            if(!st) return alert("الرجاء اختيار الولاية");
-
-            const u = {
-                id: Date.now(),
-                name: n,
-                pass: p,
-                age: age,
-                gen: document.getElementById('r-gen').value,
-                st: st,
-                soc: document.getElementById('r-soc').value,
-                img: tempImg,
-                lastSeen: Date.now(),
-                isTyping: false
-            };
-
-            users.push(u);
-            saveAll();
-            current = u;
-            sessionStorage.setItem(SESSION_KEY, JSON.stringify(u));
-            enter();
-        }
-
-        function doLogin() {
-            const n = document.getElementById('l-name').value.trim();
-            const p = document.getElementById('l-pass').value.trim();
-            const u = users.find(x => x.name === n && x.pass === p);
-            if(u) {
-                current = u;
-                sessionStorage.setItem(SESSION_KEY, JSON.stringify(u));
-                enter();
-            } else {
-                alert("الاسم أو كلمة السر غير صحيحة");
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            // الحل: التحقق من الرابط فور التحميل
+            if (urlParams.get('status') === 'success') {
+                document.getElementById('success-page').style.display = 'block';
+                document.getElementById('splash-screen').style.display = 'none';
+                document.getElementById('main-content').style.display = 'none';
+                return; // التوقف هنا لمنع تشغيل شاشة الترحيب
             }
-        }
 
-        function enter() {
-            document.getElementById('auth-screen').style.display = 'none';
-            document.getElementById('main-app').style.display = 'block';
-            sync(); // مزامنة فورية عند الدخول
-            setInterval(sync, 3000); // تحديث دوري
-        }
+            // إذا لم يكن هناك status=success، نشغل شاشة الترحيب العادية
+            const m1 = document.getElementById('welcome-msg-1');
+            const m2 = document.getElementById('welcome-msg-2');
+            const m3 = document.getElementById('thanks-msg');
+            const img = document.getElementById('success-img');
+            const splash = document.getElementById('splash-screen');
+            const main = document.getElementById('main-content');
 
-        function sync() {
-            if(!current) return;
-            const me = users.find(x => x.id === current.id);
-            if(me) {
-                me.lastSeen = Date.now();
-                saveAll();
-            }
-            drawExplore();
-            if(targetId) {
-                const peer = users.find(x => x.id === targetId);
-                if(peer) document.getElementById('typing-hint').style.display = peer.isTyping ? 'block' : 'none';
-            }
-            if(document.getElementById('p-chats').classList.contains('active-page')) drawChats();
-        }
+            setTimeout(() => { 
+                m1.style.display = 'none'; 
+                m2.style.display = 'block'; 
+            }, 5000);
 
-        function drawExplore() {
-            const box = document.getElementById('p-explore');
-            if(!box) return;
-            box.innerHTML = "";
-            users.filter(u => u.id !== current.id).forEach(u => {
-                const online = (Date.now() - u.lastSeen) < 15000;
-                box.innerHTML += `
-                    <div class="user-card">
-                        <img src="${u.img}">
-                        <div class="user-info">
-                            <b>${u.name}</b> ${online ? '<small style="color:green">● متصل الآن</small>' : '<small style="color:gray">نشط منذ قليل</small>'}<br>
-                            <small>${u.gen} | ${u.age} سنة | ${u.st} | ${u.soc}</small>
-                        </div>
-                        <div style="padding:10px; border-top:1px solid #eee; text-align:center;">
-                            <button onclick="openChat(${u.id}, '${u.name}')" style="background:var(--main); color:white; border:none; padding:10px 25px; border-radius:25px; cursor:pointer; font-weight:bold;">مراسلة</button>
-                        </div>
-                    </div>`;
-            });
-        }
+            setTimeout(() => { 
+                m2.style.display = 'none'; 
+                m3.style.display = 'block'; 
+                img.style.display = 'block'; 
+            }, 7500);
 
-        function openChat(id, name) {
-            targetId = id;
-            document.getElementById('chat-with-name').innerText = name;
-            document.getElementById('msg-panel').style.display = 'block';
-        }
-
-        function handleTyping() {
-            const me = users.find(x => x.id === current.id);
-            if(!me) return;
-            me.isTyping = true;
-            saveAll();
-            clearTimeout(window.typeTimer);
-            window.typeTimer = setTimeout(() => {
-                me.isTyping = false;
-                saveAll();
-            }, 3000);
-        }
-
-        function sendMessage() {
-            const txt = document.getElementById('msg-input').value.trim();
-            if(!txt) return;
-            msgs.push({
-                from: current.id,
-                to: targetId,
-                txt: txt,
-                time: new Date().toLocaleTimeString('ar-EG', {hour: '2-digit', minute:'2-digit'})
-            });
-            document.getElementById('msg-input').value = "";
-            saveAll();
-            alert("تم إرسال الرسالة بنجاح");
-        }
-
-        function drawChats() {
-            const box = document.getElementById('chats-list');
-            if(!box) return;
-            box.innerHTML = "";
-            const myMsgs = msgs.filter(m => m.to === current.id || m.from === current.id);
-            if(myMsgs.length === 0) {
-                box.innerHTML = "<center style='padding:50px; color:#888;'>لا توجد محادثات سابقة</center>";
-                return;
-            }
-            myMsgs.slice().reverse().forEach(m => {
-                const isMe = m.from === current.id;
-                const peer = users.find(u => u.id === (isMe ? m.to : m.from));
-                box.innerHTML += `
-                    <div class="item-list">
-                        <div style="display:flex; justify-content:space-between;">
-                            <b>${isMe ? "أنت" : (peer ? peer.name : "مستخدم")}</b>
-                            <span style="font-size:0.7rem; color:#999;">${m.time}</span>
-                        </div>
-                        <div style="margin-top:5px; color:#444;">${m.txt}</div>
-                    </div>`;
-            });
-        }
-
-        function nav(p, t, el) {
-            document.querySelectorAll('.page').forEach(x => x.classList.remove('active-page'));
-            document.getElementById('p-' + p).classList.add('active-page');
-            document.getElementById('h-title').innerText = t;
-            document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
-            el.classList.add('active');
-            if(p === 'chats') drawChats();
-        }
-
-        function saveAll() {
-            localStorage.setItem(STORAGE_KEY_USERS, JSON.stringify(users));
-            localStorage.setItem(STORAGE_KEY_MSGS, JSON.stringify(msgs));
-        }
-
-        function logOut() {
-            sessionStorage.removeItem(SESSION_KEY);
-            location.reload();
-        }
-
-        function deleteAccount() {
-            if(confirm("هل أنت متأكد من حذف حسابك نهائياً؟")) {
-                users = users.filter(u => u.id !== current.id);
-                saveAll();
-                logOut();
-            }
-        }
-
-        function closeMsg() {
-            document.getElementById('msg-panel').style.display = 'none';
-            targetId = null;
-        }
+            setTimeout(() => {
+                splash.style.opacity = '0';
+                setTimeout(() => { 
+                    splash.style.display = 'none'; 
+                    main.style.display = 'block'; 
+                }, 1000);
+            }, 10000);
+        };
     </script>
 </body>
 </html>
