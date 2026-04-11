@@ -3,210 +3,188 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SudanBook Super App</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>شبكة تواصل البحير | ملف شخصي كامل</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+    
     <style>
-        :root {
-            --primary: #00a859; /* لون السودان */
-            --bankak: #2c2e81;  /* لون بنكك */
-            --love: #e91e63;    /* لون التعارف */
-            --bg: #f0f2f5;
-            --card: #ffffff;
-            --text: #1c1e21;
-        }
+        :root { --main: #0055d4; --bg: #f0f2f5; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 0; }
+        
+        /* شاشة الدخول والتسجيل */
+        #login-screen { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: var(--main); }
+        .auth-box { background: white; padding: 25px; border-radius: 15px; width: 320px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        
+        input, select, textarea { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-family: inherit; }
+        button { background: var(--main); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            background: var(--bg);
-            margin: 0;
-            padding-bottom: 70px;
-            direction: rtl;
-        }
+        /* الواجهة الرئيسية */
+        #main-app { display: none; }
+        .nav { background: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: fixed; width: 100%; top: 0; z-index: 100; box-sizing: border-box;}
+        
+        .container { max-width: 600px; margin: 80px auto 20px auto; padding: 0 15px; }
+        
+        /* كرت المستخدم */
+        .user-card { background: white; padding: 15px; border-radius: 15px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .user-info-flex { display: flex; align-items: center; }
+        .user-img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; background: #eee; border: 2px solid var(--main); }
+        .user-details { margin-right: 15px; flex: 1; }
+        .user-details b { font-size: 1.1rem; }
+        .status-tag { font-size: 0.75rem; color: #666; background: #eee; padding: 2px 8px; border-radius: 10px; }
 
-        /* Header */
-        header {
-            background: var(--card);
-            padding: 10px 15px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: sticky;
-            top: 0; z-index: 1000;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .search-bar {
-            flex: 1;
-            background: var(--bg);
-            border-radius: 20px;
-            padding: 8px 15px;
-            margin: 0 10px;
-            display: flex;
-            align-items: center;
-        }
-
-        .search-bar input {
-            border: none; background: transparent; outline: none; width: 100%; margin-right: 5px;
-        }
-
-        /* Navigation */
-        nav {
-            position: fixed;
-            bottom: 0; width: 100%;
-            background: var(--card);
-            display: flex;
-            justify-content: space-around;
-            padding: 12px 0;
-            border-top: 1px solid #ddd;
-            z-index: 1000;
-        }
-
-        .nav-item { color: #65676b; cursor: pointer; text-align: center; font-size: 12px; }
-        .nav-item i { font-size: 20px; display: block; }
-        .nav-item.active { color: var(--primary); }
-
-        /* Pages */
-        .page { display: none; padding: 15px; max-width: 500px; margin: auto; }
-        .page.active { display: block; }
-
-        /* Cards */
-        .card { background: var(--card); border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-
-        /* Bankak Style */
-        .bankak-header { background: var(--bankak); color: white; border-radius: 15px; padding: 20px; text-align: center; }
-        .btn-transfer { background: var(--bankak); color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; }
-
-        /* Dating Style */
-        .dating-card { position: relative; border-radius: 15px; overflow: hidden; height: 400px; }
-        .dating-card img { width: 100%; height: 100%; object-fit: cover; }
-        .dating-info { position: absolute; bottom: 0; width: 100%; padding: 20px; background: linear-gradient(transparent, rgba(0,0,0,0.8)); color: white; box-sizing: border-box; }
-
-        .status-offline { background: #333; color: white; font-size: 11px; text-align: center; padding: 4px; display: none; }
+        /* نافذة الدردشة */
+        #chat-window { display: none; position: fixed; inset: 0; background: white; z-index: 200; flex-direction: column; }
+        .chat-header { padding: 15px; background: var(--main); color: white; display: flex; align-items: center; justify-content: space-between; }
+        #messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; background: #f9f9f9; }
+        .msg { padding: 10px 15px; border-radius: 15px; margin-bottom: 8px; max-width: 75%; }
+        .msg.sent { background: var(--main); color: white; align-self: flex-start; }
+        .msg.received { background: #e4e6eb; align-self: flex-end; }
     </style>
 </head>
 <body>
 
-<div id="offline-msg" class="status-offline">وضع الأوفلاين نشط - سيتم المزامنة عند توفر الشبكة</div>
-
-<header>
-    <div style="color: var(--primary); font-weight: bold; font-size: 22px;">S</div>
-    <div class="search-bar">
-        <i class="fas fa-search" style="color: #65676b;"></i>
-        <input type="text" placeholder="بحث عن أشخاص أو خدمات..." oninput="handleGlobalSearch()">
+    <div id="login-screen">
+        <div class="auth-box">
+            <h2 style="text-align:center; color: var(--main);">إنشاء حساب جديد</h2>
+            <input type="text" id="username" placeholder="اسم المستخدم">
+            <input type="password" id="password" placeholder="كلمة السر">
+            <input type="text" id="hobby" placeholder="هوايتك (مثلاً: البرمجة، السفر)">
+            <select id="social-status">
+                <option value="أعزب">أعزب</option>
+                <option value="متزوج">متزوج</option>
+                <option value="خاطب">خاطب</option>
+            </select>
+            <p style="font-size: 0.8rem; margin: 5px 0;">رابط صورة البروفايل (اختياري):</p>
+            <input type="text" id="photoURL" placeholder="https://example.com/image.jpg">
+            <button onclick="registerAndLogin()">تسجيل والدخول</button>
+        </div>
     </div>
-    <i class="fas fa-bell" style="color: #65676b;"></i>
-</header>
 
-<div id="home" class="page active">
-    <div class="card">
-        <textarea id="postText" style="width:100%; border:none; outline:none; resize:none;" placeholder="بماذا تفكر؟"></textarea>
-        <button onclick="publishPost()" style="background:var(--primary); color:white; border:none; padding:8px 20px; border-radius:20px; float:left; margin-top:10px;">نشر</button>
-        <div style="clear:both;"></div>
+    <div id="main-app">
+        <div class="nav">
+            <b style="color: var(--main);">شبكة البحير نت</b>
+            <span onclick="location.reload()" style="cursor:pointer; color:red; font-weight:bold;">خروج</span>
+        </div>
+
+        <div class="container" id="users-list">
+            <p style="text-align: center;">جاري جلب المستخدمين...</p>
+        </div>
     </div>
-    <div id="feed"></div>
-</div>
 
-<div id="dating" class="page">
-    <h3 style="color: var(--love);">اكتشف شريك حياتك</h3>
-    <div id="dating-container"></div>
-</div>
-
-<div id="bank" class="page">
-    <div class="bankak-header">
-        <small>رصيدك الحالي</small>
-        <h2 id="balance">540,200.00 SDG</h2>
+    <div id="chat-window">
+        <div class="chat-header">
+            <button onclick="closeChat()" style="width:auto; background:none; font-size:20px;">➡️</button>
+            <span id="chat-with-name">الدردشة</span>
+            <div></div>
+        </div>
+        <div id="messages"></div>
+        <div style="padding:15px; display:flex; border-top:1px solid #ddd;">
+            <input type="text" id="msgText" placeholder="اكتب رسالة..." style="margin:0; border-radius: 20px;">
+            <button onclick="sendMessage()" style="width:80px; margin-right:5px; border-radius:20px;">إرسال</button>
+        </div>
     </div>
-    <div class="card" style="margin-top: -20px;">
-        <h4>تحويل سريع</h4>
-        <input type="number" id="accNum" placeholder="رقم الحساب" style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #ddd; border-radius:8px;">
-        <input type="number" id="amount" placeholder="المبلغ" style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #ddd; border-radius:8px;">
-        <button class="btn-transfer" onclick="handleTransfer()">إرسال الآن</button>
-    </div>
-</div>
 
-<div id="profile" class="page">
-    <div class="card" style="text-align: center;">
-        <img src="https://i.pravatar.cc/150?u=me" style="width:100px; height:100px; border-radius:50%; border:3px solid var(--primary);">
-        <h2>أحمد السوداني</h2>
-        <p style="color: #65676b;">مطور تطبيقات | الخرطوم</p>
-        <button style="width:100%; padding:10px; background:#eee; border:none; border-radius:8px;">تعديل الملف الشخصي</button>
-    </div>
-</div>
+    <script>
+        // --- إعدادات Firebase ---
+        const firebaseConfig = {
+            apiKey: "ضع_هنا_API_KEY",
+            authDomain: "مشروعك.firebaseapp.com",
+            databaseURL: "https://مشروعك.firebaseio.com",
+            projectId: "مشروعك",
+            storageBucket: "مشروعك.appspot.com",
+            messagingSenderId: "12345678",
+            appId: "1:12345678:web:abc123"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
-<nav>
-    <div class="nav-item active" onclick="showPage('home', this)"><i class="fas fa-home"></i>الموجز</div>
-    <div class="nav-item" onclick="showPage('dating', this)"><i class="fas fa-heart"></i>تعارف</div>
-    <div class="nav-item" onclick="showPage('bank', this)"><i class="fas fa-wallet"></i>بنكك</div>
-    <div class="nav-item" onclick="showPage('profile', this)"><i class="fas fa-user"></i>أنا</div>
-</nav>
+        let myUser = "";
+        let chatTarget = "";
 
-<script>
-    // بيانات تجريبية
-    const users = [
-        { name: "سارة محمد", age: 24, city: "الخرطوم", img: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=400" },
-        { name: "محمد عوض", age: 29, city: "مدني", img: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400" }
-    ];
+        function registerAndLogin() {
+            const user = document.getElementById('username').value.trim();
+            const hobby = document.getElementById('hobby').value.trim();
+            const status = document.getElementById('social-status').value;
+            const photo = document.getElementById('photoURL').value.trim() || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
-    let myBalance = 540200;
+            if (!user) return alert("ادخل اسم المستخدم");
 
-    // نظام التنقل
-    function showPage(pageId, el) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        document.getElementById(pageId).classList.add('active');
-        el.classList.add('active');
-        
-        if(pageId === 'dating') renderDating();
-    }
+            myUser = user;
+            
+            // حفظ بيانات المستخدم مع التوقيت
+            const userData = {
+                username: myUser,
+                hobby: hobby,
+                socialStatus: status,
+                photo: photo,
+                lastSeen: "نشط الآن"
+            };
 
-    // نظام النشر (Home)
-    function publishPost() {
-        const text = document.getElementById('postText').value;
-        if(!text) return;
-        const feed = document.getElementById('feed');
-        const post = `<div class="card"><b>أنت</b><p>${text}</p><small>الآن</small></div>`;
-        feed.innerHTML = post + feed.innerHTML;
-        document.getElementById('postText').value = "";
-    }
+            db.ref('users/' + myUser).set(userData);
+            
+            // تحديث آخر ظهور عند إغلاق المتصفح
+            db.ref('users/' + myUser + '/lastSeen').onDisconnect().set(new Date().toLocaleString('ar-EG'));
 
-    // نظام التعارف (Dating)
-    function renderDating() {
-        const container = document.getElementById('dating-container');
-        container.innerHTML = users.map(u => `
-            <div class="card dating-card">
-                <img src="${u.img}">
-                <div class="dating-info">
-                    <h3>${u.name}، ${u.age}</h3>
-                    <p>${u.city}</p>
-                    <button style="background:var(--love); color:white; border:none; padding:8px 15px; border-radius:20px;">إرسال إعجاب</button>
-                </div>
-            </div>
-        `).join('');
-    }
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('main-app').style.display = 'block';
+            loadUsers();
+        }
 
-    // نظام التحويل (Bankak)
-    function handleTransfer() {
-        const amt = document.getElementById('amount').value;
-        if(amt > myBalance) return alert("الرصيد غير كافٍ");
-        myBalance -= amt;
-        document.getElementById('balance').innerText = myBalance.toLocaleString() + ".00 SDG";
-        alert("تم التحويل بنجاح! رقم العملية: " + Math.floor(Math.random()*1000000));
-    }
+        function loadUsers() {
+            db.ref('users').on('value', snapshot => {
+                const list = document.getElementById('users-list');
+                list.innerHTML = "";
+                snapshot.forEach(child => {
+                    const u = child.val();
+                    if (u.username !== myUser) {
+                        list.innerHTML += `
+                            <div class="user-card">
+                                <div class="user-info-flex">
+                                    <img src="${u.photo}" class="user-img">
+                                    <div class="user-details">
+                                        <b>${u.username}</b> <span class="status-tag">${u.socialStatus}</span><br>
+                                        <small>الهواية: ${u.hobby || 'غير محددة'}</small><br>
+                                        <small style="color:green">آخر ظهور: ${u.lastSeen}</small>
+                                    </div>
+                                    <button onclick="openChat('${u.username}')" style="width:auto; padding:5px 15px;">دردشة</button>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+            });
+        }
 
-    // فحص الإنترنت (Offline Logic)
-    window.addEventListener('offline', () => {
-        document.getElementById('offline-msg').style.display = 'block';
-    });
-    window.addEventListener('online', () => {
-        document.getElementById('offline-msg').style.display = 'none';
-    });
+        // --- وظائف الدردشة (نفس المنطق السابق) ---
+        function openChat(name) {
+            chatTarget = name;
+            document.getElementById('chat-with-name').innerText = name;
+            document.getElementById('chat-window').style.display = 'flex';
+            loadMessages();
+        }
+        function closeChat() { document.getElementById('chat-window').style.display = 'none'; }
 
-    // البحث (Search Logic)
-    function handleGlobalSearch() {
-        // يمكنك إضافة كود فلترة هنا للبحث في المستخدمين
-        console.log("جاري البحث...");
-    }
-</script>
+        function sendMessage() {
+            const txt = document.getElementById('msgText').value.trim();
+            if (!txt) return;
+            const chatId = [myUser, chatTarget].sort().join('_');
+            db.ref('chats/' + chatId).push({ sender: myUser, text: txt, time: Date.now() });
+            document.getElementById('msgText').value = "";
+        }
 
+        function loadMessages() {
+            const chatId = [myUser, chatTarget].sort().join('_');
+            db.ref('chats/' + chatId).on('value', snap => {
+                const box = document.getElementById('messages');
+                box.innerHTML = "";
+                snap.forEach(msgSnap => {
+                    const m = msgSnap.val();
+                    const cls = m.sender === myUser ? 'sent' : 'received';
+                    box.innerHTML += `<div class="msg ${cls}">${m.text}</div>`;
+                });
+                box.scrollTop = box.scrollHeight;
+            });
+        }
+    </script>
 </body>
 </html>
