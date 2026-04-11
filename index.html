@@ -4,265 +4,128 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>شبكة البحير | Albeher Net</title>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
     
     <style>
-        :root { --main: #ff2d55; --bg: #f0f2f5; }
+        :root { --main: #ff2d55; --bg: #f0f2f5; --dark: #4e085f; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 0; }
         
-        /* شاشة البداية */
-        #login-screen { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(135deg, #ff2d55, #4e085f); position: fixed; inset: 0; z-index: 9999; }
+        #login-screen { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(135deg, var(--main), var(--dark)); position: fixed; inset: 0; z-index: 9999; }
         .auth-box { background: white; padding: 25px; border-radius: 20px; width: 340px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); max-height: 95vh; overflow-y: auto; }
         
         #preview-img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid var(--main); margin-bottom: 10px; }
-        .upload-row { display: flex; gap: 8px; margin-bottom: 10px; }
-        .btn-up { flex: 1; background: #eee; padding: 8px; border-radius: 10px; cursor: pointer; font-size: 0.8rem; }
-
         input, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 1rem; }
+        
+        /* زر التسجيل */
         .btn-start { background: var(--main); color: white; border: none; padding: 14px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: bold; font-size: 1.1rem; margin-top: 15px; }
         
-        /* زر "لدي حساب بالفعل" تحت زر التسجيل */
-        .btn-login-toggle { background: #4e085f; color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: bold; margin-top: 10px; }
+        /* الزر المطلوب: لدي حساب بالفعل */
+        .btn-login-toggle { background: var(--dark); color: white; border: none; padding: 14px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: bold; font-size: 1.1rem; margin-top: 10px; display: block; }
+        
         .btn-link { background: none; border: none; color: var(--main); text-decoration: underline; cursor: pointer; margin-top: 15px; display: block; width: 100%; }
 
-        /* الهيكل الداخلي للموقع */
+        /* تنسيق الموقع الداخلي */
         #main-site { display: none; padding-bottom: 80px; }
-        .header { background: var(--main); color: white; padding: 15px; text-align: center; position: fixed; top: 0; width: 100%; z-index: 1000; font-weight: bold; font-size: 1.2rem; }
+        .header { background: var(--main); color: white; padding: 15px; text-align: center; position: fixed; top: 0; width: 100%; z-index: 1000; font-weight: bold; }
         .page { display: none; padding: 75px 15px 20px 15px; max-width: 600px; margin: 0 auto; }
         .active-page { display: block; }
-
-        .explore-card { background: white; border-radius: 20px; overflow: hidden; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .explore-img { width: 100%; height: 280px; object-fit: cover; }
-        .explore-info { padding: 15px; }
-        .badge { background: #f0f2f5; padding: 4px 10px; border-radius: 8px; font-size: 0.8rem; color: #555; margin-left: 5px; }
-        .action-btns { display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #eee; }
-        .action-btn { background: none; border: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; font-size: 0.8rem; flex: 1; }
-
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #ddd; z-index: 1000; }
-        .nav-tab { color: #888; cursor: pointer; text-align: center; font-size: 0.85rem; }
-        .nav-tab.active { color: var(--main); font-weight: bold; }
-
-        #chat-window { display: none; position: fixed; inset: 0; background: white; z-index: 2000; flex-direction: column; }
-        #msg-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; background: #f0f2f5; }
-        .bubble { padding: 12px; border-radius: 18px; margin-bottom: 8px; max-width: 75%; }
-        .sent { background: var(--main); color: white; align-self: flex-start; }
-        .received { background: #e4e6eb; align-self: flex-end; }
+        
+        /* كروت بسيطة للعرض */
+        .explore-card { background: white; padding: 15px; border-radius: 20px; margin-bottom: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #ddd; }
     </style>
 </head>
 <body>
 
     <div id="login-screen">
         <div class="auth-box" id="register-box">
-            <h2 style="color:var(--main); margin-bottom:10px;">تسجيل جديد</h2>
-            <img id="preview-img" src="https://cdn-icons-png.flaticon.com/512/149/149071.png">
-            <div class="upload-row">
-                <label class="btn-up" onclick="document.getElementById('file-gal').click()">📁 معرض</label>
-                <label class="btn-up" onclick="document.getElementById('file-cam').click()">📷 كاميرا</label>
-            </div>
-            <input type="file" id="file-gal" accept="image/*" style="display:none" onchange="previewImg(this)">
-            <input type="file" id="file-cam" accept="image/*" capture="user" style="display:none" onchange="previewImg(this)">
+            <h2 style="color:var(--main);">تسجيل جديد</h2>
+            <div style="font-size: 0.8rem; color: #777; margin-bottom: 10px;">(يتم الحفظ حالياً في ذاكرة المتصفح)</div>
+            
             <input type="text" id="reg-name" placeholder="اسم المستخدم">
             <input type="password" id="reg-pass" placeholder="كلمة السر">
-            <input type="number" id="reg-age" placeholder="العمر">
             <select id="reg-state">
                 <option value="">اختر الولاية</option>
-                <option value="الخرطوم">الخرطوم</option><option value="الجزيرة">الجزيرة</option><option value="البحر الأحمر">البحر الأحمر</option>
-                <option value="كسلا">كسلا</option><option value="القضارف">القضارف</option><option value="سنار">سنار</option>
-                <option value="النيل الأبيض">النيل الأبيض</option><option value="النيل الأزرق">النيل الأزرق</option><option value="الشمالية">الشمالية</option>
-                <option value="نهر النيل">نهر النيل</option><option value="شمال كردفان">شمال كردفان</option><option value="جنوب كردفان">جنوب كردفان</option>
-                <option value="غرب كردفان">غرب كردفان</option><option value="شمال دارفور">شمال دارفور</option><option value="جنوب دارفور">جنوب دارفور</option>
-                <option value="غرب دارفور">غرب دارفور</option><option value="وسط دارفور">وسط دارفور</option><option value="شرق دارفور">شرق دارفور</option>
-            </select>
-            <input type="text" id="reg-hobby" placeholder="الهواية">
-            <select id="reg-status">
-                <option value="أعزب">أعزب</option><option value="مطلق">مطلق</option><option value="أرمل">أرمل</option>
+                <option value="الخرطوم">الخرطوم</option>
+                <option value="الجزيرة">الجزيرة</option>
+                <option value="البحر الأحمر">البحر الأحمر</option>
             </select>
             
-            <button class="btn-start" onclick="startJoin()">تسجيل حساب جديد</button>
+            <button class="btn-start" onclick="localRegister()">تسجيل حساب جديد</button>
+            
             <button class="btn-login-toggle" onclick="toggleAuth(true)">لدي حساب بالفعل</button>
         </div>
 
         <div class="auth-box" id="login-box" style="display:none;">
-            <h2 style="color:#4e085f; margin-bottom:10px;">دخول</h2>
-            <p style="font-size: 0.9rem; color: #666; margin-bottom: 20px;">الرجاء إدخال بيانات حسابك المسجل</p>
+            <h2 style="color:var(--dark);">دخول</h2>
+            <p style="font-size: 0.9rem; color: #666;">ادخل اسمك وكلمة سرك المسجلة</p>
+            
             <input type="text" id="log-name" placeholder="اسم المستخدم">
             <input type="password" id="log-pass" placeholder="كلمة السر">
-            <button class="btn-start" style="background:#4e085f" onclick="login()">دخول</button>
-            <button class="btn-link" onclick="toggleAuth(false)">رجوع للتسجيل</button>
+            
+            <button class="btn-start" style="background:var(--dark)" onclick="localLogin()">دخول</button>
+            <button class="btn-link" onclick="toggleAuth(false)">رجوع لإنشاء حساب</button>
         </div>
     </div>
 
     <div id="main-site">
-        <div class="header" id="main-hdr">استكشف أصدقاء</div>
-        <div id="p-explore" class="page active-page"><div id="explore-list"></div></div>
-        <div id="p-chats" class="page"><div id="inbox-list"></div></div>
-        <div id="p-notifs" class="page"><div id="notif-list"></div></div>
-        <div id="p-settings" class="page">
-            <button class="btn-start" style="background:#555" onclick="location.reload()">تسجيل الخروج</button>
+        <div class="header">شبكة البحير - مرحباً <span id="user-display"></span></div>
+        <div class="page active-page">
+            <div class="explore-card">
+                <h3>أهلاً بك في النسخة التجريبية!</h3>
+                <p>لقد نجحت في الدخول. تم تفعيل نظام "لدي حساب بالفعل" بنجاح.</p>
+            </div>
         </div>
         <nav class="bottom-nav">
-            <div class="nav-tab active" onclick="navTo('explore', this)">❤️ استكشف</div>
-            <div class="nav-tab" onclick="navTo('chats', this)">💬 الرسائل</div>
-            <div class="nav-tab" onclick="navTo('notifs', this)">🔔 الإشعارات</div>
-            <div class="nav-tab" onclick="navTo('settings', this)">⚙️ الإعدادات</div>
+            <div onclick="location.reload()" style="color:red; cursor:pointer;">خروج</div>
         </nav>
     </div>
 
-    <div id="chat-window">
-        <div style="padding:15px; background:var(--main); color:white; display:flex; align-items:center;">
-            <button onclick="closeChat()" style="background:none; border:none; color:white; font-size:22px;">➡️</button>
-            <span id="chat-name" style="margin-right:15px; font-weight:bold">...</span>
-        </div>
-        <div id="msg-container"></div>
-        <div style="padding:15px; display:flex; background:white; border-top:1px solid #ddd;">
-            <input type="text" id="msgIn" placeholder="اكتب رسالة..." style="margin:0; border-radius:25px;">
-            <button onclick="send()" style="width:80px; margin-right:8px; border-radius:25px; background:var(--main); color:white; border:none;">إرسال</button>
-        </div>
-    </div>
-
     <script>
-        // --- إعدادات Firebase ---
-        const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_APP.firebaseapp.com",
-            databaseURL: "https://YOUR_APP.firebaseio.com",
-            projectId: "YOUR_APP",
-            storageBucket: "YOUR_APP.appspot.com",
-            messagingSenderId: "0000000",
-            appId: "1:000000:web:0000"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-
-        let myName = "";
-        let myPhoto = "";
-
         // التبديل بين الواجهات
         function toggleAuth(isLogin) {
             document.getElementById('register-box').style.display = isLogin ? 'none' : 'block';
             document.getElementById('login-box').style.display = isLogin ? 'block' : 'none';
         }
 
-        function previewImg(input) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    myPhoto = e.target.result;
-                    document.getElementById('preview-img').src = myPhoto;
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-
-        function validatePassword(p) {
-            const letters = p.replace(/[^a-zA-Z]/g, "").length;
-            const numbers = p.replace(/[^0-9]/g, "").length;
-            return letters === 6 && numbers === 2;
-        }
-
-        // تسجيل حساب جديد
-        function startJoin() {
-            myName = document.getElementById('reg-name').value.trim();
+        // محاكاة التسجيل (بدلاً من فايربيز مؤقتاً)
+        function localRegister() {
+            const name = document.getElementById('reg-name').value.trim();
             const pass = document.getElementById('reg-pass').value;
             const state = document.getElementById('reg-state').value;
-            const age = document.getElementById('reg-age').value;
 
-            if(!myName || !age || !state || !myPhoto) return alert("أكمل البيانات واختر صورة");
-            if(!validatePassword(pass)) return alert("كلمة السر يجب أن تكون 6 أحرف ورقمين!");
+            if(!name || !pass || !state) return alert("يرجى ملء كافة البيانات");
 
-            db.ref('users/' + myName).once('value', snap => {
-                if(snap.exists()) return alert("الاسم موجود مسبقاً! سجل دخولك");
-                db.ref('users/' + myName).set({
-                    name: myName, password: pass, age: age, state: state,
-                    photo: myPhoto, hobby: document.getElementById('reg-hobby').value,
-                    status: document.getElementById('reg-status').value,
-                    online: true, lastSeen: "متصل الآن", likes: 0
-                }).then(enterSite);
-            });
+            // حفظ البيانات في localStorage
+            const user = { name, pass, state };
+            localStorage.setItem('user_' + name, JSON.stringify(user));
+            
+            alert("تم تسجيل حسابك بنجاح! يمكنك الآن تجربة 'لدي حساب بالفعل'");
+            toggleAuth(true); // نقله لواجهة الدخول تلقائياً
         }
 
-        // تسجيل الدخول (لدي حساب بالفعل) - الربط مع قاعدة البيانات
-        function login() {
-            const n = document.getElementById('log-name').value.trim();
-            const p = document.getElementById('log-pass').value;
-            if(!n || !p) return alert("ادخل البيانات");
+        // محاكاة الدخول والربط مع الحسابات المسجلة
+        function localLogin() {
+            const name = document.getElementById('log-name').value.trim();
+            const pass = document.getElementById('log-pass').value;
 
-            db.ref('users/' + n).once('value', snap => {
-                if(snap.exists() && snap.val().password === p) {
-                    myName = n;
-                    myPhoto = snap.val().photo;
-                    db.ref('users/' + n).update({ online: true, lastSeen: "متصل الآن" });
-                    enterSite();
+            if(!name || !pass) return alert("ادخل الاسم وكلمة السر");
+
+            // البحث عن المستخدم في الذاكرة
+            const storedUser = localStorage.getItem('user_' + name);
+
+            if (storedUser) {
+                const user = JSON.parse(storedUser);
+                if (user.pass === pass) {
+                    // الدخول بنجاح
+                    document.getElementById('user-display').innerText = user.name;
+                    document.getElementById('login-screen').style.display = 'none';
+                    document.getElementById('main-site').style.display = 'block';
                 } else {
-                    alert("بيانات الدخول غير صحيحة! تأكد من الاسم وكلمة السر");
+                    alert("كلمة السر خاطئة!");
                 }
-            });
-        }
-
-        function enterSite() {
-            db.ref('users/' + myName + '/online').onDisconnect().set(false);
-            db.ref('users/' + myName + '/lastSeen').onDisconnect().set(new Date().toLocaleString('ar-EG'));
-            document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('main-site').style.display = 'block';
-            loadExplore();
-            listenToNotifs();
-        }
-
-        function navTo(pageId, el) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
-            document.getElementById('p-' + pageId).classList.add('active-page');
-            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-            el.classList.add('active');
-            document.getElementById('main-hdr').innerText = el.innerText;
-        }
-
-        function loadExplore() {
-            db.ref('users').on('value', snap => {
-                const list = document.getElementById('explore-list');
-                list.innerHTML = "";
-                snap.forEach(uSnap => {
-                    const u = uSnap.val();
-                    if(u.name !== myName) {
-                        list.innerHTML += `
-                            <div class="explore-card">
-                                <img src="${u.photo}" class="explore-img">
-                                <div class="explore-info">
-                                    <b>${u.name} (${u.age})</b>
-                                    <span class="badge">📍 ${u.state}</span>
-                                    <p style="font-size:0.85rem; color:#666; margin:8px 0;">${u.status} | ${u.hobby}</p>
-                                    <span style="color:${u.online ? 'green' : 'red'}; font-size:0.8rem; font-weight:bold;">
-                                        ● ${u.online ? 'نشط الآن' : 'آخر ظهور: ' + u.lastSeen}
-                                    </span>
-                                </div>
-                                <div class="action-btns">
-                                    <button class="action-btn" onclick="like('${u.name}')">❤️ ${u.likes || 0}</button>
-                                    <button class="action-btn" onclick="openChat('${u.name}')">💬 مراسلة</button>
-                                </div>
-                            </div>`;
-                    }
-                });
-            });
-        }
-
-        function like(n) { db.ref('users/' + n + '/likes').transaction(c => (c || 0) + 1); }
-        function openChat(n) {
-            chatTarget = n;
-            document.getElementById('chat-name').innerText = n;
-            document.getElementById('chat-window').style.display = 'flex';
-            const id = [myName, n].sort().join('_');
-            db.ref('chats/' + id).on('value', s => {
-                const box = document.getElementById('msg-container'); box.innerHTML = "";
-                s.forEach(m => { const d = m.val(); box.innerHTML += `<div class="bubble ${d.sender===myName?'sent':'received'}">${d.text}</div>`; });
-                box.scrollTop = box.scrollHeight;
-            });
-        }
-        function closeChat() { document.getElementById('chat-window').style.display = 'none'; }
-        function send() {
-            const t = document.getElementById('msgIn').value; if(!t) return;
-            const id = [myName, chatTarget].sort().join('_');
-            db.ref('chats/' + id).push({ sender: myName, text: t });
-            document.getElementById('msgIn').value = "";
+            } else {
+                alert("هذا المستخدم غير مسجل في الذاكرة حالياً.");
+            }
         }
     </script>
 </body>
