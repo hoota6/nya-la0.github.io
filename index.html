@@ -3,186 +3,193 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>شبكة تواصل البحير | ملف شخصي كامل</title>
+    <title>شبكة البحير | Albeher Net</title>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
     
     <style>
-        :root { --main: #0055d4; --bg: #f0f2f5; }
+        :root { --main: #ff2d55; --bg: #f8f9fa; --white: #ffffff; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 0; }
         
-        /* شاشة الدخول والتسجيل */
-        #login-screen { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: var(--main); }
-        .auth-box { background: white; padding: 25px; border-radius: 15px; width: 320px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-        
-        input, select, textarea { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-family: inherit; }
-        button { background: var(--main); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; }
+        /* شاشة التسجيل */
+        #login-screen { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(45deg, #ff2d55, #ff512f); position: fixed; inset: 0; z-index: 9999; }
+        .auth-box { background: white; padding: 25px; border-radius: 20px; width: 320px; text-align: center; }
+        #preview-img { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 3px solid var(--main); margin-bottom: 15px; }
+        .upload-btns { display: flex; gap: 8px; margin-bottom: 15px; }
+        .btn-upload { background: #eee; padding: 8px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; flex: 1; }
+        input, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; }
+        .btn-start { background: var(--main); color: white; border: none; padding: 14px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: bold; }
 
-        /* قسم الصورة الشخصية في التسجيل */
-        .photo-preview-container { text-align: center; margin: 10px 0; }
-        #preview-img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid var(--main); display: none; margin: 0 auto 10px; }
-        .file-input-label { display: block; background: #eee; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 0.9rem; color: #555; }
+        /* الهيكل الداخلي */
+        #main-site { display: none; padding-bottom: 80px; }
+        .header { background: var(--main); color: white; padding: 15px; text-align: center; position: fixed; top: 0; width: 100%; z-index: 1000; font-weight: bold; font-size: 1.2rem; }
+        .page { display: none; padding: 70px 15px 20px 15px; max-width: 600px; margin: 0 auto; }
+        .active-page { display: block; }
 
-        /* الواجهة الرئيسية */
-        #main-app { display: none; }
-        .nav { background: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: fixed; width: 100%; top: 0; z-index: 100; box-sizing: border-box;}
+        /* كرت استكشف (المواعدة والتعارف) */
+        .explore-card { background: white; border-radius: 20px; overflow: hidden; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: relative; }
+        .explore-img { width: 100%; height: 250px; object-fit: cover; cursor: pointer; }
+        .explore-info { padding: 15px; }
+        .explore-info b { font-size: 1.3rem; display: block; }
+        .status-dot { color: #4cd137; font-size: 0.8rem; }
+        .join-date { font-size: 0.75rem; color: #999; }
         
-        .container { max-width: 600px; margin: 80px auto 20px auto; padding: 0 15px; }
-        
-        /* كرت المستخدم */
-        .user-card { background: white; padding: 15px; border-radius: 15px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .user-info-flex { display: flex; align-items: center; }
-        .user-img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; background: #eee; border: 2px solid var(--main); cursor: pointer; }
-        .user-details { margin-right: 15px; flex: 1; }
-        .user-details b { font-size: 1.1rem; }
-        .status-tag { font-size: 0.75rem; color: #666; background: #eee; padding: 2px 8px; border-radius: 10px; }
+        .action-btns { display: flex; justify-content: space-around; padding: 10px; border-top: 1px solid #eee; background: #fff; }
+        .action-btn { background: none; border: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; font-size: 0.8rem; color: #555; }
+        .action-btn i { font-size: 1.4rem; margin-bottom: 4px; }
+        .btn-like.active { color: var(--main); }
+
+        /* الإشعارات */
+        .notif-card { background: #fff; padding: 15px; border-radius: 12px; margin-bottom: 10px; border-right: 5px solid var(--main); display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 
         /* نافذة الدردشة */
-        #chat-window { display: none; position: fixed; inset: 0; background: white; z-index: 200; flex-direction: column; }
-        .chat-header { padding: 15px; background: var(--main); color: white; display: flex; align-items: center; justify-content: space-between; }
-        #messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; background: #f9f9f9; }
-        .msg { padding: 10px 15px; border-radius: 15px; margin-bottom: 8px; max-width: 75%; }
-        .msg.sent { background: var(--main); color: white; align-self: flex-start; }
-        .msg.received { background: #e4e6eb; align-self: flex-end; }
+        #chat-window { display: none; position: fixed; inset: 0; background: white; z-index: 2000; flex-direction: column; }
+        #msg-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; background: #f0f2f5; }
+        .bubble { padding: 10px 15px; border-radius: 18px; margin-bottom: 10px; max-width: 75%; }
+        .sent { background: var(--main); color: white; align-self: flex-start; }
+        .received { background: #e4e6eb; align-self: flex-end; }
+
+        /* شريط التنقل السفلي */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px; border-top: 1px solid #ddd; z-index: 1000; }
+        .nav-tab { color: #777; cursor: pointer; font-size: 0.8rem; text-align: center; }
+        .nav-tab.active { color: var(--main); font-weight: bold; }
     </style>
 </head>
 <body>
 
     <div id="login-screen">
         <div class="auth-box">
-            <h2 style="text-align:center; color: var(--main);">إنشاء حساب جديد</h2>
-            
-            <div class="photo-preview-container">
-                <img id="preview-img" src="">
-                <label class="file-input-label" for="photo-file">📷 اختر صورة أو التقط واحدة</label>
-                <input type="file" id="photo-file" accept="image/*" capture="user" style="display:none" onchange="previewFile()">
+            <h2>انضم للبحير نت ❤️</h2>
+            <img id="preview-img" src="https://cdn-icons-png.flaticon.com/512/149/149071.png">
+            <div class="upload-btns">
+                <label class="btn-upload" onclick="document.getElementById('gal').click()">📁 معرض</label>
+                <label class="btn-upload" onclick="document.getElementById('cam').click()">📷 كاميرا</label>
             </div>
-
-            <input type="text" id="username" placeholder="اسم المستخدم">
-            <input type="password" id="password" placeholder="كلمة السر">
-            <input type="text" id="hobby" placeholder="هوايتك (مثلاً: البرمجة، السفر)">
-            <select id="social-status">
+            <input type="file" id="gal" accept="image/*" style="display:none" onchange="preview(this)">
+            <input type="file" id="cam" accept="image/*" capture="user" style="display:none" onchange="preview(this)">
+            
+            <input type="text" id="reg-name" placeholder="اسمك المستعار">
+            <input type="text" id="reg-hobby" placeholder="هوايتك">
+            <select id="reg-status">
                 <option value="أعزب">أعزب</option>
                 <option value="متزوج">متزوج</option>
-                <option value="خاطب">خاطب</option>
             </select>
-            
-            <button onclick="registerAndLogin()">تسجيل والدخول</button>
+            <button class="btn-start" onclick="join()">ابدأ الآن</button>
         </div>
     </div>
 
-    <div id="main-app">
-        <div class="nav">
-            <b style="color: var(--main);">شبكة البحير نت</b>
-            <span onclick="location.reload()" style="cursor:pointer; color:red; font-weight:bold;">خروج</span>
+    <div id="main-site">
+        <div class="header" id="hdr">استكشف أصدقاء</div>
+
+        <div id="p-explore" class="page active-page">
+            <div id="explore-list"></div>
         </div>
 
-        <div class="container" id="users-list">
-            <p style="text-align: center;">جاري جلب المستخدمين...</p>
+        <div id="p-chats" class="page">
+            <div id="inbox-list"></div>
         </div>
+
+        <div id="p-notifs" class="page">
+            <div id="notif-list"></div>
+        </div>
+
+        <div id="p-settings" class="page">
+            <button class="btn-start" style="background:#555" onclick="location.reload()">تسجيل الخروج</button>
+        </div>
+
+        <nav class="bottom-nav">
+            <div class="nav-tab active" onclick="nav('explore', this)">❤️ استكشف</div>
+            <div class="nav-tab" onclick="nav('chats', this)">💬 الرسائل</div>
+            <div class="nav-tab" onclick="nav('notifs', this)">🔔 الإشعارات</div>
+            <div class="nav-tab" onclick="nav('settings', this)">⚙️ الإعدادات</div>
+        </nav>
     </div>
 
     <div id="chat-window">
-        <div class="chat-header">
-            <button onclick="closeChat()" style="width:auto; background:none; font-size:20px; border:none; color:white; cursor:pointer;">➡️</button>
-            <span id="chat-with-name">الدردشة</span>
-            <div></div>
+        <div style="padding:15px; background:var(--main); color:white; display:flex; align-items:center;">
+            <button onclick="closeChat()" style="background:none; border:none; color:white; font-size:20px;">➡️</button>
+            <span id="chat-title" style="margin-right:10px">الدردشة</span>
         </div>
-        <div id="messages"></div>
+        <div id="msg-container"></div>
         <div style="padding:15px; display:flex; border-top:1px solid #ddd;">
-            <input type="text" id="msgText" placeholder="اكتب رسالة..." style="margin:0; border-radius: 20px;">
-            <button onclick="sendMessage()" style="width:80px; margin-right:5px; border-radius:20px;">إرسال</button>
+            <input type="text" id="msgIn" placeholder="اكتب هنا..." style="margin:0; border-radius:20px;">
+            <button onclick="send()" style="width:70px; margin-right:5px; border-radius:20px; background:var(--main); color:white; border:none;">إرسال</button>
         </div>
     </div>
 
     <script>
-        // --- إعدادات Firebase ---
+        // --- Firebase Config ---
         const firebaseConfig = {
-            apiKey: "ضع_هنا_API_KEY",
-            authDomain: "مشروعك.firebaseapp.com",
-            databaseURL: "https://مشروعك.firebaseio.com",
-            projectId: "مشروعك",
-            storageBucket: "مشروعك.appspot.com",
-            messagingSenderId: "12345678",
-            appId: "1:12345678:web:abc123"
+            apiKey: "AIzaSy...",
+            authDomain: "your-app.firebaseapp.com",
+            databaseURL: "https://your-app.firebaseio.com",
+            projectId: "your-app",
+            storageBucket: "your-app.appspot.com",
+            messagingSenderId: "0000000",
+            appId: "1:000000:web:0000"
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        let myUser = "";
-        let chatTarget = "";
-        let base64Image = "https://cdn-icons-png.flaticon.com/512/149/149071.png"; // الصورة الافتراضية
+        let myName = "";
+        let myPhoto = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+        let target = "";
 
-        // وظيفة معاينة الصورة وتحويلها
-        function previewFile() {
-            const file = document.getElementById('photo-file').files[0];
-            const reader = new FileReader();
-
-            reader.onloadend = function() {
-                base64Image = reader.result; // النص البرمجي للصورة
-                const preview = document.getElementById('preview-img');
-                preview.src = reader.result;
-                preview.style.display = "block";
-            }
-
-            if (file) {
-                reader.readAsDataURL(file);
+        function preview(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    myPhoto = e.target.result;
+                    document.getElementById('preview-img').src = myPhoto;
+                };
+                reader.readAsDataURL(input.files[0]);
             }
         }
 
-        function registerAndLogin() {
-            const user = document.getElementById('username').value.trim();
-            const hobby = document.getElementById('hobby').value.trim();
-            const status = document.getElementById('social-status').value;
+        function join() {
+            myName = document.getElementById('reg-name').value.trim();
+            if(!myName) return alert("ادخل اسمك");
 
-            if (!user) return alert("ادخل اسم المستخدم");
+            const joinDate = new Date().toLocaleDateString('ar-EG');
+            db.ref('users/' + myName).set({
+                name: myName,
+                photo: myPhoto,
+                hobby: document.getElementById('reg-hobby').value,
+                status: document.getElementById('reg-status').value,
+                joined: joinDate,
+                online: true,
+                likes: 0
+            });
 
-            myUser = user;
-            
-            const userData = {
-                username: myUser,
-                hobby: hobby,
-                socialStatus: status,
-                photo: base64Image,
-                lastSeen: "نشط الآن"
-            };
-
-            db.ref('users/' + myUser).set(userData);
-            
-            db.ref('users/' + myUser + '/lastSeen').onDisconnect().set(new Date().toLocaleString('ar-EG'));
+            // تحديث الحالة عند الخروج
+            db.ref('users/' + myName + '/online').onDisconnect().set(false);
 
             document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('main-app').style.display = 'block';
-            loadUsers();
+            document.getElementById('main-site').style.display = 'block';
+            
+            loadExplore();
+            listenNotifs();
         }
 
-        // إضافة وظيفة تنزيل الصورة عند الضغط عليها
-        function downloadImage(url, name) {
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `photo_${name}.png`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        function loadUsers() {
-            db.ref('users').on('value', snapshot => {
-                const list = document.getElementById('users-list');
+        function loadExplore() {
+            db.ref('users').on('value', snap => {
+                const list = document.getElementById('explore-list');
                 list.innerHTML = "";
-                snapshot.forEach(child => {
-                    const u = child.val();
-                    if (u.username !== myUser) {
+                snap.forEach(uSnap => {
+                    const u = uSnap.val();
+                    if(u.name !== myName) {
                         list.innerHTML += `
-                            <div class="user-card">
-                                <div class="user-info-flex">
-                                    <img src="${u.photo}" class="user-img" onclick="downloadImage('${u.photo}', '${u.username}')" title="اضغط لتحميل الصورة">
-                                    <div class="user-details">
-                                        <b>${u.username}</b> <span class="status-tag">${u.socialStatus}</span><br>
-                                        <small>الهواية: ${u.hobby || 'غير محددة'}</small><br>
-                                        <small style="color:green">آخر ظهور: ${u.lastSeen}</small>
-                                    </div>
-                                    <button onclick="openChat('${u.username}')" style="width:auto; padding:5px 15px;">دردشة</button>
+                            <div class="explore-card">
+                                <img src="${u.photo}" class="explore-img" onclick="viewPhoto('${u.photo}')">
+                                <div class="explore-info">
+                                    <b>${u.name} ${u.online ? '<span class="status-dot">● نشط الآن</span>' : ''}</b>
+                                    <small>الهواية: ${u.hobby} | الحالة: ${u.status}</small><br>
+                                    <span class="join-date">انضم في: ${u.joined}</span>
+                                </div>
+                                <div class="action-btns">
+                                    <button class="action-btn" onclick="like('${u.name}')">❤️ <span>${u.likes || 0}</span><br>أحببته</button>
+                                    <button class="action-btn" onclick="viewProfile('${u.name}')">👤<br>الملف</button>
+                                    <button class="action-btn" onclick="openChat('${u.name}')">💬<br>مراسلة</button>
                                 </div>
                             </div>
                         `;
@@ -191,35 +198,64 @@
             });
         }
 
-        // وظائف الدردشة
-        function openChat(name) {
-            chatTarget = name;
-            document.getElementById('chat-with-name').innerText = name;
+        function like(name) {
+            const ref = db.ref('users/' + name + '/likes');
+            ref.transaction(curr => (curr || 0) + 1);
+        }
+
+        function viewPhoto(url) {
+            const win = window.open("");
+            win.document.write(`<img src="${url}" style="width:100%; height:auto;"><br><a href="${url}" download="photo.png" style="font-size:25px;">تحميل الصورة</a>`);
+        }
+
+        function listenNotifs() {
+            db.ref('users').on('child_changed', snap => {
+                const u = snap.val();
+                if(u.name !== myName && u.online === true) {
+                    const list = document.getElementById('notif-list');
+                    list.innerHTML = `
+                        <div class="notif-card">
+                            <span><b>${u.name}</b> متصل الآن.. اتريد مراسلته؟</span>
+                            <button onclick="openChat('${u.name}')" style="background:var(--main); color:white; border:none; padding:5px 10px; border-radius:5px;">مراسلة الآن</button>
+                        </div>
+                    ` + list.innerHTML;
+                }
+            });
+        }
+
+        function nav(p, el) {
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active-page'));
+            document.getElementById('p-' + p).classList.add('active-page');
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+            document.getElementById('hdr').innerText = el.innerText;
+        }
+
+        // نظام الدردشة
+        function openChat(n) {
+            target = n;
+            document.getElementById('chat-title').innerText = n;
             document.getElementById('chat-window').style.display = 'flex';
-            loadMessages();
-        }
-        function closeChat() { document.getElementById('chat-window').style.display = 'none'; }
-
-        function sendMessage() {
-            const txt = document.getElementById('msgText').value.trim();
-            if (!txt) return;
-            const chatId = [myUser, chatTarget].sort().join('_');
-            db.ref('chats/' + chatId).push({ sender: myUser, text: txt, time: Date.now() });
-            document.getElementById('msgText').value = "";
-        }
-
-        function loadMessages() {
-            const chatId = [myUser, chatTarget].sort().join('_');
-            db.ref('chats/' + chatId).on('value', snap => {
-                const box = document.getElementById('messages');
+            const id = [myName, target].sort().join('_');
+            db.ref('chats/' + id).on('value', s => {
+                const box = document.getElementById('msg-container');
                 box.innerHTML = "";
-                snap.forEach(msgSnap => {
-                    const m = msgSnap.val();
-                    const cls = m.sender === myUser ? 'sent' : 'received';
-                    box.innerHTML += `<div class="msg ${cls}">${m.text}</div>`;
+                s.forEach(m => {
+                    const d = m.val();
+                    box.innerHTML += `<div class="bubble ${d.sender===myName?'sent':'received'}">${d.text}</div>`;
                 });
                 box.scrollTop = box.scrollHeight;
             });
+        }
+
+        function closeChat() { document.getElementById('chat-window').style.display = 'none'; }
+
+        function send() {
+            const t = document.getElementById('msgIn').value;
+            if(!t) return;
+            const id = [myName, target].sort().join('_');
+            db.ref('chats/' + id).push({ sender: myName, text: t });
+            document.getElementById('msgIn').value = "";
         }
     </script>
 </body>
