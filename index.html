@@ -2,40 +2,147 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تطبيق مودة للتعارف</title>
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>محاكي قيادة البحير</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: #222; font-family: Arial; touch-action: none; }
+        canvas { display: block; background: #444; margin: 0 auto; }
+        
+        /* واجهة التحكم للموبايل */
+        .controls { position: fixed; bottom: 20px; width: 100%; display: flex; justify-content: space-around; padding: 0 20px; box-sizing: border-box; }
+        .btn { width: 70px; height: 70px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; font-weight: bold; user-select: none; border: 2px solid white; }
+        .btn:active { background: rgba(255,255,255,0.5); }
+        
+        #dashboard { position: fixed; top: 10px; left: 10px; color: white; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 10px; }
+    </style>
 </head>
 <body>
 
-    <div id="auth-container" class="container">
-        <h2 id="form-title">إنشاء حساب جديد</h2>
-        <input type="text" id="username" placeholder="اسم المستخدم">
-        <input type="password" id="password" placeholder="كلمة السر">
-        <button onclick="handleAuth()" id="auth-btn">تسجيل</button>
-        <p onclick="toggleAuth()" id="toggle-text">لديك حساب بالفعل؟ سجل دخولك</p>
-    </div>
+<div id="dashboard">السرعة: <span id="speed">0</span> كم/س</div>
 
-    <div id="app-container" class="container" style="display:none;">
-        <header>
-            <span>مرحباً، <b id="user-display"></b></span>
-            <button onclick="logout()">خروج</button>
-        </header>
+<canvas id="gameCanvas"></canvas>
+
+<div class="controls">
+    <div id="leftBtn" class="btn">◀</div>
+    <div id="accBtn" class="btn" style="background: green;">دواسة</div>
+    <div id="brakeBtn" class="btn" style="background: red;">فرامل</div>
+    <div id="rightBtn" class="btn">▶</div>
+</div>
+
+<script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const speedDisplay = document.getElementById('speed');
+
+    canvas.width = window.innerWidth > 500 ? 400 : window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // إعدادات السيارة
+    const car = {
+        x: canvas.width / 2 - 25,
+        y: canvas.height - 150,
+        width: 50,
+        height: 90,
+        speed: 0,
+        acceleration: 0.2,
+        friction: 0.05,
+        maxSpeed: 15,
+        angle: 0,
+        turningSpeed: 0.04
+    };
+
+    // إعدادات الطريق
+    let roadOffset = 0;
+    const keys = {};
+
+    // أزرار التحكم
+    const setupControl = (id, key) => {
+        const btn = document.getElementById(id);
+        btn.addEventListener('pointerdown', () => keys[key] = true);
+        btn.addEventListener('pointerup', () => keys[key] = false);
+    };
+
+    setupControl('accBtn', 'ArrowUp');
+    setupControl('brakeBtn', 'ArrowDown');
+    setupControl('leftBtn', 'ArrowLeft');
+    setupControl('rightBtn', 'ArrowRight');
+
+    function drawRoad() {
+        ctx.fillStyle = "#333";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
         
-        <div class="chat-box">
-            <div id="users-list">
-                <h4>الأعضاء المتصلون</h4>
-                </div>
-            <div id="chat-window">
-                <div id="messages"></div>
-                <div class="input-area">
-                    <input type="text" id="msg-input" placeholder="اكتب رسالتك هنا...">
-                    <button onclick="sendMessage()">إرسال</button>
-                </div>
-            </div>
-        </div>
-    </div>
+        // خطوط الطريق المتحركة
+        ctx.strokeStyle = "white";
+        ctx.setLineDash([40, 40]);
+        ctx.lineWidth = 5;
+        ctx.beginPath();
+        ctx.moveTo(canvas.width / 2, 0);
+        ctx.lineTo(canvas.width / 2, canvas.height);
+        ctx.lineDashOffset = -roadOffset;
+        ctx.stroke();
+        
+        roadOffset += car.speed;
+    }
 
-    <script src="script.js"></script>
+    function drawCar() {
+        ctx.save();
+        ctx.translate(car.x + car.width / 2, car.y + car.height / 2);
+        ctx.rotate(car.angle);
+        
+        // جسم السيارة
+        ctx.fillStyle = "red";
+        ctx.fillRect(-car.width / 2, -car.height / 2, car.width, car.height);
+        
+        // الزجاج
+        ctx.fillStyle = "lightblue";
+        ctx.fillRect(-car.width / 2 + 5, -car.height / 2 + 10, car.width - 10, 20);
+        
+        // المصابيح
+        ctx.fillStyle = "yellow";
+        ctx.fillRect(-car.width / 2 + 5, -car.height / 2, 10, 5);
+        ctx.fillRect(car.width / 2 - 15, -car.height / 2, 10, 5);
+        
+        ctx.restore();
+    }
+
+    function updatePhysics() {
+        // تسارع وفرامل
+        if (keys['ArrowUp']) car.speed += car.acceleration;
+        if (keys['ArrowDown']) car.speed -= car.acceleration * 2;
+
+        // احتكاك طبيعي
+        if (car.speed > 0) car.speed -= car.friction;
+        if (car.speed < 0) car.speed += car.friction;
+        if (Math.abs(car.speed) < 0.1) car.speed = 0;
+
+        // السرعة القصوى
+        if (car.speed > car.maxSpeed) car.speed = car.maxSpeed;
+
+        // دوران
+        if (car.speed !== 0) {
+            const flip = car.speed > 0 ? 1 : -1;
+            if (keys['ArrowLeft']) car.angle -= car.turningSpeed * flip;
+            if (keys['ArrowRight']) car.angle += car.turningSpeed * flip;
+        }
+
+        // حركة السيارة بناءً على الزاوية
+        car.x += Math.sin(car.angle) * car.speed;
+        // منع الخروج عن الطريق
+        if (car.x < 0) car.x = 0;
+        if (car.x > canvas.width - car.width) car.x = canvas.width - car.width;
+
+        speedDisplay.innerText = Math.round(car.speed * 10);
+    }
+
+    function gameLoop() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        updatePhysics();
+        drawRoad();
+        drawCar();
+        requestAnimationFrame(gameLoop);
+    }
+
+    gameLoop();
+</script>
 </body>
 </html>
